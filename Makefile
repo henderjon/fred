@@ -14,30 +14,20 @@ TEST_COVER_FILE=$(BIN)-test-coverage.out
 # TIMESTAMP=$(shell date '+%Y-%m-%dT%H:%M:%S %z %Z')
 
 LDFLAGS="-X 'main.binName=$(BIN)' -X 'main.buildVersion=$(HEAD)' -X 'main.buildTimestamp=$(TIMESTAMP)' -X 'main.compiledBy=$(shell go version)'"
-LDFLAGS_STATIC="-X 'main.binName=$(BIN)' -X 'main.buildVersion=$(HEAD)' -X 'main.buildTimestamp=$(TIMESTAMP)' -X 'main.compiledBy=$(shell go version)' -extldflags=-static"
-STATIC_TAGS="osusergo,netgo,sqlite_omit_load_extension"
 
 all: local
+
+.PHONY: version
+version:
+	@printf "\n\n%s\n\n" $(HEAD)
 
 ################################################################################
 #### HOUSE CLEANING
 ################################################################################
 
-.PHONY: _setup
-_setup:
-	mkdir -p $(BINDIR)
-
-.PHONY: clean
-clean:
-	rm -f $(BIN) $(BIN)-* $(BINDIR)/$(BIN) $(BINDIR)/$(BIN)-*
-
 .PHONY: dep
 dep:
 	go mod tidy
-
-.PHONY: version
-version:
-	@printf "\n\n%s\n\n" $(HEAD)
 
 .PHONY: check
 check: _setup
@@ -47,8 +37,16 @@ check: _setup
 	go vet
 
 ################################################################################
-#### INSTALL
+#### UN/INSTALL
 ################################################################################
+
+.PHONY: _setup
+_setup:
+	mkdir -p $(BINDIR)
+
+.PHONY: clean
+clean:
+	rm -f $(BIN) $(BIN)-* $(BINDIR)/$(BIN) $(BINDIR)/$(BIN)-*
 
 .PHONY: install
 install: local
@@ -80,27 +78,11 @@ test-cover:
 ################################################################################
 
 .PHONY: local
-local: check static
+local: dep check
 	go build -ldflags $(LDFLAGS) -o $(BINDIR)/$(BIN)
 
 .PHONY: prod
-prod: check static
+prod: dep check
 	GOWORK=off go build -ldflags $(LDFLAGS) -o $(BINDIR)/$(BIN)
 
-################################################################################
-#### CROSS COMPILE TO LINUX +CGO BUILDS
-################################################################################
 
-.PHONY: cgo
-cgo: check static docker-cgo
-	$(info docker build --tag $(HEAD) .)
-	$(info docker run --rm -p 80:9000 --detach $(HEAD) ./$(BIN)-linux64-$(HEAD) -debug -stand-alone -local-port 9000)
-
-.PHONY: docker-cgo
-docker-cgo: clean
-# bind mount $PWD to /usr/local/src; set the working dir to /usr/local/src; run make linux64-cgo
-	docker run --rm --volume "$(PWD)":/usr/local/src --workdir /usr/local/src golang:latest make linux64-cgo
-
-.PHONY: linux64-cgo
-linux64-cgo: _setup
-	env CGO_ENABLED=1 go build -a -ldflags $(LDFLAGS_STATIC) -tags $(STATIC_TAGS) -o $(BINDIR)/$(BIN)-linux64-$(HEAD) .
