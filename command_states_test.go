@@ -7,6 +7,7 @@ import (
 )
 
 func Test_lexNumber(t *testing.T) {
+	// we're testing our accuracy in parsing NUMBERS, parsing the full address(es) for the command is tested in the parser
 	tests := []struct {
 		input    string
 		expected item

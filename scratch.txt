@@ -1,0 +1,27 @@
+## FLOW
+
+The lexer walks the input and, using the states to understand the given string, emits items to the parser that collects the items in a command.
+
+parser
+--------------------------------------------------------------------------------
+
+creates a lexer and runs it on a line of input
+
+lexer
+--------------------------------------------------------------------------------
+
+- maintains internal state
+  - including a chan/buffer of items it finds.
+  - position w/i the line
+  - current "width" (number of bytes the current stateFunc is accepting)
+  - methods for walking to/fro on the line
+- executes "stateFuncs" in a loop
+
+stateFuncs
+--------------------------------------------------------------------------------
+
+- evaluate byte(s) in order to find items
+- add found items to lexer's internal chan
+
+
+

@@ -46,8 +46,8 @@ var itemTyps = map[itemType]string{
 	itemError:      "itemError",
 	itemEOF:        "itemEOF",
 	itemKeyword:    "itemKeyword",
-	itemNumber:     "itemNumber",
-	itemRange:      "itemRange",
+	itemNumber:     "itemNumber", // a single address
+	itemRange:      "itemRange",  // a range of addresses
 	itemAction:     "itemAction",
 	itemDelim:      "itemDelim",
 	itemPattern:    "itemPattern",
