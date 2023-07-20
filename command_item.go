@@ -17,11 +17,11 @@ func (i *item) String() string {
 		// return i.val
 		fallthrough
 	case i.typ > itemKeyword:
-		return fmt.Sprintf("%s <%s>", itemTyps[i.typ], i.val)
+		return fmt.Sprintf("type: %s; val: %s", itemTyps[i.typ], i.val)
 	case len(i.val) > 10:
-		return fmt.Sprintf("%s %.10q...", itemTyps[i.typ], i.val)
+		return fmt.Sprintf("type: %s; val: %.10q", itemTyps[i.typ], i.val)
 	}
-	return fmt.Sprintf("%s %q", itemTyps[i.typ], i.val)
+	return fmt.Sprintf("type: %s; val: %q", itemTyps[i.typ], i.val)
 }
 
 // itemType identifies the type of lex items.
@@ -40,17 +40,21 @@ const (
 	itemPattern
 	itemAdditional
 	itemEmpty
+	itemCommand
+	itemUnknownCommand
 )
 
 var itemTyps = map[itemType]string{
-	itemError:      "itemError",
-	itemEOF:        "itemEOF",
-	itemKeyword:    "itemKeyword",
-	itemNumber:     "itemNumber", // a single address
-	itemRange:      "itemRange",  // a range of addresses
-	itemAction:     "itemAction",
-	itemDelim:      "itemDelim",
-	itemPattern:    "itemPattern",
-	itemAdditional: "itemAdditional",
-	itemEmpty:      "itemEmpty",
+	itemError:          "itemError",
+	itemEOF:            "itemEOF",
+	itemKeyword:        "itemKeyword",
+	itemNumber:         "itemNumber", // a single address
+	itemRange:          "itemRange",  // a range of addresses
+	itemAction:         "itemAction",
+	itemDelim:          "itemDelim",
+	itemPattern:        "itemPattern",
+	itemAdditional:     "itemAdditional",
+	itemEmpty:          "itemEmpty",
+	itemCommand:        "itemCommand",
+	itemUnknownCommand: "itemUnknownCommand",
 }

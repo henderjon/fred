@@ -1,6 +1,8 @@
 package main
 
-import "unicode"
+import (
+	"unicode"
+)
 
 // [num][range][num][action][delim][pattern][delim][pattern][delim][additional]
 
@@ -8,18 +10,25 @@ import "unicode"
 func lexDef(l *lexer) stateFn {
 	for {
 		if l.pos > l.start {
+			l.emit(itemEOF)
 			break
 		}
-		switch b := l.next(); {
-		case isSpace(b):
+		r := l.next()
+		switch true {
+		// case r == eof:
+		// 	return nil
+		case isSpace(r):
 			l.ignore()
-		case b == '+' || b == '-' || ('0' <= b && b <= '9'):
+		case r == '+' || r == '-' || ('0' <= r && r <= '9'):
 			l.backup()
 			return lexNumber
-		case b == ',':
+		case isAlpha(r):
+			l.backup()
+			return lexAction
+		case r == ',':
 			l.emit(itemRange)
 		default:
-			l.backup()
+			// l.backup()
 			return lexErr
 			// return nil //l.errorf("unrecognized character in action: %#U", r)
 		}
@@ -28,7 +37,7 @@ func lexDef(l *lexer) stateFn {
 }
 
 func lexErr(l *lexer) stateFn {
-	// l.emit(itemError)
+	l.emit(itemError)
 	return nil
 }
 
@@ -61,4 +70,20 @@ func isSpace(r rune) bool {
 // isAlphaNumeric reports whether r is an alphabetic, digit, or underscore.
 func isAlphaNumeric(r rune) bool {
 	return r == '_' || unicode.IsLetter(r) || unicode.IsDigit(r)
+}
+
+// isAlphaNumeric reports whether r is an alphabetic, digit, or underscore.
+func isAlpha(r rune) bool {
+	return r == '_' || unicode.IsLetter(r)
+}
+
+// lexCommand checks a run for being a valid command
+func lexAction(l *lexer) stateFn {
+	if l.accept(string(cmds)) {
+		l.emit(itemAction)
+	} else {
+		// if we got a letter but that letter isn't a command ...
+		l.emit(itemUnknownCommand) // TODO: do we need to support alpha delims?
+	}
+	return lexDef
 }

@@ -1,8 +1,10 @@
 package main
 
+import "errors"
+
 type parser struct{}
 
-func (p *parser) run(input string) *command {
+func (p *parser) run(input string) (*command, error) {
 	var (
 		i item
 		c = &command{}
@@ -20,15 +22,20 @@ Address:
 			c.setFrom(end)
 		case itemNumber: // did we get a number first?
 			c.setFrom(i.val)
+			// c.setFrom(i.val) // TODO: this should be unnecessary
 		case itemAction: // did we get an action first
-			c.action = i.val
+			c.setAction(rune(i.val[0]))
 			break Address
+		case itemUnknownCommand: // no more items
+			return c, errors.New("unknonwn command") // skip the rest of the func
+		case itemError: // no more items
+			return c, errors.New("unknonwn error") // skip the rest of the func
 		case itemEOF: // no more items
-			return c // skip the rest of the func
+			return c, errors.New("eof") // skip the rest of the func
 		default:
-			stderr.Log(i.String())
 			stderr.Log("first token should be of type(s): action, range, number")
+			return c, nil
 		}
 	}
-	return c
+	return c, nil
 }

@@ -6,8 +6,6 @@ import (
 	"unicode/utf8"
 )
 
-const eof = -1
-
 // stateFn represents the state of the scanner as a function that returns the next state.
 type stateFn func(*lexer) stateFn
 
@@ -59,7 +57,11 @@ func (l *lexer) ignore() {
 
 // accept consumes the next rune if it's from the valid set.
 func (l *lexer) accept(valid string) bool {
-	return strings.ContainsRune(valid, l.next())
+	r := strings.ContainsRune(valid, l.next())
+	// if !r {
+	// 	l.backup()
+	// }
+	return r
 }
 
 // acceptRun consumes a run of runes from the valid set.
@@ -103,7 +105,7 @@ func (l *lexer) run() {
 	for state := lexDef; state != nil; {
 		state = state(l)
 	}
-	l.emit(itemEOF)
+	// l.emit(itemEOF)
 	close(l.items)
 }
 

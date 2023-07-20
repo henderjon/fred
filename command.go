@@ -3,17 +3,12 @@ package main
 import (
 	"fmt"
 	"strconv"
-)
-
-const (
-	unset = -1
-	zero  = "0"
-	end   = "-1"
+	"strings"
 )
 
 type command struct {
 	addrs  []int
-	action string
+	action rune
 	delim  rune
 	regex  string
 	sub    string
@@ -24,8 +19,8 @@ type command struct {
 
 func newCommand() *command {
 	return &command{
-		addrs: make([]int, 0),
-		// action: "",
+		addrs:  make([]int, 0),
+		action: noAction,
 		// delim:  rune(unset),
 		// regex:  "",
 		// sub:    "",
@@ -33,12 +28,15 @@ func newCommand() *command {
 }
 
 func (c *command) String() string {
-	if len(c.addrs) != 2 {
-		panic("commands require two addresses")
+	var cmd strings.Builder
+
+	fmt.Fprintf(&cmd, "%d", c.addrs[0])
+
+	if len(c.addrs) >= 2 {
+		fmt.Fprintf(&cmd, ",%d", c.addrs[1])
 	}
-	return fmt.Sprintf("%d,%d%s%s%s%s%s%s",
-		c.addrs[0],
-		c.addrs[1],
+
+	fmt.Fprintf(&cmd, "%c%s%s%s%s%s",
 		c.action,
 		string(c.delim),
 		c.regex,
@@ -46,6 +44,7 @@ func (c *command) String() string {
 		c.sub,
 		string(c.delim),
 	)
+	return cmd.String()
 }
 
 func (c *command) setFrom(f string) {
@@ -59,13 +58,18 @@ func (c *command) setFrom(f string) {
 	// `[1] = [0]` assignement to `case 1:` and drop all of `case 2:`
 	switch c.numAddrs() {
 	case 0:
+		if i < 0 {
+			i = 0
+		}
 		c.addrs = append(c.addrs, i)
 	case 1:
 		if i < 0 || i >= c.addrs[0] {
 			c.addrs = append(c.addrs, i)
 		} else {
+			// repeat the first number if the second number is smaller than the first
+			c.addrs = append(c.addrs, c.addrs[0])
 			// 	// TODO use the $ end of the buffer for the last line
-			fmt.Fprintf(stderr, "%d, %d", c.addrs[0], i)
+			// fmt.Fprintf(stderr, "%d, %d (%s)", c.addrs[0], i, logger.Here())
 			// stderr.Log("second address must be larger than the first", )
 		}
 	case 2:
@@ -102,4 +106,8 @@ func (c *command) numAddrs() int {
 
 func (c *command) setDelim(d string) {
 	c.delim = rune(d[0])
+}
+
+func (c *command) setAction(a rune) {
+	c.action = rune(a)
 }
