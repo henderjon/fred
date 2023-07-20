@@ -38,10 +38,13 @@ const (
 	itemAction
 	itemDelim
 	itemPattern
+	itemSubstitution
 	itemAdditional
 	itemEmpty
 	itemCommand
 	itemUnknownCommand
+	itemEmptyPattern
+	itemMissingDelim
 )
 
 var itemTyps = map[itemType]string{
@@ -53,8 +56,11 @@ var itemTyps = map[itemType]string{
 	itemAction:         "itemAction",
 	itemDelim:          "itemDelim",
 	itemPattern:        "itemPattern",
+	itemSubstitution:   "itemSubstitution",
 	itemAdditional:     "itemAdditional",
 	itemEmpty:          "itemEmpty",
 	itemCommand:        "itemCommand",
 	itemUnknownCommand: "itemUnknownCommand",
+	itemEmptyPattern:   "itemEmptyPattern",
+	itemMissingDelim:   "itemMissingDelim",
 }

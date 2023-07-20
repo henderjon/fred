@@ -11,10 +11,10 @@ var (
 )
 
 func main() {
-	// stderr.Log("here")
-	c, err := (&parser{}).run("15b")
+	input := `15s/pattern/substitute/`
+	c, err := (&parser{}).run(input)
 	if err != nil {
 		stderr.Log(err)
 	}
-	stderr.Log(c.String())
+	stderr.Log(input, c.String())
 }

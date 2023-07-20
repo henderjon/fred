@@ -40,7 +40,6 @@ var (
 	// NEGATE       = byte('^')
 	// NCCL         = byte('!')
 	// PERIOD       = byte('.') // Append CMD
-	gPREFIX          = rune('g')      // g/../p is the glob prefix which means we use the pattern to print every line that matches
 	gSUFFIX          = rune('g')      // s/../../g is the gflag that tells us to perform the substitution more than once on the line
 	noAction         = rune(NULLBYTE) // NO ACTION
 	printAction      = rune('p')      // Print CMD
@@ -52,6 +51,7 @@ var (
 	eqAction         = rune('=')      // Equal CMD
 	moveAction       = rune('m')      // Move CMD
 	copyAction       = rune('k')      // Copy CMD
+	searchAction     = rune('g')      // g/../p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
 	substituteAction = rune('s')      // Substitute CMD
 	editAction       = rune('e')      // Edit command
 	fileAction       = rune('f')      // File command
@@ -69,6 +69,7 @@ var cmds = []rune{
 	eqAction,
 	moveAction,
 	copyAction,
+	searchAction,
 	substituteAction,
 	editAction,
 	fileAction,

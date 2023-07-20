@@ -32,6 +32,11 @@ func (l *lexer) next() rune {
 	return r
 }
 
+// current shows the value to be emited
+func (l *lexer) current() string {
+	return l.input[l.start:l.pos]
+}
+
 // peek returns but does not consume the next rune in the input.
 func (l *lexer) peek() rune {
 	r := l.next()
@@ -105,12 +110,12 @@ func (l *lexer) run() {
 	for state := lexDef; state != nil; {
 		state = state(l)
 	}
-	// l.emit(itemEOF)
-	close(l.items)
+	l.emit(itemEOF)
+	// close(l.items)
 }
 
 // lex creates a new scanner for the input string.
-func lex(name, input string) *lexer {
+func lex(input, name string) *lexer {
 	l := &lexer{
 		name:  name,
 		input: input,

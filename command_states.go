@@ -80,10 +80,54 @@ func isAlpha(r rune) bool {
 // lexCommand checks a run for being a valid command
 func lexAction(l *lexer) stateFn {
 	if l.accept(string(cmds)) {
+		cmd := l.current()
 		l.emit(itemAction)
+		switch cmd {
+		case string(moveAction):
+
+		case string(copyAction):
+
+		case string(searchAction):
+			return lexPattern(l)
+		case string(substituteAction):
+			lexPattern(l)
+			return lexSubstitution(l)
+		}
+		return nil
 	} else {
 		// if we got a letter but that letter isn't a command ...
 		l.emit(itemUnknownCommand) // TODO: do we need to support alpha delims?
 	}
+	return lexDef
+}
+
+func lexPattern(l *lexer) stateFn {
+	delim := l.next()
+	l.ignore()
+
+	// reject empty patterns
+	if !l.acceptUntil(string(delim)) {
+		l.emit(itemEmptyPattern)
+	}
+	if delim == l.peek() {
+		l.emit(itemPattern)
+	} else {
+		l.emit(itemMissingDelim)
+	}
+
+	return lexDef
+}
+
+func lexSubstitution(l *lexer) stateFn {
+	delim := l.next()
+	l.ignore() // delim
+	// we don't care if it's empty
+	l.acceptUntil(string(delim))
+	if delim == l.peek() {
+		l.emit(itemSubstitution)
+	} else {
+		l.emit(itemMissingDelim)
+	}
+
 	return lexDef
 }

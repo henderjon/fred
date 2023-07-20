@@ -10,32 +10,37 @@ func (p *parser) run(input string) (*command, error) {
 		c = &command{}
 	)
 
-	l := lex("", input)
+	// stack := make(chan item, 2)
+	l := lex(input, "main input")
 	go l.run()
 
-Address:
+	// Address: break Address
 	for {
 		i = l.nextItem()
 		switch i.typ {
 		case itemRange: // did we get a comma first?
-			c.setFrom(zero)
-			c.setFrom(end)
+			c.setAddr(zero)
+			c.setAddr(end)
 		case itemNumber: // did we get a number first?
-			c.setFrom(i.val)
-			// c.setFrom(i.val) // TODO: this should be unnecessary
+			c.setAddr(i.val)
+			// c.setAddr(i.val) // TODO: this should be unnecessary
 		case itemAction: // did we get an action first
 			c.setAction(rune(i.val[0]))
-			break Address
+		case itemPattern: // no more items
+			c.setPattern(i.val)
+		case itemSubstitution: // no more items
+			c.setSubstitution(i.val)
 		case itemUnknownCommand: // no more items
-			return c, errors.New("unknonwn command") // skip the rest of the func
+			return c, errors.New("unknown command") // skip the rest of the func
 		case itemError: // no more items
-			return c, errors.New("unknonwn error") // skip the rest of the func
+			return c, errors.New("unknown error") // skip the rest of the func
 		case itemEOF: // no more items
+			// close(l.items)
 			return c, errors.New("eof") // skip the rest of the func
 		default:
-			stderr.Log("first token should be of type(s): action, range, number")
+			stderr.Log(i.String())
 			return c, nil
 		}
 	}
-	return c, nil
+	// return c, nil
 }
