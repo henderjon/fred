@@ -12,16 +12,16 @@ func Test_lexAddress(t *testing.T) {
 		input    string
 		expected item
 	}{
-		{"12", item{itemNumber, "12"}},
-		{"-12", item{itemNumber, "-12"}},
-		{"+12", item{itemNumber, "+12"}},
-		{"   12  ", item{itemNumber, "12"}},
-		{"   12,  ", item{itemNumber, "12"}},
+		{"12", item{itemAddress, "12"}},
+		{"-12", item{itemAddress, "-12"}},
+		{"+12", item{itemAddress, "+12"}},
+		{"   12  ", item{itemAddress, "12"}},
+		{"   12,  ", item{itemAddress, "12"}},
 		{"  ,12  ", item{itemRange, ","}},
 	} //itemEmpty
 	var i item
 	for _, test := range tests {
-		l := lex("", test.input)
+		l := lex(test.input, "")
 		go l.run()
 		i = l.nextItem()
 		if diff := cmp.Diff(i, test.expected, cmp.AllowUnexported(item{})); diff != "" {
@@ -43,7 +43,7 @@ func Test_lexCommand(t *testing.T) {
 	} //itemEmpty
 	var i item
 	for _, test := range tests {
-		l := lex("", test.input)
+		l := lex(test.input, "")
 		go l.run()
 		i = l.nextItem()
 		// stderr.Fatal(i.String())

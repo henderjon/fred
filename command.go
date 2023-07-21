@@ -55,13 +55,14 @@ func (c *command) setAddr(f string) {
 	// as of now we only use the first and last numbers given,
 	// to change this behavior to use only the first two numbers more the
 	// `[1] = [0]` assignement to `case 1:` and drop all of `case 2:`
-	switch c.numAddrs() {
-	case 0:
+	switch true {
+	default:
+	case c.numAddrs() == 0:
 		if i < 0 {
 			i = 0
 		}
 		c.addrs = append(c.addrs, i)
-	case 1:
+	case c.numAddrs() == 1:
 		if i < 0 || i >= c.addrs[0] {
 			c.addrs = append(c.addrs, i)
 		} else {
@@ -69,13 +70,12 @@ func (c *command) setAddr(f string) {
 			c.addrs = append(c.addrs, c.addrs[0])
 			// TODO: use the $ end of the buffer for the last line
 		}
-	case 2:
+	case c.numAddrs() >= 2:
 		if i < 0 || i >= c.addrs[0] {
 			c.addrs[1] = i
 		} else {
 			c.addrs[1] = c.addrs[0]
 		}
-	default:
 	}
 }
 

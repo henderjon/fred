@@ -9,10 +9,10 @@ import (
 // lexDef is the default lex state
 func lexDef(l *lexer) stateFn {
 	for {
-		if l.pos > l.start {
-			l.emit(itemEOF)
-			break
-		}
+		// if l.pos > l.start {
+		// 	l.emit(itemEOF)
+		// 	break
+		// }
 		r := l.next()
 		switch true {
 		// case r == eof:
@@ -36,7 +36,7 @@ func lexDef(l *lexer) stateFn {
 			// return nil //l.errorf("unrecognized character in action: %#U", r)
 		}
 	}
-	return nil
+	// return nil
 }
 
 // isSpace reports whether r is a space character.
@@ -68,7 +68,7 @@ func lexAddress(l *lexer) stateFn {
 	l.accept("+-")
 	digits := "0123456789"
 	if l.acceptRun(digits) {
-		l.emit(itemNumber)
+		l.emit(itemAddress)
 	} else {
 		l.emit(itemEmpty)
 	}
@@ -141,7 +141,7 @@ func lexDestination(l *lexer) stateFn {
 	l.accept("+-")
 	digits := "0123456789"
 	if l.acceptRun(digits) {
-		l.emit(itemNumber)
+		l.emit(itemDestination)
 	} else {
 		l.emit(itemEmpty)
 	}

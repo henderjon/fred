@@ -108,7 +108,7 @@ func (l *lexer) run() {
 		state = state(l)
 	}
 	l.emit(itemEOF)
-	// close(l.items)
+	close(l.items)
 }
 
 // lex creates a new scanner for the input string.

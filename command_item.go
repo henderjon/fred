@@ -33,13 +33,13 @@ const (
 	itemError itemType = iota + 1 // error occurred; value is text of error
 	itemEOF
 	itemKeyword // used only to delimit the keywords
-	itemNumber
+	itemAddress
 	itemRange
 	itemAction
 	itemDelim
 	itemPattern
 	itemSubstitution
-	itemAdditional
+	itemDestination
 	itemEmpty
 	itemCommand
 	itemUnknownCommand
@@ -52,13 +52,13 @@ var itemTyps = map[itemType]string{
 	itemError:          "itemError",
 	itemEOF:            "itemEOF",
 	itemKeyword:        "itemKeyword",
-	itemNumber:         "itemNumber", // a single address
-	itemRange:          "itemRange",  // a range of addresses
+	itemAddress:        "itemAddress", // a single address
+	itemRange:          "itemRange",   // a range of addresses
 	itemAction:         "itemAction",
 	itemDelim:          "itemDelim",
 	itemPattern:        "itemPattern",
 	itemSubstitution:   "itemSubstitution",
-	itemAdditional:     "itemAdditional",
+	itemDestination:    "itemDestination",
 	itemEmpty:          "itemEmpty",
 	itemCommand:        "itemCommand",
 	itemUnknownCommand: "itemUnknownCommand",
