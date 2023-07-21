@@ -62,11 +62,8 @@ func (l *lexer) ignore() {
 
 // accept consumes the next rune if it's from the valid set.
 func (l *lexer) accept(valid string) bool {
-	r := strings.ContainsRune(valid, l.next())
-	// if !r {
-	// 	l.backup()
-	// }
-	return r
+	// l.next consumes a character
+	return strings.ContainsRune(valid, l.next())
 }
 
 // acceptRun consumes a run of runes from the valid set.

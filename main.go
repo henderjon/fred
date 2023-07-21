@@ -11,7 +11,7 @@ var (
 )
 
 func main() {
-	input := `15s/pattern/substitute/`
+	input := `10,15s/pattern/substitute/`
 	c, err := (&parser{}).run(input)
 	if err != nil {
 		stderr.Log(err)

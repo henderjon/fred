@@ -45,6 +45,7 @@ const (
 	itemUnknownCommand
 	itemEmptyPattern
 	itemMissingDelim
+	itemGlobalFlag
 )
 
 var itemTyps = map[itemType]string{
@@ -63,4 +64,5 @@ var itemTyps = map[itemType]string{
 	itemUnknownCommand: "itemUnknownCommand",
 	itemEmptyPattern:   "itemEmptyPattern",
 	itemMissingDelim:   "itemMissingDelim",
+	itemGlobalFlag:     "itemGlobalFlag",
 }

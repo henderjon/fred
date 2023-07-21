@@ -35,8 +35,8 @@ func (p *parser) run(input string) (*command, error) {
 		case itemError: // no more items
 			return c, errors.New("unknown error") // skip the rest of the func
 		case itemEOF: // no more items
-			// close(l.items)
-			return c, errors.New("eof") // skip the rest of the func
+			close(l.items)
+			return c, nil // skip the rest of the func
 		default:
 			stderr.Log(i.String())
 			return c, nil

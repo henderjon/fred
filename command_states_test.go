@@ -6,7 +6,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func Test_lexNumber(t *testing.T) {
+func Test_lexAddress(t *testing.T) {
 	// we're testing our accuracy in parsing NUMBERS, parsing the full address(es) for the command is tested in the parser
 	tests := []struct {
 		input    string
