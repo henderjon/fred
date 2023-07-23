@@ -70,8 +70,12 @@ func (l *lexer) accept(valid string) bool {
 func (l *lexer) acceptRun(valid string) bool {
 	var i int
 	for ; l.accept(valid); i++ {
+		stderr.Log("loop")
+		// TODO: failing on single digit numbers because l.next is looking ahead
 	}
+	stderr.Log(l.current(), i)
 	l.backup() // we're always going to move one too many but accept() already backs up
+	stderr.Log(l.current(), i)
 	return i > 0
 }
 
@@ -79,6 +83,9 @@ func (l *lexer) acceptRun(valid string) bool {
 func (l *lexer) acceptUntil(invalid string) bool {
 	var i int
 	for ; !l.accept(invalid); i++ {
+		if l.pos >= len(l.input) {
+			return false // if we run out of chars before we find our end
+		}
 	}
 	l.backup() // we're always going to move one too many but accept() already backs up
 	return i > 0
@@ -92,7 +99,7 @@ func (l *lexer) lineNumber() int {
 
 // error returns an error token and terminates the scan by passing
 // back a nil pointer that will be the next state, terminating l.run.
-func (l *lexer) errorf(format string, args ...interface{}) stateFn {
+func (l *lexer) errorf(format string, args ...any) stateFn {
 	l.items <- item{itemError, fmt.Sprintf(format, args...)}
 	return nil
 }

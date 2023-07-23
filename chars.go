@@ -40,23 +40,23 @@ var (
 	// NEGATE       = byte('^')
 	// NCCL         = byte('!')
 	// PERIOD       = byte('.') // Append CMD
-	gSUFFIX          = rune('g')      // s/../../g is the gflag that tells us to perform the substitution more than once on the line
-	noAction         = rune(NULLBYTE) // NO ACTION
-	printAction      = rune('p')      // Print CMD
-	quitAction       = rune('q')      // Quit CMD
-	appendAction     = rune('a')      // Append CMD
-	deleteAction     = rune('d')      // Delete CMD
-	insertAction     = rune('i')      // Insert CMD
-	changeAction     = rune('c')      // Change CMD
-	eqAction         = rune('=')      // Equal CMD
-	moveAction       = rune('m')      // Move CMD
-	copyAction       = rune('k')      // Copy CMD
-	searchAction     = rune('g')      // g/../p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
-	substituteAction = rune('s')      // Substitute CMD
-	editAction       = rune('e')      // Edit command
-	fileAction       = rune('f')      // File command
-	readAction       = rune('r')      // read [file] command
-	writeAction      = rune('w')      // write [file] command
+	// gSUFFIX          = rune('g')      // s/../../g is the gflag that tells us to perform the substitution more than once on the line
+	printAction      = rune('p') // Print CMD
+	quitAction       = rune('q') // Quit CMD
+	appendAction     = rune('a') // Append CMD
+	deleteAction     = rune('d') // Delete CMD
+	insertAction     = rune('i') // Insert CMD
+	changeAction     = rune('c') // Change CMD
+	eqAction         = rune('=') // Equal CMD
+	moveAction       = rune('m') // Move CMD
+	copyAction       = rune('k') // Copy CMD
+	searchAction     = rune('/') // g/../p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
+	gSearchAction    = rune('g') // g/../p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
+	substituteAction = rune('s') // Substitute CMD
+	editAction       = rune('e') // Edit command
+	fileAction       = rune('f') // File command
+	readAction       = rune('r') // read [file] command
+	writeAction      = rune('w') // write [file] command
 )
 
 var cmds = []rune{
