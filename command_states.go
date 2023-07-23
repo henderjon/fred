@@ -20,8 +20,17 @@ func lexDef(l *lexer) stateFn {
 		case isSpace(r):
 			l.ignore()
 		case r == '+' || r == '-' || ('0' <= r && r <= '9'):
-			l.backup()
+			l.backup() // TODO: this might be a clue ...
+			// stderr.Fatal(l.current())
 			return lexAddress
+		case r == gSearchAction:
+			l.emit(itemGlobalPrefix)
+			delim := l.next()
+			l.ignore() // ignore the delim
+			return lexPattern(delim, itemPattern)
+		case r == searchAction:
+			l.ignore() // ignore the delim
+			return lexPattern(r, itemPattern)
 		case isAlpha(r):
 			l.backup()
 			return lexAction
@@ -29,9 +38,8 @@ func lexDef(l *lexer) stateFn {
 			l.emit(itemRange)
 		case r == eof:
 			l.emit(itemEOF)
-			break
+			return nil
 		default:
-			stderr.Log(string(r))
 			return lexErr
 			// return nil //l.errorf("unrecognized character in action: %#U", r)
 		}
@@ -65,12 +73,15 @@ func lexErr(l *lexer) stateFn {
 // strconv) will notice.
 func lexAddress(l *lexer) stateFn {
 	// Optional leading sign.
-	l.accept("+-")
+	if !l.accept("+-") {
+		l.backup()
+	}
+
 	digits := "0123456789"
 	if l.acceptRun(digits) {
 		l.emit(itemAddress)
 	} else {
-		l.emit(itemEmpty)
+		return l.errorf("invalid or missing address: %s", l.current())
 	}
 
 	return lexDef
@@ -78,84 +89,53 @@ func lexAddress(l *lexer) stateFn {
 
 // lexCommand checks a run for being a valid command
 func lexAction(l *lexer) stateFn {
-	if l.accept(string(cmds)) {
-		cmd := l.current()
+	if l.acceptRun(string(cmds)) {
+		// cmd := l.current()
 		l.emit(itemAction)
-		// some actions need more information
-		switch cmd {
-		case string(moveAction):
-			lexDestination(l)
-		case string(copyAction):
-			lexDestination(l)
-		case string(searchAction):
-			return lexPattern(l)
-		case string(substituteAction):
-			lexPattern(l)
-			return lexSubstitution(l)
-		}
+		// // some actions need more information
+		// switch cmd {
+		// case string(moveAction):
+		// 	lexDestination(l)
+		// case string(copyAction):
+		// 	lexDestination(l)
+		// }
 		return nil
-	} else {
-		// if we got a letter but that letter isn't a command ...
-		l.emit(itemUnknownCommand)
 	}
-	return lexDef
+
+	return l.errorf("unknown command: %s", l.current())
 }
 
 // lexPattern checks for the regex pattern for 'g' and 's'
-func lexPattern(l *lexer) stateFn {
-	delim := l.next()
-	l.ignore()
+func lexPattern(delim rune, t itemType) stateFn {
+	return stateFn(func(l *lexer) stateFn {
+		// reject empty patterns
 
-	// reject empty patterns
-	if !l.acceptUntil(string(delim)) {
-		l.emit(itemEmptyPattern)
-	}
-	if delim == l.peek() {
-		l.emit(itemPattern)
-	} else {
-		l.emit(itemMissingDelim)
-	}
+		if !l.acceptUntil(string(delim)) {
+			return l.errorf("empty pattern or missing delim")
+		}
 
-	return lexDef
-}
+		if delim == l.peek() {
+			l.emit(t)
+			l.acceptRun(string(delim)) // TODO: consuming it here ... how does that screw with our substitutions?
+			l.ignore()
+		} else {
+			return l.errorf("missing the closing delim")
+		}
 
-// lexSubstitution checks for the replacement/substitution string for 's'
-func lexSubstitution(l *lexer) stateFn {
-	delim := l.next()
-	l.ignore() // delim
-	// we don't care if it's empty
-	l.acceptUntil(string(delim))
-	if delim == l.peek() {
-		l.emit(itemSubstitution)
-		l.accept(string(delim))
-	} else {
-		l.emit(itemMissingDelim)
-	}
-
-	return lexDef
+		return lexDef
+	})
 }
 
 // lexDestination checks for the trailing address for actions such as 'm' and 'k'
-func lexDestination(l *lexer) stateFn {
-	// Optional leading sign.
-	l.accept("+-")
-	digits := "0123456789"
-	if l.acceptRun(digits) {
-		l.emit(itemDestination)
-	} else {
-		l.emit(itemEmpty)
-	}
+// func lexDestination(l *lexer) stateFn {
+// 	// Optional leading sign.
+// 	l.accept("+-")
+// 	digits := "0123456789"
+// 	if l.acceptRun(digits) {
+// 		l.emit(itemDestination)
+// 	} else {
+// 		return l.errorf("current command requires a destination address")
+// 	}
 
-	return lexDef
-}
-
-// lexFlag checks for the trailing 'g' suffix
-func lexFlag(l *lexer) stateFn {
-	if l.acceptRun("g") {
-		l.emit(itemGlobalFlag)
-	} else {
-		l.emit(itemEmpty)
-	}
-
-	return lexDef
-}
+// 	return lexDef
+// }

@@ -28,12 +28,12 @@ func (p *parser) run(input string) (*command, error) {
 			c.setAction(rune(i.val[0]))
 		case itemPattern: // no more items
 			c.setPattern(i.val)
+		case itemGlobalPrefix: // no more items
+			c.setGlobalPrefix(true)
 		case itemSubstitution: // no more items
 			c.setSubstitution(i.val)
-		case itemUnknownCommand: // no more items
-			return c, errors.New("unknown command") // skip the rest of the func
 		case itemError: // no more items
-			return c, errors.New("unknown error") // skip the rest of the func
+			return nil, errors.New(i.val) // skip the rest of the func
 		case itemEOF: // no more items
 			return c, nil // skip the rest of the func
 		default:
