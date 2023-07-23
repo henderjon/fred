@@ -70,12 +70,9 @@ func (l *lexer) accept(valid string) bool {
 func (l *lexer) acceptRun(valid string) bool {
 	var i int
 	for ; l.accept(valid); i++ {
-		stderr.Log("loop")
 		// TODO: failing on single digit numbers because l.next is looking ahead
 	}
-	stderr.Log(l.current(), i)
 	l.backup() // we're always going to move one too many but accept() already backs up
-	stderr.Log(l.current(), i)
 	return i > 0
 }
 
