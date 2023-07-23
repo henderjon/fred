@@ -12,20 +12,8 @@ type command struct {
 	pattern      string
 	substitution string
 	additional   string
-	// delim        rune
-	// hasFrom  bool
-	// hasTo    bool
-	// hasDelim bool
-}
-
-func newCommand() *command {
-	return &command{
-		addrs:  make([]int, 0),
-		action: noAction,
-		// delim:  rune(unset),
-		// regex:  "",
-		// sub:    "",
-	}
+	globalPrefix bool
+	globalSuffix bool
 }
 
 func (c *command) String() string {
@@ -70,7 +58,7 @@ func (c *command) setAddr(f string) {
 			c.addrs = append(c.addrs, c.addrs[0])
 			// TODO: use the $ end of the buffer for the last line
 		}
-	case c.numAddrs() >= 2:
+	case c.numAddrs() >= 2: // TODO: maybe this should throw an error instead of compensating?
 		if i < 0 || i >= c.addrs[0] {
 			c.addrs[1] = i
 		} else {
@@ -93,4 +81,12 @@ func (c *command) setPattern(s string) {
 
 func (c *command) setSubstitution(s string) {
 	c.substitution = s
+}
+
+func (c *command) setGlobalPrefix(b bool) {
+	c.globalPrefix = b
+}
+
+func (c *command) setGlobalSuffix(b bool) {
+	c.globalSuffix = b
 }
