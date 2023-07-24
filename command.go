@@ -27,8 +27,13 @@ func (c *command) String() string {
 		fmt.Fprintf(&cmd, ",%d", c.addRange[1])
 	}
 
-	fmt.Fprintf(&cmd, "; %c; %s; %s; %s",
+	if len(c.addPattern) > 0 {
+		fmt.Fprintf(&cmd, "; %s", c.addPattern)
+	}
+
+	fmt.Fprintf(&cmd, "; %c; %d; %s; %s; %s",
 		c.action,
+		c.destination,
 		c.pattern,
 		c.substitution,
 		c.additional,
