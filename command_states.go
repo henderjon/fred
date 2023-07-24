@@ -15,14 +15,13 @@ func lexDef(l *lexer) stateFn {
 		// }
 		r := l.next()
 		switch true {
-		// case r == eof:
-		// 	return nil
 		case isSpace(r):
 			l.ignore()
 		case r == '+' || r == '-' || ('0' <= r && r <= '9'):
-			l.backup() // TODO: this might be a clue ...
-			// stderr.Fatal(l.current())
+			l.backup()
 			return lexAddress
+		case r == eqAction:
+			l.emit(itemAction)
 		case r == gSearchAction:
 			l.emit(itemGlobalPrefix)
 			delim := l.next()
@@ -73,9 +72,11 @@ func lexErr(l *lexer) stateFn {
 // strconv) will notice.
 func lexAddress(l *lexer) stateFn {
 	// Optional leading sign.
-	if !l.accept("+-") {
-		l.backup()
-	}
+	// if !l.accept("+-") {
+	// 	l.backup()
+	// }
+
+	l.acceptRun("+-") // TODO: will accept more than one ... :thinking_face:
 
 	digits := "0123456789"
 	if l.acceptRun(digits) {
@@ -89,7 +90,20 @@ func lexAddress(l *lexer) stateFn {
 
 // lexCommand checks a run for being a valid command
 func lexAction(l *lexer) stateFn {
-	if l.acceptRun(string(cmds)) {
+	// these commands need a destination
+	if l.acceptOne(string([]rune{moveAction, copyAction})) {
+		l.emit(itemAction)
+		if l.acceptRun("0123456789") {
+			l.emit(itemDestination)
+		} else {
+			return l.errorf("missing destination address")
+		}
+		return nil
+	}
+
+	// if l.acceptOne(string(itemSubstitution)) {}
+
+	if l.acceptOne(string(cmds)) {
 		// cmd := l.current()
 		l.emit(itemAction)
 		// // some actions need more information

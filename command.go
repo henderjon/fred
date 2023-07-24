@@ -7,10 +7,12 @@ import (
 )
 
 type command struct {
-	addrs        []int
+	addRange     []int
+	addPattern   string
 	action       rune
 	pattern      string
 	substitution string
+	destination  int
 	additional   string
 	globalPrefix bool
 	globalSuffix bool
@@ -19,10 +21,10 @@ type command struct {
 func (c *command) String() string {
 	var cmd strings.Builder
 
-	fmt.Fprintf(&cmd, "%d", c.addrs[0])
+	fmt.Fprintf(&cmd, "%d", c.addRange[0])
 
-	if len(c.addrs) >= 2 {
-		fmt.Fprintf(&cmd, ",%d", c.addrs[1])
+	if len(c.addRange) >= 2 {
+		fmt.Fprintf(&cmd, ",%d", c.addRange[1])
 	}
 
 	fmt.Fprintf(&cmd, "; %c; %s; %s; %s",
@@ -45,34 +47,38 @@ func (c *command) setAddr(f string) {
 	// `[1] = [0]` assignement to `case 1:` and drop all of `case 2:`
 	switch true {
 	default:
-	case c.numAddrs() == 0:
+	case c.numaddRange() == 0:
 		if i < 0 {
 			i = 0
 		}
-		c.addrs = append(c.addrs, i)
-	case c.numAddrs() == 1:
-		if i < 0 || i >= c.addrs[0] {
-			c.addrs = append(c.addrs, i)
+		c.addRange = append(c.addRange, i)
+	case c.numaddRange() == 1:
+		if i < 0 || i >= c.addRange[0] {
+			c.addRange = append(c.addRange, i)
 		} else {
 			// repeat the first number if the second number is smaller than the first
-			c.addrs = append(c.addrs, c.addrs[0])
+			c.addRange = append(c.addRange, c.addRange[0])
 			// TODO: use the $ end of the buffer for the last line
 		}
-	case c.numAddrs() >= 2: // TODO: maybe this should throw an error instead of compensating?
-		if i < 0 || i >= c.addrs[0] {
-			c.addrs[1] = i
+	case c.numaddRange() >= 2: // TODO: maybe this should throw an error instead of compensating?
+		if i < 0 || i >= c.addRange[0] {
+			c.addRange[1] = i
 		} else {
-			c.addrs[1] = c.addrs[0]
+			c.addRange[1] = c.addRange[0]
 		}
 	}
 }
 
-func (c *command) numAddrs() int {
-	return len(c.addrs)
+func (c *command) numaddRange() int {
+	return len(c.addRange)
 }
 
 func (c *command) setAction(a rune) {
-	c.action = rune(a)
+	if c.action == 0 {
+		c.action = rune(a)
+	} else {
+		c.setAdditional(string(a))
+	}
 }
 
 func (c *command) setPattern(s string) {
@@ -89,4 +95,16 @@ func (c *command) setGlobalPrefix(b bool) {
 
 func (c *command) setGlobalSuffix(b bool) {
 	c.globalSuffix = b
+}
+
+func (c *command) setAdditional(s string) {
+	c.additional = s
+}
+
+func (c *command) setDestination(s string) {
+	i, e := strconv.Atoi(s)
+	if e != nil {
+		stderr.Log(e)
+	}
+	c.destination = i
 }

@@ -26,6 +26,8 @@ func (p *parser) run(input string) (*command, error) {
 			// c.setAddr(i.val) // TODO: this should be unnecessary
 		case itemAction: // did we get an action first
 			c.setAction(rune(i.val[0]))
+		case itemDestination:
+			c.setDestination(i.val)
 		case itemPattern: // no more items
 			c.setPattern(i.val)
 		case itemGlobalPrefix: // no more items

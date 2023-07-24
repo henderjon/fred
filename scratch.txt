@@ -23,5 +23,9 @@ stateFuncs
 - evaluate byte(s) in order to find items
 - add found items to lexer's internal chan
 
+THOUGHTS
+================================================================================
 
+- If lexer.accept can be avoided, we can centralize lexer.backup within lexer.accept
+- With commands needing a destination, should I support pattern matches for paste-many style actions?
 

@@ -67,10 +67,20 @@ func (l *lexer) accept(valid string) bool {
 }
 
 // acceptRun consumes a run of runes from the valid set.
+func (l *lexer) acceptOne(valid string) bool {
+	var i int
+	if l.accept(valid) {
+		i++
+	} else {
+		l.backup()
+	}
+	return i > 0
+}
+
+// acceptRun consumes a run of runes from the valid set.
 func (l *lexer) acceptRun(valid string) bool {
 	var i int
 	for ; l.accept(valid); i++ {
-		// TODO: failing on single digit numbers because l.next is looking ahead
 	}
 	l.backup() // we're always going to move one too many but accept() already backs up
 	return i > 0
