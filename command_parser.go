@@ -29,7 +29,7 @@ func (p *parser) run(input string) (*command, error) {
 		case itemDestination:
 			c.setDestination(i.val)
 		case itemAdditional:
-			c.setAdditional(i.val)
+			c.setSubCommand(i.val)
 		case itemAddressPattern:
 			c.setAddrPattern(i.val)
 		case itemPattern:

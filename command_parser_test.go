@@ -24,7 +24,7 @@ func Test_parser_full_commands(t *testing.T) {
 		{"=", &command{action: eqAction}, false},
 		{"10,25m35", &command{addrRange: []int{10, 25}, action: moveAction, destination: 35}, false},
 		{"10,25k35", &command{addrRange: []int{10, 25}, action: copyAction, destination: 35}, false},
-		{"10,25g/mm/s/and/for/p", &command{addrRange: []int{10, 25}, addrPattern: "mm", globalPrefix: true, action: substituteAction, pattern: "and", substitution: "for", additional: "p"}, false},
+		{"10,25g/mm/s/and/for/p", &command{addrRange: []int{10, 25}, addrPattern: "mm", globalPrefix: true, action: substituteAction, pattern: "and", substitution: "for", subCommand: "p"}, false},
 		{"10,25g/mm/m35", &command{addrRange: []int{10, 25}, addrPattern: "mm", globalPrefix: true, action: moveAction, destination: 35}, false},
 		// testing edge cases
 		{"12", &command{addrRange: []int{12}}, false},

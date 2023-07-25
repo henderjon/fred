@@ -13,7 +13,7 @@ type command struct {
 	pattern      string
 	substitution string
 	destination  int
-	additional   string
+	subCommand   string
 	globalPrefix bool
 	globalSuffix bool
 }
@@ -36,7 +36,7 @@ func (c *command) String() string {
 		c.destination,
 		c.pattern,
 		c.substitution,
-		c.additional,
+		c.subCommand,
 	)
 
 	if c.globalPrefix {
@@ -91,7 +91,7 @@ func (c *command) setAction(a rune) {
 	if c.action == 0 {
 		c.action = rune(a)
 	} else {
-		c.setAdditional(string(a))
+		c.setSubCommand(string(a))
 	}
 }
 
@@ -115,8 +115,8 @@ func (c *command) setGlobalSuffix(b bool) {
 	c.globalSuffix = b
 }
 
-func (c *command) setAdditional(s string) {
-	c.additional = s
+func (c *command) setSubCommand(s string) {
+	c.subCommand = s
 }
 
 func (c *command) setDestination(s string) {
