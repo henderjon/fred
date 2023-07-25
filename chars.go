@@ -41,20 +41,21 @@ var (
 	// NCCL         = byte('!')
 	// PERIOD       = byte('.') // Append CMD
 	// gSUFFIX          = rune('g')      // s/../../g is the gflag that tells us to perform the substitution more than once on the line
-	printAction     = rune('p') // Print CMD
-	printNumsAction = rune('n') // Print CMD
-	quitAction      = rune('q') // Quit CMD
-	appendAction    = rune('a') // Append CMD
-	deleteAction    = rune('d') // Delete CMD
-	insertAction    = rune('i') // Insert CMD
-	changeAction    = rune('c') // Change CMD
-	eqAction        = rune('=') // Equal CMD
-	moveAction      = rune('m') // Move CMD
-	copyAction      = rune('k') // Copy CMD
-	searchAction    = rune('/') // /re/... establishes the ADDRESSES for the lines against which to execute cmd
-	gSearchAction   = rune('g') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
-	scrollAction    = rune('z') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
-	// TODO: there is a complexity around addressing lines via regex and then running a command ... there is the possibility of 3 patterns e.g. 10,20g/pattern/s/pattern/sub/
+	printAction     = rune('p')
+	printNumsAction = rune('n')
+	quitAction      = rune('q')
+	appendAction    = rune('a')
+	deleteAction    = rune('d')
+	insertAction    = rune('i')
+	changeAction    = rune('c')
+	eqAction        = rune('=')
+	moveAction      = rune('m')
+	copyAction      = rune('k')
+	// markAction       = rune(' ')
+	searchAction     = rune('/') // /re/... establishes the ADDRESSES for the lines against which to execute cmd
+	gSearchAction    = rune('g') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
+	scrollAction     = rune('z') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
+	joinAction       = rune('j')
 	substituteAction = rune('s') // Substitute CMD
 	editAction       = rune('e') // Edit command
 	fileAction       = rune('f') // File command
