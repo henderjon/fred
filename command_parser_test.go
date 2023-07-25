@@ -11,15 +11,15 @@ import (
 // 		input    string
 // 		expected *command
 // 	}{
-// 		{"12", &command{addRange: []int{12}}},
-// 		{"-12", &command{addRange: []int{0}}},
-// 		{"+12", &command{addRange: []int{12}}},
-// 		{"   12  ", &command{addRange: []int{12}}},
-// 		{"   12,  ", &command{addRange: []int{12, -1}}},         // parses correctly but invalid address?
-// 		{"   12,13  ", &command{addRange: []int{12, 13}}},       // parses correctly but invalid address?
-// 		{"   12,13,14,15  ", &command{addRange: []int{12, 15}}}, // parses correctly but invalid address?
-// 		{"   12,13,14,11  ", &command{addRange: []int{12, 12}}}, // parses correctly but invalid address?
-// 		{"  ,12  ", &command{addRange: []int{0, 12}}},
+// 		{"12", &command{addrRange: []int{12}}},
+// 		{"-12", &command{addrRange: []int{0}}},
+// 		{"+12", &command{addrRange: []int{12}}},
+// 		{"   12  ", &command{addrRange: []int{12}}},
+// 		{"   12,  ", &command{addrRange: []int{12, -1}}},         // parses correctly but invalid address?
+// 		{"   12,13  ", &command{addrRange: []int{12, 13}}},       // parses correctly but invalid address?
+// 		{"   12,13,14,15  ", &command{addrRange: []int{12, 15}}}, // parses correctly but invalid address?
+// 		{"   12,13,14,11  ", &command{addrRange: []int{12, 12}}}, // parses correctly but invalid address?
+// 		{"  ,12  ", &command{addrRange: []int{0, 12}}},
 // 	} //itemEmpty
 
 // 	for _, test := range tests {
@@ -38,43 +38,45 @@ func Test_parser_full_commands(t *testing.T) {
 		expErr     bool
 	}{
 		// typical usage
-		{",n", &command{addRange: []int{0, -1}, action: printNumsAction}, false},
-		{"10,25p", &command{addRange: []int{10, 25}, action: printAction}, false},
-		{"10,25n", &command{addRange: []int{10, 25}, action: printNumsAction}, false},
+		{",n", &command{addrRange: []int{0, -1}, action: printNumsAction}, false},
+		{"10,25p", &command{addrRange: []int{10, 25}, action: printAction}, false},
+		{"10,25n", &command{addrRange: []int{10, 25}, action: printNumsAction}, false},
 		{"q", &command{action: quitAction}, false},
-		{"25a", &command{addRange: []int{25}, action: appendAction}, false},
-		{"10,25d", &command{addRange: []int{10, 25}, action: deleteAction}, false},
-		{"10,25i", &command{addRange: []int{10, 25}, action: insertAction}, false},
-		{"10,25c", &command{addRange: []int{10, 25}, action: changeAction}, false},
+		{"25a", &command{addrRange: []int{25}, action: appendAction}, false},
+		{"10,25d", &command{addrRange: []int{10, 25}, action: deleteAction}, false},
+		{"10,25i", &command{addrRange: []int{10, 25}, action: insertAction}, false},
+		{"10,25c", &command{addrRange: []int{10, 25}, action: changeAction}, false},
 		{"=", &command{action: eqAction}, false},
-		{"10,25m35", &command{addRange: []int{10, 25}, action: moveAction, destination: 35}, false},
-		{"10,25k35", &command{addRange: []int{10, 25}, action: copyAction, destination: 35}, false},
+		{"10,25m35", &command{addrRange: []int{10, 25}, action: moveAction, destination: 35}, false},
+		{"10,25k35", &command{addrRange: []int{10, 25}, action: copyAction, destination: 35}, false},
+		{"10,25g/mm/s/and/for/p", &command{addrRange: []int{10, 25}, addrPattern: "mm", globalPrefix: true, action: substituteAction, pattern: "and", substitution: "for", additional: "p"}, false},
+		{"10,25g/mm/m35", &command{addrRange: []int{10, 25}, addrPattern: "mm", globalPrefix: true, action: moveAction, destination: 35}, false},
 		// testing edge cases
-		{"12", &command{addRange: []int{12}}, false},
-		{"-12", &command{addRange: []int{0}}, false},
-		{"+12", &command{addRange: []int{12}}, false},
-		{"   12  ", &command{addRange: []int{12}}, false},
-		{"   12,  ", &command{addRange: []int{12, -1}}, false},
-		{"   12,13  ", &command{addRange: []int{12, 13}}, false},
-		{"   12,13,14,15  ", &command{addRange: []int{12, 15}}, false}, // parses correctly but invalid address?
-		{"   12,13,14,11  ", &command{addRange: []int{12, 12}}, false}, // parses correctly but invalid address?
-		{"  ,12  ", &command{addRange: []int{0, 12}}, false},
-		{"12a", &command{addRange: []int{12}, action: appendAction}, false},
-		{"12,230a", &command{addRange: []int{12, 230}, action: appendAction}, false},
-		{"+12i", &command{addRange: []int{12}, action: insertAction}, false},
-		{"   12 a  ", &command{addRange: []int{12}, action: appendAction}, false},
-		{"   12,a  ", &command{addRange: []int{12, -1}, action: appendAction}, false},
-		{"   12 b  ", nil, true},                                                  // unknown command
-		{"g/^f[ob]ar/", &command{globalPrefix: true, pattern: `^f[ob]ar`}, false}, // missing address
-		{",g/^f[ob]ar/", &command{addRange: []int{0, -1}, globalPrefix: true, pattern: `^f[ob]ar`}, false},
-		{"5,g/^f[ob]ar/", &command{addRange: []int{5, -1}, globalPrefix: true, pattern: `^f[ob]ar`}, false},
-		{"5,8g/^f[ob]ar/", &command{addRange: []int{5, 8}, globalPrefix: true, pattern: `^f[ob]ar`}, false},
-		{"5,8g/^f[ob]ar/p", &command{addRange: []int{5, 8}, action: printAction, globalPrefix: true, pattern: `^f[ob]ar`}, false},
-		{"g/^f[ob]ar/", &command{globalPrefix: true, pattern: `^f[ob]ar`}, false},
-		{"g/b.g/", &command{globalPrefix: true, pattern: `b.g`}, false},
+		{"12", &command{addrRange: []int{12}}, false},
+		{"-12", &command{addrRange: []int{0}}, false},
+		{"+12", &command{addrRange: []int{12}}, false},
+		{"   12  ", &command{addrRange: []int{12}}, false},
+		{"   12,  ", &command{addrRange: []int{12, -1}}, false},
+		{"   12,13  ", &command{addrRange: []int{12, 13}}, false},
+		{"   12,13,14,15  ", &command{addrRange: []int{12, 15}}, false}, // parses correctly but invalid address?
+		{"   12,13,14,11  ", &command{addrRange: []int{12, 12}}, false}, // parses correctly but invalid address?
+		{"  ,12  ", &command{addrRange: []int{0, 12}}, false},
+		{"12a", &command{addrRange: []int{12}, action: appendAction}, false},
+		{"12,230a", &command{addrRange: []int{12, 230}, action: appendAction}, false},
+		{"+12i", &command{addrRange: []int{12}, action: insertAction}, false},
+		{"   12 a  ", &command{addrRange: []int{12}, action: appendAction}, false},
+		{"   12,a  ", &command{addrRange: []int{12, -1}, action: appendAction}, false},
+		{"   12 b  ", nil, true},                                                      // unknown command
+		{"g/^f[ob]ar/", &command{globalPrefix: true, addrPattern: `^f[ob]ar`}, false}, // missing address
+		{",g/^f[ob]ar/", &command{addrRange: []int{0, -1}, globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
+		{"5,g/^f[ob]ar/", &command{addrRange: []int{5, -1}, globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
+		{"5,8g/^f[ob]ar/", &command{addrRange: []int{5, 8}, globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
+		{"5,8g/^f[ob]ar/p", &command{addrRange: []int{5, 8}, action: printAction, globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
+		{"g/^f[ob]ar/", &command{globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
+		{"g/b.g/", &command{globalPrefix: true, addrPattern: `b.g`}, false},
 		{"g//", nil, true},   //itemEmptyPattern
 		{"g/b.z", nil, true}, //itemMissingDelim
-		{"/re/p", &command{action: printAction, pattern: `re`}, false},
+		{"/re/p", &command{action: printAction, addrPattern: `re`}, false},
 	} //itemEmpty
 
 	for _, test := range tests {

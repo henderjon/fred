@@ -7,8 +7,8 @@ import (
 )
 
 type command struct {
-	addRange     []int
-	addPattern   string
+	addrRange    []int
+	addrPattern  string
 	action       rune
 	pattern      string
 	substitution string
@@ -21,14 +21,14 @@ type command struct {
 func (c *command) String() string {
 	var cmd strings.Builder
 
-	fmt.Fprintf(&cmd, "%d", c.addRange[0])
+	fmt.Fprintf(&cmd, "%d", c.addrRange[0])
 
-	if len(c.addRange) >= 2 {
-		fmt.Fprintf(&cmd, ",%d", c.addRange[1])
+	if len(c.addrRange) >= 2 {
+		fmt.Fprintf(&cmd, ",%d", c.addrRange[1])
 	}
 
-	if len(c.addPattern) > 0 {
-		fmt.Fprintf(&cmd, "; %s", c.addPattern)
+	if len(c.addrPattern) > 0 {
+		fmt.Fprintf(&cmd, "; %s", c.addrPattern)
 	}
 
 	fmt.Fprintf(&cmd, "; %c; %d; %s; %s; %s",
@@ -52,30 +52,30 @@ func (c *command) setAddr(f string) {
 	// `[1] = [0]` assignement to `case 1:` and drop all of `case 2:`
 	switch true {
 	default:
-	case c.numaddRange() == 0:
+	case c.numaddrRange() == 0:
 		if i < 0 {
 			i = 0
 		}
-		c.addRange = append(c.addRange, i)
-	case c.numaddRange() == 1:
-		if i < 0 || i >= c.addRange[0] {
-			c.addRange = append(c.addRange, i)
+		c.addrRange = append(c.addrRange, i)
+	case c.numaddrRange() == 1:
+		if i < 0 || i >= c.addrRange[0] {
+			c.addrRange = append(c.addrRange, i)
 		} else {
 			// repeat the first number if the second number is smaller than the first
-			c.addRange = append(c.addRange, c.addRange[0])
+			c.addrRange = append(c.addrRange, c.addrRange[0])
 			// TODO: use the $ end of the buffer for the last line
 		}
-	case c.numaddRange() >= 2: // TODO: maybe this should throw an error instead of compensating?
-		if i < 0 || i >= c.addRange[0] {
-			c.addRange[1] = i
+	case c.numaddrRange() >= 2: // TODO: maybe this should throw an error instead of compensating?
+		if i < 0 || i >= c.addrRange[0] {
+			c.addrRange[1] = i
 		} else {
-			c.addRange[1] = c.addRange[0]
+			c.addrRange[1] = c.addrRange[0]
 		}
 	}
 }
 
-func (c *command) numaddRange() int {
-	return len(c.addRange)
+func (c *command) numaddrRange() int {
+	return len(c.addrRange)
 }
 
 func (c *command) setAction(a rune) {
@@ -88,6 +88,10 @@ func (c *command) setAction(a rune) {
 
 func (c *command) setPattern(s string) {
 	c.pattern = s
+}
+
+func (c *command) setAddrPattern(s string) {
+	c.addrPattern = s
 }
 
 func (c *command) setSubstitution(s string) {

@@ -9,18 +9,6 @@ type item struct {
 }
 
 func (i *item) String() string {
-	switch {
-	case i.typ == itemEOF:
-		// return "EOF"
-		fallthrough
-	case i.typ == itemError:
-		// return i.val
-		fallthrough
-	case i.typ > itemKeyword:
-		return fmt.Sprintf("type: %s; val: %s", itemTypes[i.typ], i.val)
-	case len(i.val) > 10:
-		return fmt.Sprintf("type: %s; val: %.10q", itemTypes[i.typ], i.val)
-	}
 	return fmt.Sprintf("type: %s; val: %q", itemTypes[i.typ], i.val)
 }
 
@@ -32,29 +20,29 @@ type itemType int
 const (
 	itemError itemType = iota + 1 // error occurred; value is text of error
 	itemEOF
-	itemKeyword
 	itemAddress
+	itemAddressPattern
 	itemRange
 	itemAction
-	itemDelim
 	itemPattern
 	itemSubstitution
 	itemDestination
-	itemCommand
+	itemAdditional
 	itemGlobalPrefix
+	itemGlobalSuffix
 )
 
 var itemTypes = map[itemType]string{
-	itemError:        "itemError",
-	itemEOF:          "itemEOF",
-	itemKeyword:      "itemKeyword",
-	itemAddress:      "itemAddress", // a single address
-	itemRange:        "itemRange",   // a range of addresses
-	itemAction:       "itemAction",
-	itemDelim:        "itemDelim",
-	itemPattern:      "itemPattern",
-	itemSubstitution: "itemSubstitution",
-	itemDestination:  "itemDestination",
-	itemCommand:      "itemCommand",
-	itemGlobalPrefix: "itemGlobalPrefix",
+	itemError:          "itemError",
+	itemEOF:            "itemEOF",
+	itemAddress:        "itemAddress",        // a single address
+	itemAddressPattern: "itemAddressPattern", // a single address
+	itemRange:          "itemRange",          // a range of addresses
+	itemAction:         "itemAction",
+	itemPattern:        "itemPattern",
+	itemSubstitution:   "itemSubstitution",
+	itemDestination:    "itemDestination",
+	itemAdditional:     "itemAdditional",
+	itemGlobalPrefix:   "itemGlobalPrefix",
+	itemGlobalSuffix:   "itemGlobalSuffix",
 }

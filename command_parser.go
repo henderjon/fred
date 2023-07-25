@@ -28,16 +28,22 @@ func (p *parser) run(input string) (*command, error) {
 			c.setAction(rune(i.val[0]))
 		case itemDestination:
 			c.setDestination(i.val)
-		case itemPattern: // no more items
+		case itemAdditional:
+			c.setAdditional(i.val)
+		case itemAddressPattern:
+			c.setAddrPattern(i.val)
+		case itemPattern:
 			c.setPattern(i.val)
-		case itemGlobalPrefix: // no more items
+		case itemGlobalPrefix:
 			c.setGlobalPrefix(true)
-		case itemSubstitution: // no more items
+		case itemGlobalSuffix:
+			c.setGlobalPrefix(true)
+		case itemSubstitution:
 			c.setSubstitution(i.val)
-		case itemError: // no more items
-			return nil, errors.New(i.val) // skip the rest of the func
+		case itemError:
+			return nil, errors.New(i.val)
 		case itemEOF: // no more items
-			return c, nil // skip the rest of the func
+			return c, nil
 		default:
 			stderr.Log(i.String())
 			return c, nil

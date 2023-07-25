@@ -26,10 +26,10 @@ func lexDef(l *lexer) stateFn {
 			l.emit(itemGlobalPrefix)
 			delim := l.next()
 			l.ignore() // ignore the delim
-			return lexPattern(delim, itemPattern)
+			return lexPattern(delim, itemAddressPattern)
 		case r == searchAction:
 			l.ignore() // ignore the delim
-			return lexPattern(r, itemPattern)
+			return lexPattern(r, itemAddressPattern)
 		case isAlpha(r):
 			l.backup()
 			return lexAction
@@ -121,20 +121,26 @@ func lexAction(l *lexer) stateFn {
 
 // lexPattern checks for the regex pattern for 'g' and 's'
 func lexPattern(delim rune, t itemType) stateFn {
+	var level int
 	return stateFn(func(l *lexer) stateFn {
 		// reject empty patterns
-
 		if !l.acceptUntil(string(delim)) {
-			return l.errorf("empty pattern or missing delim")
+			return l.errorf("empty pattern or substitution or missing delim")
 		}
 
 		if delim == l.peek() {
 			l.emit(t)
 			l.acceptRun(string(delim)) // TODO: consuming it here ... how does that screw with our substitutions?
 			l.ignore()
+			level++
 		} else {
 			return l.errorf("missing the closing delim")
 		}
+
+		// we don't recurse on address patterns
+		// if t != itemAddressPattern && level <= 1 {
+		// return lexPattern(delim, itemSubstitution)
+		// }
 
 		return lexDef
 	})

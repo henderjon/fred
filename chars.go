@@ -17,7 +17,7 @@ var (
 	// nlines       int // the number of lines given
 	// curline      int // the current line
 	// lastline     int // last line of the buffer
-	NULLBYTE = byte('\x00')
+	null = byte('\x00')
 	// ENDOFSTRING  = NULLBYTE
 	// DITTO        = byte('&')
 	// CURRENT_LINE = byte('.')
