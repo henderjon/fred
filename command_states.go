@@ -14,6 +14,7 @@ func lexDef(l *lexer) stateFn {
 		// 	break
 		// }
 		r := l.next()
+		// stderr.Log(string(r))
 		switch true {
 		case isSpace(r):
 			l.ignore()
@@ -91,7 +92,7 @@ func lexAddress(l *lexer) stateFn {
 // lexCommand checks a run for being a valid command
 func lexAction(l *lexer) stateFn {
 	// these commands need a destination
-	if l.acceptOne(string([]rune{moveAction, copyAction})) {
+	if l.acceptOne(string([]rune{moveAction, copyAction, scrollAction})) {
 		l.emit(itemAction)
 		if l.acceptRun("0123456789") {
 			l.emit(itemDestination)
@@ -101,17 +102,26 @@ func lexAction(l *lexer) stateFn {
 		return nil
 	}
 
-	// if l.acceptOne(string(itemSubstitution)) {}
+	if l.acceptOne(string(substituteAction)) {
+		l.emit(itemAction)
+		delim := l.next()
+		// stderr.Log(string(delim))
+		l.ignore() // ignore the delim
+		lexPattern(delim, itemPattern)(l)
+		return lexPattern(delim, itemSubstitution)
+	}
 
 	if l.acceptOne(string(cmds)) {
 		// cmd := l.current()
+		// stderr.Log(l.current())
 		l.emit(itemAction)
-		// // some actions need more information
+		// some actions need more information
 		// switch cmd {
-		// case string(moveAction):
-		// 	lexDestination(l)
-		// case string(copyAction):
-		// 	lexDestination(l)
+		// case string(substituteAction):
+		// 	delim := l.next()
+		// 	l.ignore() // ignore the delim
+		// 	lexPattern(delim, itemPattern)
+		// 	lexPattern(delim, itemSubstitution)
 		// }
 		return nil
 	}
@@ -137,9 +147,9 @@ func lexPattern(delim rune, t itemType) stateFn {
 			return l.errorf("missing the closing delim")
 		}
 
-		// we don't recurse on address patterns
+		// when we get a pattern we don't recurse on address patterns
 		// if t != itemAddressPattern && level <= 1 {
-		// return lexPattern(delim, itemSubstitution)
+		// 	return lexPattern(delim, itemSubstitution)
 		// }
 
 		return lexDef

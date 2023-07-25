@@ -6,31 +6,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-// func Test_parser_run(t *testing.T) {
-// 	tests := []struct {
-// 		input    string
-// 		expected *command
-// 	}{
-// 		{"12", &command{addrRange: []int{12}}},
-// 		{"-12", &command{addrRange: []int{0}}},
-// 		{"+12", &command{addrRange: []int{12}}},
-// 		{"   12  ", &command{addrRange: []int{12}}},
-// 		{"   12,  ", &command{addrRange: []int{12, -1}}},         // parses correctly but invalid address?
-// 		{"   12,13  ", &command{addrRange: []int{12, 13}}},       // parses correctly but invalid address?
-// 		{"   12,13,14,15  ", &command{addrRange: []int{12, 15}}}, // parses correctly but invalid address?
-// 		{"   12,13,14,11  ", &command{addrRange: []int{12, 12}}}, // parses correctly but invalid address?
-// 		{"  ,12  ", &command{addrRange: []int{0, 12}}},
-// 	} //itemEmpty
-
-// 	for _, test := range tests {
-// 		c, _ := (&parser{}).run(test.input)
-
-// 		if diff := cmp.Diff(c, test.expected, cmp.AllowUnexported(command{})); diff != "" {
-// 			t.Errorf("given: %s; -got/+want\n%s", test.input, diff)
-// 		}
-// 	}
-// }
-
 func Test_parser_full_commands(t *testing.T) {
 	tests := []struct {
 		input      string
@@ -77,6 +52,7 @@ func Test_parser_full_commands(t *testing.T) {
 		{"g//", nil, true},   //itemEmptyPattern
 		{"g/b.z", nil, true}, //itemMissingDelim
 		{"/re/p", &command{action: printAction, addrPattern: `re`}, false},
+		{"/re/m35", &command{action: moveAction, addrPattern: `re`, destination: 35}, false},
 	} //itemEmpty
 
 	for _, test := range tests {

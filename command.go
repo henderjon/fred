@@ -38,6 +38,15 @@ func (c *command) String() string {
 		c.substitution,
 		c.additional,
 	)
+
+	if c.globalPrefix {
+		fmt.Fprintf(&cmd, "; g/: %t", c.globalPrefix)
+	}
+
+	if c.globalSuffix {
+		fmt.Fprintf(&cmd, "; /g: %t", c.globalSuffix)
+	}
+
 	return cmd.String()
 }
 

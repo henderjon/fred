@@ -53,6 +53,7 @@ var (
 	copyAction      = rune('k') // Copy CMD
 	searchAction    = rune('/') // /re/... establishes the ADDRESSES for the lines against which to execute cmd
 	gSearchAction   = rune('g') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
+	scrollAction    = rune('z') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
 	// TODO: there is a complexity around addressing lines via regex and then running a command ... there is the possibility of 3 patterns e.g. 10,20g/pattern/s/pattern/sub/
 	substituteAction = rune('s') // Substitute CMD
 	editAction       = rune('e') // Edit command
