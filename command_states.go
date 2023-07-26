@@ -57,6 +57,11 @@ func isAlphaNumeric(r rune) bool {
 	return r == '_' || unicode.IsLetter(r) || unicode.IsDigit(r)
 }
 
+// isAlphaNumeric reports whether r is alphabetic, digit, or underscore.
+func isNumeric(r rune) bool {
+	return unicode.IsDigit(r)
+}
+
 // isAlpha reports whether r is alphabetic
 func isAlpha(r rune) bool {
 	return r == '_' || unicode.IsLetter(r)
@@ -108,7 +113,8 @@ func lexAction(l *lexer) stateFn {
 		// stderr.Log(string(delim))
 		l.ignore() // ignore the delim
 		lexPattern(delim, itemPattern)(l)
-		return lexPattern(delim, itemSubstitution)
+		lexPattern(delim, itemSubstitution)(l)
+		return lexReplaceNum(l)
 	}
 
 	if l.acceptOne(string(cmds)) {
@@ -140,7 +146,7 @@ func lexPattern(delim rune, t itemType) stateFn {
 
 		if delim == l.peek() {
 			l.emit(t)
-			l.acceptRun(string(delim)) // TODO: consuming it here ... how does that screw with our substitutions?
+			l.acceptRun(string(delim))
 			l.ignore()
 			level++
 		} else {
@@ -154,6 +160,21 @@ func lexPattern(delim rune, t itemType) stateFn {
 
 		return lexDef
 	})
+}
+
+func lexReplaceNum(l *lexer) stateFn {
+	if l.acceptRun("g") {
+		l.emit(itemReplaceNum)
+		return lexDef
+	}
+
+	digits := "0123456789"
+	if l.acceptRun(digits) {
+		l.emit(itemReplaceNum)
+		return lexDef
+	}
+
+	return lexDef
 }
 
 // lexDestination checks for the trailing address for actions such as 'm' and 'k'

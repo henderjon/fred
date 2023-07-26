@@ -12,7 +12,7 @@ var (
 
 func main() {
 	// input := `10,15s/pattern/substitute/`
-	input := `10,25g/mm/s/and/for/p`
+	input := `10,25g/mm/s/and/for/g`
 	c, err := (&parser{}).run(input)
 	if err != nil {
 		stderr.Log(err)

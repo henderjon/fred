@@ -12,40 +12,29 @@ type command struct {
 	action       rune
 	pattern      string
 	substitution string
+	replaceNum   int
 	destination  int
 	subCommand   string
 	globalPrefix bool
-	globalSuffix bool
 }
 
 func (c *command) String() string {
 	var cmd strings.Builder
 
-	fmt.Fprintf(&cmd, "%d", c.addrRange[0])
+	fmt.Fprintf(&cmd, "addrRange(%d", c.addrRange[0])
 
 	if len(c.addrRange) >= 2 {
 		fmt.Fprintf(&cmd, ",%d", c.addrRange[1])
 	}
 
-	if len(c.addrPattern) > 0 {
-		fmt.Fprintf(&cmd, "; %s", c.addrPattern)
-	}
-
-	fmt.Fprintf(&cmd, "; %c; %d; %s; %s; %s",
-		c.action,
-		c.destination,
-		c.pattern,
-		c.substitution,
-		c.subCommand,
-	)
-
-	if c.globalPrefix {
-		fmt.Fprintf(&cmd, "; g/: %t", c.globalPrefix)
-	}
-
-	if c.globalSuffix {
-		fmt.Fprintf(&cmd, "; /g: %t", c.globalSuffix)
-	}
+	fmt.Fprintf(&cmd, ") addrPattern(%s)", c.addrPattern)
+	fmt.Fprintf(&cmd, " action(%s)", string(c.action))
+	fmt.Fprintf(&cmd, " pattern(%s)", c.pattern)
+	fmt.Fprintf(&cmd, " substitution(%s)", c.substitution)
+	fmt.Fprintf(&cmd, " replaceNum(%d)", c.replaceNum)
+	fmt.Fprintf(&cmd, " destination(%d)", c.destination)
+	fmt.Fprintf(&cmd, " subCommand(%s)", c.subCommand)
+	fmt.Fprintf(&cmd, " globalPrefix(%t)", c.globalPrefix)
 
 	return cmd.String()
 }
@@ -111,8 +100,17 @@ func (c *command) setGlobalPrefix(b bool) {
 	c.globalPrefix = b
 }
 
-func (c *command) setGlobalSuffix(b bool) {
-	c.globalSuffix = b
+func (c *command) setReplaceNum(s string) {
+	if s == string(gReplaceAction) {
+		c.replaceNum = -1 // TODO: this really ought to be 0 but 0 is the default and we want to default to 1?
+		return
+	}
+
+	i, e := strconv.Atoi(s)
+	if e != nil {
+		stderr.Log(e)
+	}
+	c.replaceNum = i
 }
 
 func (c *command) setSubCommand(s string) {

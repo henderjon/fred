@@ -29,7 +29,7 @@ const (
 	itemDestination
 	itemAdditional
 	itemGlobalPrefix
-	itemGlobalSuffix
+	itemReplaceNum
 )
 
 var itemTypes = map[itemType]string{
@@ -44,5 +44,5 @@ var itemTypes = map[itemType]string{
 	itemDestination:    "itemDestination",
 	itemAdditional:     "itemAdditional",
 	itemGlobalPrefix:   "itemGlobalPrefix",
-	itemGlobalSuffix:   "itemGlobalSuffix",
+	itemReplaceNum:     "itemReplaceNum",
 }

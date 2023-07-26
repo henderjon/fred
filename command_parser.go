@@ -36,8 +36,8 @@ func (p *parser) run(input string) (*command, error) {
 			c.setPattern(i.val)
 		case itemGlobalPrefix:
 			c.setGlobalPrefix(true)
-		case itemGlobalSuffix:
-			c.setGlobalPrefix(true)
+		case itemReplaceNum:
+			c.setReplaceNum(i.val)
 		case itemSubstitution:
 			c.setSubstitution(i.val)
 		case itemError:
