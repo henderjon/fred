@@ -7,7 +7,8 @@ import (
 )
 
 type command struct {
-	addrRange    []int
+	addrStart    string
+	addrEnd      string
 	addrPattern  string
 	action       rune
 	pattern      string
@@ -21,10 +22,10 @@ type command struct {
 func (c *command) String() string {
 	var cmd strings.Builder
 
-	fmt.Fprintf(&cmd, "addrRange(%d", c.addrRange[0])
+	fmt.Fprintf(&cmd, "addrRange(%s", c.addrStart)
 
-	if len(c.addrRange) >= 2 {
-		fmt.Fprintf(&cmd, ",%d", c.addrRange[1])
+	if len(c.addrEnd) > 0 {
+		fmt.Fprintf(&cmd, ",%s", c.addrEnd)
 	}
 
 	fmt.Fprintf(&cmd, ") addrPattern(%s)", c.addrPattern)
@@ -40,49 +41,53 @@ func (c *command) String() string {
 }
 
 func (c *command) setAddr(f string) {
-	var (
-		i   int
-		err error
-	)
-
-	if f == string(lastLine) { // handle the '$' special
-		i = -1
+	if len(c.addrStart) == 0 {
+		c.addrStart = f
 	} else {
-		i, err = strconv.Atoi(f)
-		if err != nil {
-			stderr.Log(err)
-		}
-	}
 
-	// as of now we only use the first and last numbers given,
-	// to change this behavior to use only the first two numbers more the
-	// `[1] = [0]` assignment to `case 1:` and drop all of `case 2:`
-	switch true {
-	default:
-	case c.numaddrRange() == 0:
-		if i < 0 {
-			i = 0
-		}
-		c.addrRange = append(c.addrRange, i)
-	case c.numaddrRange() == 1:
-		if i < 0 || i >= c.addrRange[0] {
-			c.addrRange = append(c.addrRange, i)
-		} else {
-			// repeat the first number if the second number is smaller than the first
-			c.addrRange = append(c.addrRange, c.addrRange[0])
-			// TODO: use the $ end of the buffer for the last line
-		}
-	case c.numaddrRange() >= 2: // TODO: maybe this should throw an error instead of compensating?
-		if i < 0 || i >= c.addrRange[0] {
-			c.addrRange[1] = i
-		} else {
-			c.addrRange[1] = c.addrRange[0]
-		}
+		// if len(c.addrEnd) == 0 {
+		c.addrEnd = f
 	}
-}
+	return
+	// var (
+	// 	i   int
+	// 	err error
+	// )
 
-func (c *command) numaddrRange() int {
-	return len(c.addrRange)
+	// if f == string(lastLine) { // handle the '$' special
+	// 	i = -1
+	// } else {
+	// 	i, err = strconv.Atoi(f)
+	// 	if err != nil {
+	// 		stderr.Log(err)
+	// 	}
+	// }
+
+	// // as of now we only use the first and last numbers given,
+	// // to change this behavior to use only the first two numbers more the
+	// // `[1] = [0]` assignment to `case 1:` and drop all of `case 2:`
+	// switch true {
+	// default:
+	// case c.numaddrRange() == 0:
+	// 	if i < 0 {
+	// 		i = 0
+	// 	}
+	// 	c.addrRange = append(c.addrRange, i)
+	// case c.numaddrRange() == 1:
+	// 	if i < 0 || i >= c.addrRange[0] {
+	// 		c.addrRange = append(c.addrRange, i)
+	// 	} else {
+	// 		// repeat the first number if the second number is smaller than the first
+	// 		c.addrRange = append(c.addrRange, c.addrRange[0])
+	// 		// TODO: use the $ end of the buffer for the last line
+	// 	}
+	// case c.numaddrRange() >= 2: // TODO: maybe this should throw an error instead of compensating?
+	// 	if i < 0 || i >= c.addrRange[0] {
+	// 		c.addrRange[1] = i
+	// 	} else {
+	// 		c.addrRange[1] = c.addrRange[0]
+	// 	}
+	// }
 }
 
 func (c *command) setAction(a rune) {

@@ -6,7 +6,7 @@ const (
 	eof   = -1
 	unset = -1
 	zero  = "0"
-	end   = "-1"
+	end   = "$"
 )
 
 var (
@@ -21,7 +21,8 @@ var (
 	// ENDOFSTRING  = NULLBYTE
 	// DITTO        = byte('&')
 	// CURRENT_LINE = byte('.')
-	lastLine = byte('$')
+	// firstLine = byte('0')
+	// lastLine = byte('$')
 	// SCAN         = byte('/')
 	// BACK_SCAN    = byte('\\')
 	// ESCAPE       = byte('@')

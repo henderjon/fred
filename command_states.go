@@ -19,7 +19,7 @@ func lexDef(l *lexer) stateFn {
 		switch true {
 		case isSpace(r):
 			l.ignore()
-		case strings.ContainsRune("+-0123456789$", r):
+		case strings.ContainsRune("+-0123456789.$", r):
 			l.backup()
 			return lexAddress(itemAddress)(l)
 		case r == eqAction:
@@ -81,7 +81,7 @@ func lexAddress(t itemType) stateFn {
 		switch true {
 		default:
 			return l.errorf("invalid or missing address/destination: %s", l.current())
-		case l.acceptRun("$"):
+		case l.acceptRun("$."):
 			l.emit(t)
 		case l.acceptRun("01234567890"):
 			l.emit(t)

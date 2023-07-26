@@ -21,7 +21,6 @@ const (
 	itemError itemType = iota + 1 // error occurred; value is text of error
 	itemEOF
 	itemAddress
-	itemLastLine
 	itemAddressPattern
 	itemRange
 	itemAction
@@ -37,7 +36,6 @@ var itemTypes = map[itemType]string{
 	itemError:          "itemError",
 	itemEOF:            "itemEOF",
 	itemAddress:        "itemAddress",        // a single address
-	itemLastLine:       "itemLastLine",       // '$' means last line of the buffer
 	itemAddressPattern: "itemAddressPattern", // find lines matching this pattern
 	itemRange:          "itemRange",          // a range of addresses
 	itemAction:         "itemAction",
