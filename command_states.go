@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"unicode"
 )
 
@@ -18,9 +19,9 @@ func lexDef(l *lexer) stateFn {
 		switch true {
 		case isSpace(r):
 			l.ignore()
-		case r == '+' || r == '-' || ('0' <= r && r <= '9'):
+		case strings.ContainsRune("+-0123456789$", r):
 			l.backup()
-			return lexAddress
+			return lexAddress(itemAddress)(l)
 		case r == eqAction:
 			l.emit(itemAction)
 		case r == gSearchAction:
@@ -76,22 +77,21 @@ func lexErr(l *lexer) stateFn {
 // isn't a perfect number scanner - for instance it accepts "." and "0x0.2"
 // and "089" - but when it's wrong the input is invalid and the parser (via
 // strconv) will notice.
-func lexAddress(l *lexer) stateFn {
-	// Optional leading sign.
-	// if !l.accept("+-") {
-	// 	l.backup()
-	// }
+func lexAddress(t itemType) stateFn {
+	return stateFn(func(l *lexer) stateFn {
+		l.acceptRun("+-") // TODO: will accept more than one ... :thinking_face:
 
-	l.acceptRun("+-") // TODO: will accept more than one ... :thinking_face:
+		switch true {
+		default:
+			return l.errorf("invalid or missing address/destination: %s", l.current())
+		case l.acceptRun("$"):
+			l.emit(t)
+		case l.acceptRun("01234567890"):
+			l.emit(t)
+		}
 
-	digits := "0123456789"
-	if l.acceptRun(digits) {
-		l.emit(itemAddress)
-	} else {
-		return l.errorf("invalid or missing address: %s", l.current())
-	}
-
-	return lexDef
+		return lexDef
+	})
 }
 
 // lexCommand checks a run for being a valid command
@@ -99,12 +99,7 @@ func lexAction(l *lexer) stateFn {
 	// these commands need a destination
 	if l.acceptOne(string([]rune{moveAction, copyAction, scrollAction})) {
 		l.emit(itemAction)
-		if l.acceptRun("0123456789") {
-			l.emit(itemDestination)
-		} else {
-			return l.errorf("missing destination address")
-		}
-		return nil
+		return lexAddress(itemDestination)(l)
 	}
 
 	if l.acceptOne(string(substituteAction)) {

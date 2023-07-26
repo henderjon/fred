@@ -21,7 +21,7 @@ var (
 	// ENDOFSTRING  = NULLBYTE
 	// DITTO        = byte('&')
 	// CURRENT_LINE = byte('.')
-	// LAST_LINE    = byte('$')
+	lastLine = byte('$')
 	// SCAN         = byte('/')
 	// BACK_SCAN    = byte('\\')
 	// ESCAPE       = byte('@')

@@ -24,6 +24,8 @@ func (p *parser) run(input string) (*command, error) {
 		case itemAddress: // did we get a number first?
 			c.setAddr(i.val)
 			// c.setAddr(i.val) // TODO: this should be unnecessary
+		case itemLastLine: // did we get a number first?
+			c.setAddr(end)
 		case itemAction: // did we get an action first
 			c.setAction(rune(i.val[0]))
 		case itemDestination:

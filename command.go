@@ -40,14 +40,23 @@ func (c *command) String() string {
 }
 
 func (c *command) setAddr(f string) {
-	i, e := strconv.Atoi(f)
-	if e != nil {
-		stderr.Log(e)
+	var (
+		i   int
+		err error
+	)
+
+	if f == string(lastLine) { // handle the '$' special
+		i = -1
+	} else {
+		i, err = strconv.Atoi(f)
+		if err != nil {
+			stderr.Log(err)
+		}
 	}
 
 	// as of now we only use the first and last numbers given,
 	// to change this behavior to use only the first two numbers more the
-	// `[1] = [0]` assignement to `case 1:` and drop all of `case 2:`
+	// `[1] = [0]` assignment to `case 1:` and drop all of `case 2:`
 	switch true {
 	default:
 	case c.numaddrRange() == 0:
