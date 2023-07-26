@@ -73,10 +73,7 @@ func lexErr(l *lexer) stateFn {
 	return nil
 }
 
-// lexAddress scans a number: decimal, octal, hex, float, or imaginary.  This
-// isn't a perfect number scanner - for instance it accepts "." and "0x0.2"
-// and "089" - but when it's wrong the input is invalid and the parser (via
-// strconv) will notice.
+// lexAddress parses a value that represents an address in the command
 func lexAddress(t itemType) stateFn {
 	return stateFn(func(l *lexer) stateFn {
 		l.acceptRun("+-") // TODO: will accept more than one ... :thinking_face:
@@ -113,17 +110,8 @@ func lexAction(l *lexer) stateFn {
 	}
 
 	if l.acceptOne(string(cmds)) {
-		// cmd := l.current()
 		// stderr.Log(l.current())
 		l.emit(itemAction)
-		// some actions need more information
-		// switch cmd {
-		// case string(substituteAction):
-		// 	delim := l.next()
-		// 	l.ignore() // ignore the delim
-		// 	lexPattern(delim, itemPattern)
-		// 	lexPattern(delim, itemSubstitution)
-		// }
 		return nil
 	}
 
@@ -148,11 +136,6 @@ func lexPattern(delim rune, t itemType) stateFn {
 			return l.errorf("missing the closing delim")
 		}
 
-		// when we get a pattern we don't recurse on address patterns
-		// if t != itemAddressPattern && level <= 1 {
-		// 	return lexPattern(delim, itemSubstitution)
-		// }
-
 		return lexDef
 	})
 }
@@ -171,17 +154,3 @@ func lexReplaceNum(l *lexer) stateFn {
 
 	return lexDef
 }
-
-// lexDestination checks for the trailing address for actions such as 'm' and 'k'
-// func lexDestination(l *lexer) stateFn {
-// 	// Optional leading sign.
-// 	l.accept("+-")
-// 	digits := "0123456789"
-// 	if l.acceptRun(digits) {
-// 		l.emit(itemDestination)
-// 	} else {
-// 		return l.errorf("current command requires a destination address")
-// 	}
-
-// 	return lexDef
-// }
