@@ -31,9 +31,11 @@ func Test_parser_full_commands(t *testing.T) {
 		{"10,25m35", &command{addrStart: "10", addrEnd: "25", action: moveAction, destination: 35}, false},
 		{"10,25k35", &command{addrStart: "10", addrEnd: "25", action: copyAction, destination: 35}, false},
 		{"10,25g/mm/s/and/for/p", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: true, action: substituteAction, pattern: "and", substitution: "for", subCommand: "p"}, false},
+		{"10,25g|mm|s!and!for!p", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: true, action: substituteAction, pattern: "and", substitution: "for", subCommand: "p"}, false},
 		{"10,25g/mm/s/and/for/g", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: true, replaceNum: -1, action: substituteAction, pattern: "and", substitution: "for"}, false},
 		{"10,25g/mm/s/and/for/3", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: true, replaceNum: 3, action: substituteAction, pattern: "and", substitution: "for"}, false},
 		{"10,25g/mm/m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: true, action: moveAction, destination: 35}, false},
+		{"10,25g|mm|m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: true, action: moveAction, destination: 35}, false},
 		// testing edge cases
 		{"12", &command{addrStart: "12"}, false},
 		{"-12", &command{addrStart: "-12"}, false},
