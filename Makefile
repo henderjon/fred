@@ -63,6 +63,10 @@ uninstall:
 #### TESING
 ################################################################################
 
+.PHONY: demo
+demo: local
+	./$(BINDIR)/$(BIN)
+
 .PHONY: test
 test: dep check
 	go test -covermode=count ./...

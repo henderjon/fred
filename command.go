@@ -14,7 +14,7 @@ type command struct {
 	pattern      string
 	substitution string
 	replaceNum   int
-	destination  int
+	destination  string
 	subCommand   string
 	globalPrefix bool
 }
@@ -33,7 +33,7 @@ func (c *command) String() string {
 	fmt.Fprintf(&cmd, " pattern(%s)", c.pattern)
 	fmt.Fprintf(&cmd, " substitution(%s)", c.substitution)
 	fmt.Fprintf(&cmd, " replaceNum(%d)", c.replaceNum)
-	fmt.Fprintf(&cmd, " destination(%d)", c.destination)
+	fmt.Fprintf(&cmd, " destination(%s)", c.destination)
 	fmt.Fprintf(&cmd, " subCommand(%s)", c.subCommand)
 	fmt.Fprintf(&cmd, " globalPrefix(%t)", c.globalPrefix)
 
@@ -132,9 +132,5 @@ func (c *command) setSubCommand(s string) {
 }
 
 func (c *command) setDestination(s string) {
-	i, e := strconv.Atoi(s)
-	if e != nil {
-		stderr.Log(e)
-	}
-	c.destination = i
+	c.destination = s
 }
