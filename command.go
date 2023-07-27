@@ -21,6 +21,23 @@ type command struct {
 func (c *command) String() string {
 	var cmd strings.Builder
 
+	// base := reflect.TypeOf(command{})
+	// v := reflect.ValueOf(c).Elem()
+	// nf := v.NumField()
+	// for i := 0; i < nf; i++ {
+	// 	// fmt.Fprintf(&cmd, "(%s / %s)", v.Field(i).Type(), v.Field(i).Kind())
+	// 	fmt.Fprintf(&cmd, "(%s) ", v.Field(i).Type())
+	// 	fmt.Fprintf(&cmd, " %s", base.Field(i).Name)
+	// 	switch v.Field(i).Kind() {
+	// 	case reflect.String:
+	// 		fmt.Fprintf(&cmd, " %s ", v.Field(i).String())
+	// 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+	// 		fmt.Fprintf(&cmd, " %q ", v.Field(i).Int())
+	// 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+	// 		fmt.Fprintf(&cmd, " %q ", v.Field(i).Uint())
+	// 	}
+	// }
+
 	fmt.Fprintf(&cmd, "addrRange(%s", c.addrStart)
 
 	if len(c.addrEnd) > 0 {

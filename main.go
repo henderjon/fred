@@ -1,26 +1,73 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"os"
 
 	"github.com/henderjon/logger"
 )
 
+const prompt = ":"
+
 var (
 	stderr = logger.NewDropLogger(os.Stderr)
+	stdin  = bufio.NewScanner(os.Stdin)
 )
 
 func main() {
 	// input := `10,15s/pattern/substitute/`
-	input := `10,25g/mm/s/and/for/g`
-	c, err := (&parser{}).run(input)
+	// input := `10,25g/mm/s/and/for/g`
+	// c, err := (&parser{}).run(input)
+	// if err != nil {
+	// 	stderr.Log(err)
+	// }
+
+	// if c != nil {
+	// 	stderr.Log(input, c.String())
+	// } else {
+	// 	stderr.Log(input, "nil command")
+	// }
+
+	b := newMemoryBuf()
+
+	cmdParser := &parser{}
+	fmt.Fprint(os.Stdout, prompt)
+	for stdin.Scan() { // main loop
+		err := stdin.Err()
+		if err != nil {
+			break
+		}
+
+		cmdInput := stdin.Bytes()
+		cmd, err := cmdParser.run(string(cmdInput))
+		if err != nil {
+			fmt.Fprintln(os.Stdout, err.Error())
+		}
+
+		// cursave := b.curline
+		if cmd.globalPrefix {
+			// doCmd over range of lines
+		} else {
+			err := doCmd(*cmd, b)
+			if err != nil {
+				fmt.Fprintln(os.Stdout, err.Error())
+			}
+		}
+		fmt.Fprint(os.Stdout, prompt)
+	}
+}
+
+func doCmd(cmd command, b buffer) error {
+	var err error
+
+	line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd)
 	if err != nil {
-		stderr.Log(err)
+		return err
 	}
 
-	if c != nil {
-		stderr.Log(input, c.String())
-	} else {
-		stderr.Log(input, "nil command")
-	}
+	stderr.Log(line1, line2)
+	stderr.Log(cmd)
+
+	return err
 }

@@ -79,12 +79,3 @@ func Test_parser_full_commands(t *testing.T) {
 
 	}
 }
-
-// {"10,25/"} searchAction     = rune('/') // /re/... establishes the ADDRESSES for the lines against which to execute cmd
-
-// {"10,25g"} gSearchAction    = rune('g') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
-// {"10,25s"} substituteAction = rune('s') // Substitute CMD
-// {"10,25e"} editAction       = rune('e') // Edit command
-// {"10,25f"} fileAction       = rune('f') // File command
-// {"10,25r"} readAction       = rune('r') // read [file] command
-// {"10,25w"} writeAction      = rune('w') // write [file] command
