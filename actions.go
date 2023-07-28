@@ -61,3 +61,21 @@ func doChange(b buffer, l1, l2 int) error {
 	}
 	return b.insertAfter(b.prevLine(l1))
 }
+
+func doMove(b buffer, l1, l2 int, dest string) error {
+	l3, err := b.defaultLine(dest)
+	if err != nil {
+		return err
+	}
+
+	b.bulkMove(l1, l2, l3)
+	var cl int
+	if l3 > l1 {
+		cl = l3
+	} else {
+		cl = l3 + (l2 - l1 + 1) // the last line + the difference of the origin range (should be a negative number)
+	}
+
+	b.setCurline(cl)
+	return nil
+}

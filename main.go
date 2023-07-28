@@ -93,6 +93,8 @@ func doCmd(cmd command, b buffer) error {
 		return doDelete(b, line1, line2)
 	case changeAction:
 		return doChange(b, line1, line2)
+	case moveAction:
+		return doMove(b, line1, line2, cmd.destination)
 	}
 
 	stderr.Log(line1, line2)

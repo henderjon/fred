@@ -150,7 +150,7 @@ func (b memoryBuf) getLine(idx int) string {
 	return b.lines[idx].String()
 }
 
-// defaultLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults. It also changes '.' and '$' to current and end addresses respectively
+// defaultLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
 func (b memoryBuf) defaultLines(start, end string) (int, int, error) {
 	var (
 		err   error
@@ -186,6 +186,7 @@ func (b memoryBuf) defaultLines(start, end string) (int, int, error) {
 	return line1, line2, nil // page 188
 }
 
+// converts a string address into a number with special cases for '.' and '$'
 func (b memoryBuf) defaultLine(addr string) (int, error) {
 	if addr == "." { // || addr == "" ... we do this check above
 		return b.curline, nil
