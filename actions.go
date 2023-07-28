@@ -24,14 +24,14 @@ func doPrint(b buffer, l1, l2 int) error {
 }
 
 func doAppend(b buffer, l1 int) error {
-	return b.insertAfter(l1, false)
+	return b.insertAfter(l1)
 }
 
 func doInsert(b buffer, l1 int) error {
 	if l1 <= 1 {
-		return b.insertAfter(0, false)
+		return b.insertAfter(0)
 	}
-	return b.insertAfter(l1, false)
+	return b.insertAfter(l1)
 }
 
 // doDelete moves a range of lines to the end of the buffer then decreases the last line to "forget" about the lines at the end

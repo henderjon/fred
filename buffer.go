@@ -18,7 +18,7 @@ type buffer interface {
 	setLastline(i int)
 	getLastline() int
 
-	insertAfter(idx int, global bool) error
+	insertAfter(idx int) error
 	putText(line []byte) error
 	getText(idx int) []byte
 	replaceText(line []byte, idx int) error

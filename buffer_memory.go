@@ -42,27 +42,24 @@ func (b *memoryBuf) getLastline() int {
 	return b.lastline
 }
 
-func (b memoryBuf) insertAfter(idx int, global bool) error {
+func (b memoryBuf) insertAfter(idx int) error {
 	var err error
-	if global {
-		return errors.New("global operations not allowed")
-	} else {
-		b.curline = idx
-		for stdin.Scan() { // NOTE: use io.Writer
-			if err := stdin.Err(); err != nil {
-				return err
-			}
 
-			line := stdin.Bytes()
+	b.curline = idx
+	for stdin.Scan() { // NOTE: use io.Writer
+		if err := stdin.Err(); err != nil {
+			return err
+		}
 
-			if len(line) == 1 && line[0] == '.' {
-				return nil
-			}
+		line := stdin.Bytes()
 
-			err = b.putText(line)
-			if err != nil {
-				return err
-			}
+		if len(line) == 1 && line[0] == '.' {
+			return nil
+		}
+
+		err = b.putText(line)
+		if err != nil {
+			return err
 		}
 	}
 	return err
