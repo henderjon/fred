@@ -179,7 +179,8 @@ func (b memoryBuf) defaultLines(start, end string) (int, int, error) {
 	}
 
 	if line1 > line2 || line1 <= 0 {
-		return 0, 0, errors.New("invalid range")
+		// we might get a "0" from the command, let them know we don't like that
+		return 0, 0, errors.New("defaultLines; invalid range")
 	}
 	return line1, line2, nil // page 188
 }

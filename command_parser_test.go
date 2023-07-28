@@ -14,10 +14,10 @@ func Test_parser_full_commands(t *testing.T) {
 	}{
 		// typical usage
 		{"wq", &command{action: writeAction, subCommand: "q"}, false},
-		{",n", &command{addrStart: "0", addrEnd: "$", action: printNumsAction}, false},
-		{",$n", &command{addrStart: "0", addrEnd: "$", action: printNumsAction}, false},
-		{"0,$n", &command{addrStart: "0", addrEnd: "$", action: printNumsAction}, false},
-		{"0,.n", &command{addrStart: "0", addrEnd: ".", action: printNumsAction}, false},
+		{",n", &command{addrStart: "1", addrEnd: "$", action: printNumsAction}, false},
+		{",$n", &command{addrStart: "1", addrEnd: "$", action: printNumsAction}, false},
+		{"0,$n", &command{addrStart: "0", addrEnd: "$", action: printNumsAction}, false}, //  buffer should error
+		{"0,.n", &command{addrStart: "0", addrEnd: ".", action: printNumsAction}, false}, //  buffer should error
 		{".,$n", &command{addrStart: ".", addrEnd: "$", action: printNumsAction}, false},
 		{"$n", &command{addrStart: "$", action: printNumsAction}, false}, // parsing the command does not validate the command
 		{".n", &command{addrStart: ".", action: printNumsAction}, false}, // parsing the command does not validate the command
@@ -46,7 +46,7 @@ func Test_parser_full_commands(t *testing.T) {
 		{"   12,13  ", &command{addrStart: "12", addrEnd: "13"}, false},
 		{"   12,13,14,15  ", &command{addrStart: "12", addrEnd: "15"}, false}, // parses correctly but invalid address? ... // NOTE: should we let commands be applied to specific lines?
 		{"   12,13,14,11  ", &command{addrStart: "12", addrEnd: "11"}, false}, // parsing the command does not validate the command
-		{"  ,12  ", &command{addrStart: "0", addrEnd: "12"}, false},
+		{"  ,12  ", &command{addrStart: "1", addrEnd: "12"}, false},
 		{"12a", &command{addrStart: "12", action: appendAction}, false},
 		{"12,230a", &command{addrStart: "12", addrEnd: "230", action: appendAction}, false},
 		{"+12i", &command{addrStart: "+12", action: insertAction}, false},
@@ -54,7 +54,7 @@ func Test_parser_full_commands(t *testing.T) {
 		{"   12,a  ", &command{addrStart: "12", addrEnd: "$", action: appendAction}, false},
 		{"   12 b  ", nil, true},                                                      // unknown command
 		{"g/^f[ob]ar/", &command{globalPrefix: true, addrPattern: `^f[ob]ar`}, false}, // missing address
-		{",g/^f[ob]ar/", &command{addrStart: "0", addrEnd: "$", globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
+		{",g/^f[ob]ar/", &command{addrStart: "1", addrEnd: "$", globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
 		{"5,g/^f[ob]ar/", &command{addrStart: "5", addrEnd: "$", globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
 		{"5,8g/^f[ob]ar/", &command{addrStart: "5", addrEnd: "8", globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
 		{"5,8g/^f[ob]ar/p", &command{addrStart: "5", addrEnd: "8", action: printAction, globalPrefix: true, addrPattern: `^f[ob]ar`}, false},

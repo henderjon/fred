@@ -5,7 +5,7 @@ import "errors"
 const (
 	eof   = -1
 	unset = -1
-	zero  = "0"
+	zero  = "1"
 	end   = "$"
 )
 
