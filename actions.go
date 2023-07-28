@@ -46,3 +46,11 @@ func doDelete(b buffer, l1, l2 int) error {
 	b.setCurline(b.prevLine(l1))
 	return nil
 }
+
+func doChange(b buffer, l1, l2 int) error {
+	err := doDelete(b, l1, l2)
+	if err != nil {
+		return err
+	}
+	return b.insertAfter(b.prevLine(l1))
+}
