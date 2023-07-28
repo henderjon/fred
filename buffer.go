@@ -14,6 +14,8 @@ type bufferLine struct {
 type buffer interface {
 	// normalizeAddr(addr string, isSecond bool) int
 	defaultLines(start, end string) (int, int, error)
+	getNumLines() int
+	setCurline(i int)
 	insertAfter(idx int, global bool) error
 	putText(line []byte) error
 	getText(idx int) []byte

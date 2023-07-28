@@ -30,6 +30,7 @@ func main() {
 	// }
 
 	b := newMemoryBuf()
+	b = fillDemo(b)
 
 	cmdParser := &parser{}
 	fmt.Fprint(os.Stdout, prompt)
@@ -50,7 +51,11 @@ func main() {
 			// doCmd over range of lines
 		} else {
 			err := doCmd(*cmd, b)
-			if err != nil {
+			switch true {
+			case err == errQuit:
+				fmt.Fprintln(os.Stdout, err.Error())
+				os.Exit(0)
+			case err != nil:
 				fmt.Fprintln(os.Stdout, err.Error())
 			}
 		}
@@ -61,9 +66,21 @@ func main() {
 func doCmd(cmd command, b buffer) error {
 	var err error
 
+	// some commands do not require addresses
+	switch cmd.action {
+	case quitAction:
+		return errQuit
+	}
+
+	// some commands require addresses
 	line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd)
 	if err != nil {
 		return err
+	}
+
+	switch cmd.action {
+	case printAction:
+		return doPrint(b, line1, line2)
 	}
 
 	stderr.Log(line1, line2)

@@ -24,9 +24,13 @@ func newMemoryBuf() buffer {
 // 	return b.curline
 // }
 
-// func (b memoryBuf) setCurline(i int) {
-// 	b.curline = i
-// }
+func (b memoryBuf) getNumLines() int {
+	return len(b.lines) - 1 // take one back for the zero index
+}
+
+func (b *memoryBuf) setCurline(i int) {
+	b.curline = i
+}
 
 func (b memoryBuf) insertAfter(idx int, global bool) error {
 	var err error
@@ -34,7 +38,7 @@ func (b memoryBuf) insertAfter(idx int, global bool) error {
 		return errors.New("global operations not allowed")
 	} else {
 		b.curline = idx
-		for stdin.Scan() {
+		for stdin.Scan() { // NOTE: use io.Writer
 			if err := stdin.Err(); err != nil {
 				return err
 			}
@@ -54,7 +58,7 @@ func (b memoryBuf) insertAfter(idx int, global bool) error {
 	return err
 }
 
-func (b memoryBuf) putText(line []byte) error {
+func (b *memoryBuf) putText(line []byte) error {
 	b.lastline++
 	newLine := bufferLine{
 		txt:  line,
@@ -136,14 +140,31 @@ func (b memoryBuf) getLine(idx int) string {
 }
 
 func (b memoryBuf) defaultLines(start, end string) (int, int, error) {
-	line1, err := b.defaultLine(start)
-	if err != nil {
-		return 0, 0, fmt.Errorf("invalid first address: %s", err.Error())
+	var (
+		err   error
+		line1 int
+		line2 int
+	)
+
+	// if no address was given, use the current line
+	if len(start) == 0 && len(end) == 0 {
+		return b.curline, b.curline, nil
 	}
 
-	line2, err := b.defaultLine(end)
-	if err != nil {
-		return 0, 0, fmt.Errorf("invalid first address: %s", err.Error())
+	if len(start) > 0 {
+		line1, err = b.defaultLine(start)
+		if err != nil {
+			return 0, 0, fmt.Errorf("invalid first address: %s", err.Error())
+		}
+	}
+
+	if len(end) > 0 {
+		line2, err = b.defaultLine(end)
+		if err != nil {
+			return 0, 0, fmt.Errorf("invalid first address: %s", err.Error())
+		}
+	} else {
+		line2 = line1
 	}
 
 	if line1 > line2 || line1 <= 0 {

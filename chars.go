@@ -10,6 +10,7 @@ const (
 )
 
 var (
+	errQuit  = errors.New("goodbye")
 	errEOD   = errors.New("end of data")
 	errBREAK = errors.New("break operation; no error")
 	// line1        int // the first given line
