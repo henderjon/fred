@@ -3,6 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 )
 
 func doPrint(b buffer, l1, l2 int) error {
@@ -111,3 +113,79 @@ func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 
 	return nil
 }
+
+func doSimpleReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
+	var err error
+
+	n, err := strconv.Atoi(num)
+	if err != nil {
+		return fmt.Errorf("invalid number: %s; %s", num, err.Error())
+	}
+
+	for idx := l1; idx <= l2; idx++ {
+		old := b.getText(idx)
+		new := strings.Replace(old, pattern, replace, n)
+		b.replaceText(new, idx)
+	}
+
+	return err
+}
+
+// func doRegexReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
+// 	var (
+// 		err error
+// 		re  *regexp.Regexp
+// 	)
+
+// 	re, err = regexp.Compile(string(pat))
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	template := []byte(sub)
+
+// 	result := []byte{}
+
+// 	n := -1 // assume global; -1 no limits
+// 	if !gflag {
+// 		n = 1
+// 	}
+
+// 	for idx := addr.from; idx <= addr.to; idx++ {
+// 		var (
+// 			p   int
+// 			old = getText(idx)
+// 			new []byte
+// 		)
+
+// 		// go has no regex func for only doing ONE replacement. This uses a
+// 		// workaround to walk through the string and manually replace each match
+// 		// in order to emulate the behavior.
+
+// 		// this finds the indexes of the matches
+// 		submatches := re.FindAllSubmatchIndex(old, n)
+// 		for n := 0; n < len(submatches); n++ {
+// 			// expand any $1 replacements; this takes the text input 'old' and
+// 			// using the indexes from 'submatches[n]' replaces it with the
+// 			// expanded replacement in 'template' and appends it to 'result' in
+// 			// other words, result is what should go into the new string
+// 			result := re.Expand(result, template, old, submatches[n])
+// 			// create a new string add the characters of the old string from the
+// 			// beginning of the last match (or zero) to the beginning of the
+// 			// current match (we're currently iterating)
+// 			new = append(new, old[p:submatches[n][0]]...)
+// 			// add the replacement value to the new string
+// 			new = append(new, result...)
+// 			// move the cursor to the index of the end of the current match so
+// 			// that then we add from the index of the end of the current match to
+// 			// the index of the beginning of the next match of the old string to
+// 			// the new string. in effect, make sure we add the bits of the old
+// 			// string that didn't match to the new string.
+// 			p = submatches[n][1]
+// 		}
+
+// 		new = append(new, old[p:]...)
+// 		replaceText(new, idx)
+// 	}
+// 	return err
+// }

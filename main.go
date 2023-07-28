@@ -97,6 +97,10 @@ func doCmd(cmd command, b buffer) error {
 		return doMove(b, line1, line2, cmd.destination)
 	case copyAction:
 		return doCopyNPaste(b, line1, line2, cmd.destination)
+	case simpleReplaceAction:
+		return doSimpleReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum)
+		// case regexReplaceAction:
+		// 	return doRegexReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum)
 	}
 
 	stderr.Log(line1, line2)

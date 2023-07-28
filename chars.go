@@ -54,16 +54,17 @@ var (
 	moveAction      = rune('m')
 	copyAction      = rune('k')
 	// markAction       = rune(' ')
-	searchAction     = rune('/') // /re/... establishes the ADDRESSES for the lines against which to execute cmd
-	gSearchAction    = rune('g') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
-	gReplaceAction   = rune('g') // s/foo/bar/g is the glob prefix which means we replace ALL the matches not just the first
-	scrollAction     = rune('z')
-	joinAction       = rune('j')
-	substituteAction = rune('s') // Substitute CMD
-	editAction       = rune('e') // Edit command
-	fileAction       = rune('f') // File command
-	readAction       = rune('r') // read [file] command
-	writeAction      = rune('w') // write [file] command
+	searchAction        = rune('/') // /re/... establishes the ADDRESSES for the lines against which to execute cmd
+	gSearchAction       = rune('g') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
+	gReplaceAction      = rune('g') // s/foo/bar/g is the glob prefix which means we replace ALL the matches not just the first
+	scrollAction        = rune('z')
+	joinAction          = rune('j')
+	simpleReplaceAction = rune('s') // Substitute CMD
+	regexReplaceAction  = rune('S')
+	editAction          = rune('e') // Edit command
+	fileAction          = rune('f') // File command
+	readAction          = rune('r') // read [file] command
+	writeAction         = rune('w') // write [file] command
 )
 
 var cmds = []rune{
@@ -78,16 +79,10 @@ var cmds = []rune{
 	moveAction,
 	copyAction,
 	searchAction,
-	substituteAction,
+	simpleReplaceAction,
+	regexReplaceAction,
 	editAction,
 	fileAction,
 	readAction,
 	writeAction,
-}
-
-var destinationCmds = []rune{
-	printAction,
-	printNumsAction,
-	moveAction,
-	copyAction,
 }

@@ -91,7 +91,7 @@ func (c *command) setGlobalPrefix(b bool) {
 
 func (c *command) setReplaceNum(s string) {
 	if s == string(gReplaceAction) {
-		c.replaceNum = "0" // zero means all
+		c.replaceNum = "-1" // zero means all
 		return
 	}
 
