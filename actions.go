@@ -22,3 +22,20 @@ func doPrint(b buffer, l1, l2 int) error {
 
 	return nil
 }
+
+func doAppend(b buffer, l1 int) error {
+	return b.insertAfter(l1, false)
+}
+
+// doDelete moves a range of lines to the end of the buffer then moves the last line up to "forget" about the lines at the end
+func doDelete(b buffer, l1, l2 int) error {
+	if l1 <= 0 {
+		return errors.New("doDelete; invalid address")
+	}
+
+	ll := b.getLastline()
+	b.bulkMove(l1, l2, ll)
+	b.setLastline(ll - (l2 - l1 + 1))
+	b.setCurline(b.prevLine(l1))
+	return nil
+}

@@ -12,10 +12,12 @@ type bufferLine struct {
 }
 
 type buffer interface {
-	// normalizeAddr(addr string, isSecond bool) int
 	defaultLines(start, end string) (int, int, error)
 	getNumLines() int
 	setCurline(i int)
+	setLastline(i int)
+	getLastline() int
+
 	insertAfter(idx int, global bool) error
 	putText(line []byte) error
 	getText(idx int) []byte
@@ -29,8 +31,4 @@ type buffer interface {
 	getLine(idx int) string
 }
 
-// line 1 : integer;
-// line2 : integer;
-// nlines : integer; number of lines specified
-// curln : integer; value of '.'
-// lastln : integer; value of '$'
+// TODO: track a drity buffer for save dialog on quit

@@ -112,7 +112,7 @@ func lexAction(l *lexer) stateFn {
 	if l.acceptOne(string(cmds)) {
 		// stderr.Log(l.current())
 		l.emit(itemAction)
-		return nil
+		return lexDef
 	}
 
 	return l.errorf("unknown command: %s", l.current())

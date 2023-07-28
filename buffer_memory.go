@@ -20,9 +20,11 @@ func newMemoryBuf() buffer {
 	}
 }
 
-// func (b memoryBuf) getCurline() int {
-// 	return b.curline
-// }
+func (b *memoryBuf) clear() {
+	b.curline = 0
+	b.lastline = 0
+	b.lines = make([]bufferLine, 1)
+}
 
 func (b memoryBuf) getNumLines() int {
 	return len(b.lines) - 1 // take one back for the zero index
@@ -30,6 +32,14 @@ func (b memoryBuf) getNumLines() int {
 
 func (b *memoryBuf) setCurline(i int) {
 	b.curline = i
+}
+
+func (b *memoryBuf) setLastline(i int) {
+	b.lastline = i
+}
+
+func (b *memoryBuf) getLastline() int {
+	return b.lastline
 }
 
 func (b memoryBuf) insertAfter(idx int, global bool) error {
@@ -139,6 +149,7 @@ func (b memoryBuf) getLine(idx int) string {
 	return b.lines[idx].String()
 }
 
+// defaultLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults. It also changes '.' and '$' to current and end addresses respectively
 func (b memoryBuf) defaultLines(start, end string) (int, int, error) {
 	var (
 		err   error
@@ -174,7 +185,7 @@ func (b memoryBuf) defaultLines(start, end string) (int, int, error) {
 }
 
 func (b memoryBuf) defaultLine(addr string) (int, error) {
-	if addr == "." || addr == "" {
+	if addr == "." { // || addr == "" ... we do this check above
 		return b.curline, nil
 	}
 

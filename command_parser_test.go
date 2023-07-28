@@ -13,6 +13,7 @@ func Test_parser_full_commands(t *testing.T) {
 		expErr     bool
 	}{
 		// typical usage
+		{"wq", &command{action: writeAction, subCommand: "q"}, false},
 		{",n", &command{addrStart: "0", addrEnd: "$", action: printNumsAction}, false},
 		{",$n", &command{addrStart: "0", addrEnd: "$", action: printNumsAction}, false},
 		{"0,$n", &command{addrStart: "0", addrEnd: "$", action: printNumsAction}, false},
