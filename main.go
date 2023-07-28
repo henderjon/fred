@@ -85,6 +85,8 @@ func doCmd(cmd command, b buffer) error {
 		return doPrint(b, line1, line2)
 	case appendAction:
 		return doAppend(b, line1)
+	case insertAction:
+		return doInsert(b, line1)
 	case deleteAction:
 		return doDelete(b, line1, line2)
 	}
