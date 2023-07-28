@@ -78,9 +78,36 @@ func doMove(b buffer, l1, l2 int, dest string) error {
 	if l3 > l1 {
 		cl = l3
 	} else {
-		cl = l3 + (l2 - l1 + 1) // the last line + the difference of the origin range (should be a negative number)
+		cl = l3 + (l2 - l1 + 1) // the last line + the number of lines we moved (the difference of the origin range)
 	}
 
 	b.setCurline(cl)
+	return nil
+}
+
+func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
+	var err error
+
+	l3, err := guardAddress(dest, b.getCurline(), b.getLastline())
+	if err != nil {
+		return err
+	}
+
+	// flag where we're going to be adding lines
+	mark := b.getLastline()
+
+	// add old lines to the end of the buffer; we'll move them later
+	b.setCurline(mark)
+
+	for i := l1; i <= l2; i++ {
+		err = b.putText(b.getText(i))
+		if err != nil {
+			return err
+		}
+	}
+
+	mark++ // we added our new content here, let's move it to where we want it to be
+	b.bulkMove(mark, mark+(l2-l1), l3)
+
 	return nil
 }

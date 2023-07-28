@@ -68,6 +68,7 @@ func (b memoryBuf) insertAfter(idx int) error {
 	return err
 }
 
+// putText adds a new lines to the end of the buffer then moves them into place
 func (b *memoryBuf) putText(line []byte) error {
 	b.lastline++
 	newLine := bufferLine{
@@ -160,9 +161,11 @@ func (b memoryBuf) defaultLines(start, end string) (int, int, error) {
 	}
 
 	line2 := line1
-	line2, err = guardAddress(end, b.getCurline(), b.getLastline())
-	if err != nil {
-		return 0, 0, err
+	if len(end) > 0 {
+		line2, err = guardAddress(end, b.getCurline(), b.getLastline())
+		if err != nil {
+			return 0, 0, err
+		}
 	}
 
 	if line1 > line2 || line1 <= 0 {
