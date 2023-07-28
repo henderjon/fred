@@ -82,7 +82,7 @@ func doCmd(cmd command, b buffer) error {
 	case 0:
 		return doPrint(b, line1, line2) // maybe print
 	case eqAction:
-		return doPrintAdress(b, line2)
+		return doPrintAddress(b, line2)
 	case printAction:
 		return doPrint(b, line1, line2)
 	case appendAction:

@@ -25,8 +25,8 @@ func doPrint(b buffer, l1, l2 int) error {
 	return nil
 }
 
-// doPrintAdress asks for 'l2' because it should print the end of the requested range knowing that if only one address is given, it is a range of a single number
-func doPrintAdress(b buffer, l2 int) error {
+// doPrintAddress asks for 'l2' because it should print the end of the requested range knowing that if only one address is given, it is a range of a single number
+func doPrintAddress(b buffer, l2 int) error {
 	b.setCurline(l2)
 	fmt.Printf("%d\n", b.getCurline())
 	return nil
