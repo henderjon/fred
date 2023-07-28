@@ -15,6 +15,7 @@ type buffer interface {
 	defaultLines(start, end string) (int, int, error)
 	getNumLines() int
 	setCurline(i int)
+	getCurline() int
 	setLastline(i int)
 	getLastline() int
 

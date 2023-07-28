@@ -81,6 +81,8 @@ func doCmd(cmd command, b buffer) error {
 	switch cmd.action {
 	case 0:
 		return doPrint(b, line1, line2) // maybe print
+	case eqAction:
+		return doPrintAdress(b, line2)
 	case printAction:
 		return doPrint(b, line1, line2)
 	case appendAction:

@@ -34,6 +34,10 @@ func (b *memoryBuf) setCurline(i int) {
 	b.curline = i
 }
 
+func (b *memoryBuf) getCurline() int {
+	return b.curline
+}
+
 func (b *memoryBuf) setLastline(i int) {
 	b.lastline = i
 }
