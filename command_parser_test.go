@@ -14,6 +14,7 @@ func Test_parser_full_commands(t *testing.T) {
 	}{
 		// typical usage
 		{"wq", &command{action: writeAction, subCommand: "q"}, false},
+		{"dp", &command{action: deleteAction, subCommand: "p"}, false},
 		{",n", &command{addrStart: "1", addrEnd: "$", action: printNumsAction}, false},
 		{",$n", &command{addrStart: "1", addrEnd: "$", action: printNumsAction}, false},
 		{"0,$n", &command{addrStart: "0", addrEnd: "$", action: printNumsAction}, false}, //  buffer should error
