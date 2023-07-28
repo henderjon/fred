@@ -63,9 +63,14 @@ func doChange(b buffer, l1, l2 int) error {
 }
 
 func doMove(b buffer, l1, l2 int, dest string) error {
-	l3, err := b.defaultLine(dest)
+	l3, err := guardAddress(dest, b.getCurline(), b.getLastline())
 	if err != nil {
 		return err
+	}
+
+	// guard against bad addressing
+	if (l1 <= 0 || l3 >= l1) && (l3 <= l2) {
+		return fmt.Errorf("invalid ranges; move '%d' through '%d' to '%d'?", l1, l2, l3)
 	}
 
 	b.bulkMove(l1, l2, l3)

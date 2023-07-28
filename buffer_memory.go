@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 )
@@ -152,49 +151,59 @@ func (b memoryBuf) getLine(idx int) string {
 
 // defaultLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
 func (b memoryBuf) defaultLines(start, end string) (int, int, error) {
-	var (
-		err   error
-		line1 int
-		line2 int
-	)
+	var err error
 
-	// if no address was given, use the current line
-	if len(start) == 0 && len(end) == 0 {
-		return b.curline, b.curline, nil
+	var line1 int
+	line1, err = guardAddress(start, b.getCurline(), b.getLastline())
+	if err != nil {
+		return 0, 0, err
 	}
 
-	if len(start) > 0 {
-		line1, err = b.defaultLine(start)
-		if err != nil {
-			return 0, 0, fmt.Errorf("invalid first address: %s", err.Error())
-		}
-	}
-
-	if len(end) > 0 {
-		line2, err = b.defaultLine(end)
-		if err != nil {
-			return 0, 0, fmt.Errorf("invalid first address: %s", err.Error())
-		}
-	} else {
-		line2 = line1
+	line2 := line1
+	line2, err = guardAddress(end, b.getCurline(), b.getLastline())
+	if err != nil {
+		return 0, 0, err
 	}
 
 	if line1 > line2 || line1 <= 0 {
 		// we might get a "0" from the command, let them know we don't like that
-		return 0, 0, errors.New("defaultLines; invalid range")
+		return 0, 0, fmt.Errorf("defaultLines; invalid range; %d, %d", line1, line2)
 	}
+
 	return line1, line2, nil // page 188
 }
 
 // converts a string address into a number with special cases for '.' and '$'
-func (b memoryBuf) defaultLine(addr string) (int, error) {
-	if addr == "." { // || addr == "" ... we do this check above
-		return b.curline, nil
+// func (b memoryBuf) defaultLine(addr string) (int, error) {
+// 	if addr == "." { // || addr == "" ... we do this check above
+// 		return b.curline, nil
+// 	}
+
+// 	if addr == "$" {
+// 		return b.lastline, nil
+// 	}
+
+// 	return strconv.Atoi(addr)
+// }
+
+// converts a string address into a number with special cases for '.', '$', and ”. Start/end addresses are guarded against '0' elsewhere (in defaultLines) but allowed in destinations
+func guardAddress(addr string, current, last int) (int, error) {
+	if addr == "." || addr == "" { // if no address was given, use the current line
+		return current, nil
 	}
 
 	if addr == "$" {
-		return b.lastline, nil
+		return last, nil
 	}
 
-	return strconv.Atoi(addr)
+	i, err := strconv.Atoi(addr)
+	if err != nil {
+		return 0, fmt.Errorf("invalid address: %s; %s", addr, err.Error())
+	}
+
+	if i < 0 || i > last {
+		return 0, fmt.Errorf("invalid address: %s", addr)
+	}
+
+	return i, nil
 }

@@ -13,7 +13,7 @@ type bufferLine struct {
 
 type buffer interface {
 	defaultLines(start, end string) (int, int, error)
-	defaultLine(addr string) (int, error)
+	// defaultLine(addr string) (int, error)
 	getNumLines() int
 	setCurline(i int)
 	getCurline() int
