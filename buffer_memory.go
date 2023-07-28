@@ -54,7 +54,7 @@ func (b memoryBuf) insertAfter(idx int) error {
 			return err
 		}
 
-		line := stdin.Bytes()
+		line := stdin.Text()
 
 		if len(line) == 1 && line[0] == '.' {
 			return nil
@@ -69,7 +69,7 @@ func (b memoryBuf) insertAfter(idx int) error {
 }
 
 // putText adds a new lines to the end of the buffer then moves them into place
-func (b *memoryBuf) putText(line []byte) error {
+func (b *memoryBuf) putText(line string) error {
 	b.lastline++
 	newLine := bufferLine{
 		txt:  line,
@@ -88,14 +88,14 @@ func (b *memoryBuf) putText(line []byte) error {
 	return nil
 }
 
-func (b memoryBuf) getText(idx int) []byte {
+func (b memoryBuf) getText(idx int) string {
 	return b.lines[idx].txt
 }
 
-func (b memoryBuf) replaceText(line []byte, idx int) error {
-	// if !hasIdx(currentBuffer, idx) {
-	// 	return errAddrOutOfRange
-	// }
+func (b memoryBuf) replaceText(line string, idx int) error {
+	if idx < 1 || idx > b.getLastline() {
+		return fmt.Errorf("cannot replace text; invalid address; %d", idx)
+	}
 
 	b.lines[idx].txt = line
 	return nil
@@ -175,19 +175,6 @@ func (b memoryBuf) defaultLines(start, end string) (int, int, error) {
 
 	return line1, line2, nil // page 188
 }
-
-// converts a string address into a number with special cases for '.' and '$'
-// func (b memoryBuf) defaultLine(addr string) (int, error) {
-// 	if addr == "." { // || addr == "" ... we do this check above
-// 		return b.curline, nil
-// 	}
-
-// 	if addr == "$" {
-// 		return b.lastline, nil
-// 	}
-
-// 	return strconv.Atoi(addr)
-// }
 
 // converts a string address into a number with special cases for '.', '$', and ”. Start/end addresses are guarded against '0' elsewhere (in defaultLines) but allowed in destinations
 func guardAddress(addr string, current, last int) (int, error) {

@@ -50,7 +50,7 @@ var demotext = []string{
 
 func fillDemo(b buffer) buffer {
 	for _, line := range demotext {
-		b.putText([]byte(line))
+		b.putText(line)
 	}
 	return b
 }

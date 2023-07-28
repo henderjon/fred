@@ -7,7 +7,7 @@ func (b bufferLine) String() string {
 }
 
 type bufferLine struct {
-	txt  []byte
+	txt  string
 	mark bool
 }
 
@@ -21,9 +21,9 @@ type buffer interface {
 	getLastline() int
 
 	insertAfter(idx int) error
-	putText(line []byte) error
-	getText(idx int) []byte
-	replaceText(line []byte, idx int) error
+	putText(line string) error
+	getText(idx int) string
+	replaceText(line string, idx int) error
 	bulkMove(from, to, dest int)
 	putMark(idx int, m bool)
 	getMark(idx int) bool
