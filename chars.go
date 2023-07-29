@@ -43,20 +43,22 @@ var (
 	// NCCL         = byte('!')
 	// PERIOD       = byte('.') // Append CMD
 	// gSUFFIX          = rune('g')      // s/../../g is the gflag that tells us to perform the substitution more than once on the line
-	printAction     = rune('p')
-	printNumsAction = rune('n')
-	quitAction      = rune('q')
-	appendAction    = rune('a')
-	deleteAction    = rune('d')
-	insertAction    = rune('i')
-	changeAction    = rune('c')
-	eqAction        = rune('=')
-	moveAction      = rune('m')
-	copyAction      = rune('k')
+	printAction        = rune('p')
+	printNumsAction    = rune('n')
+	printLiteralAction = rune('l')
+	quitAction         = rune('q')
+	appendAction       = rune('a')
+	deleteAction       = rune('d')
+	insertAction       = rune('i')
+	changeAction       = rune('c')
+	eqAction           = rune('=')
+	moveAction         = rune('m')
+	copyAction         = rune('k')
 	// markAction       = rune(' ')
 	searchAction        = rune('/') // /re/... establishes the ADDRESSES for the lines against which to execute cmd
 	gSearchAction       = rune('g') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
 	gReplaceAction      = rune('g') // s/foo/bar/g is the glob prefix which means we replace ALL the matches not just the first
+	transliterateAction = rune('t')
 	scrollAction        = rune('z')
 	joinAction          = rune('j')
 	simpleReplaceAction = rune('s') // Substitute CMD
@@ -70,6 +72,7 @@ var (
 var cmds = []rune{
 	printAction,
 	printNumsAction,
+	printLiteralAction,
 	quitAction,
 	appendAction,
 	deleteAction,
@@ -79,6 +82,9 @@ var cmds = []rune{
 	moveAction,
 	copyAction,
 	searchAction,
+	transliterateAction,
+	scrollAction,
+	joinAction,
 	simpleReplaceAction,
 	regexReplaceAction,
 	editAction,

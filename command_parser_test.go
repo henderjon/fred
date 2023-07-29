@@ -38,6 +38,8 @@ func Test_parser_full_commands(t *testing.T) {
 		{"10,25g/mm/s/and/for/3", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: true, replaceNum: "3", action: simpleReplaceAction, pattern: "and", substitution: "for"}, false},
 		{"10,25g/mm/m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: true, action: moveAction, destination: "35"}, false},
 		{"10,25g|mm|m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: true, action: moveAction, destination: "35"}, false},
+		{"10,15j|mm|", &command{addrStart: "10", addrEnd: "15", pattern: "mm", action: joinAction}, false},
+		{"10,15t|foo|bar|", &command{addrStart: "10", addrEnd: "15", pattern: "foo", substitution: "bar", action: transliterateAction}, false},
 		// testing edge cases
 		{"12", &command{addrStart: "12"}, false},
 		{"-12", &command{addrStart: "-12"}, false},

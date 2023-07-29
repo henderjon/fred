@@ -80,11 +80,15 @@ func doCmd(cmd command, b buffer) error {
 
 	switch cmd.action {
 	case 0:
-		return doPrint(b, line1, line2) // maybe print
+		return doPrint(b, line1, line2, printTypeNum) // maybe print
 	case eqAction:
 		return doPrintAddress(b, line2)
 	case printAction:
-		return doPrint(b, line1, line2)
+		return doPrint(b, line1, line2, printTypeReg)
+	case printNumsAction:
+		return doPrint(b, line1, line2, printTypeNum)
+	case printLiteralAction:
+		return doPrint(b, line1, line2, printTypeLit)
 	case appendAction:
 		return doAppend(b, line1)
 	case insertAction:
@@ -101,6 +105,11 @@ func doCmd(cmd command, b buffer) error {
 		return doSimpleReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum)
 	case regexReplaceAction:
 		return doRegexReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum)
+	case joinAction:
+		return doJoinLines(b, line1, line2, cmd.pattern)
+	case transliterateAction:
+		return doTransliterate(b, line1, line2, cmd.pattern, cmd.substitution)
+		// case scrollAction:
 	}
 
 	stderr.Log(line1, line2)

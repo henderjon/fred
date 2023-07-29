@@ -6,9 +6,16 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
-func doPrint(b buffer, l1, l2 int) error {
+const (
+	printTypeReg = iota
+	printTypeNum
+	printTypeLit
+)
+
+func doPrint(b buffer, l1, l2, printType int) error {
 	if l1 <= 0 || l1 > b.getNumLines() { // NOTE: l2 is not bound by last line; may be a problem
 		return errors.New("doPrint; invalid address")
 	}
@@ -18,7 +25,14 @@ func doPrint(b buffer, l1, l2 int) error {
 			break
 		}
 		line := b.getText(n)
-		fmt.Printf("%2d) %s\n", n, line)
+		switch printType {
+		default:
+			fmt.Printf("%2d) %s\n", n, line)
+		case printTypeNum:
+			fmt.Printf("%2d) %s\n", n, line)
+		case printTypeLit:
+			fmt.Printf("%2d) %+q\n", n, line)
+		}
 	}
 
 	b.setCurline(l2)
@@ -190,6 +204,70 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 		}
 
 		new.WriteString(old[p:])
+		b.replaceText(new.String(), idx)
+	}
+	return err
+}
+
+func doJoinLines(b buffer, l1, l2 int, sep string) error {
+	var (
+		err error
+		new strings.Builder
+	)
+
+	if len(sep) == 0 {
+		sep = " "
+	}
+
+	// this should prevent putText() from moving the lines since we'll be doing
+	// it ourselves
+	b.setCurline(b.getLastline())
+	for idx := l1; idx <= l2; idx++ {
+		// copy all lines and combine them
+		old := b.getText(idx)
+		new.WriteString(strings.TrimSpace(old))
+		new.WriteString(sep)
+	}
+
+	// add them to the end of the bufferLines
+	err = b.putText(strings.TrimSuffix(new.String(), sep))
+	if err != nil {
+		return err
+	}
+
+	// then move them into place
+	b.bulkMove(b.getCurline(), b.getCurline(), b.prevLine(l1))
+	doDelete(b, b.nextLine(l1), b.nextLine(l2))
+	b.setCurline(l1)
+	return err
+}
+
+func doTransliterate(b buffer, l1, l2 int, pattern, replace string) error {
+	var err error
+
+	if utf8.RuneCountInString(pattern) != utf8.RuneCountInString(replace) {
+		return fmt.Errorf("cannot transliterate; match and replace strings are different lengths")
+	}
+
+	replacements := make([]rune, 0)
+	for _, r := range replace {
+		replacements = append(replacements, r)
+	}
+
+	for idx := l1; idx <= l2; idx++ {
+		var new strings.Builder
+		old := b.getText(idx)
+		for _, oldRune := range old {
+			newRune := oldRune
+			for patternIdx, patternRune := range pattern {
+				if oldRune == patternRune {
+					if patternIdx < len(replacements) {
+						newRune = replacements[patternIdx]
+					}
+				}
+			}
+			new.WriteRune(newRune)
+		}
 		b.replaceText(new.String(), idx)
 	}
 	return err
