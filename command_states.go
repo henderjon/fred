@@ -85,7 +85,7 @@ func lexAddress(t itemType) stateFn {
 // lexCommand checks a run for being a valid command
 func lexAction(l *lexer) stateFn {
 	// these commands need a destination
-	if l.acceptOne(string([]rune{moveAction, copyAction, scrollAction})) {
+	if l.acceptOne(string([]rune{moveAction, copyAction, setPagerAction})) {
 		l.emit(itemAction)
 		return lexAddress(itemDestination)(l)
 	}

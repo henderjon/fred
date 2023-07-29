@@ -30,8 +30,7 @@ func main() {
 			break
 		}
 
-		cmdInput := stdin.Bytes()
-		cmd, err := cmdParser.run(string(cmdInput))
+		cmd, err := cmdParser.run(stdin.Text())
 		if err != nil {
 			fmt.Fprintln(os.Stdout, err.Error())
 		}
@@ -75,8 +74,8 @@ func doCmd(cmd command, b buffer) error {
 	}
 
 	switch cmd.action {
-	case 0:
-		return doPrint(b, line1, line2, pager, printTypeNum) // maybe print
+	case 0: // rune default (empty action)
+		return doPrint(b, line1, line2, pager, printTypeNum)
 	case eqAction:
 		return doPrintAddress(b, line2)
 	case printAction:
@@ -107,7 +106,7 @@ func doCmd(cmd command, b buffer) error {
 		return doTransliterate(b, line1, line2, cmd.pattern, cmd.substitution)
 	case mirrorAction:
 		return doMirrorLines(b, line1, line2)
-	case scrollAction:
+	case setPagerAction:
 		return setPager(&pager, cmd.destination)
 	}
 

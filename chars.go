@@ -22,7 +22,7 @@ var (
 	gSearchAction       = rune('g') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
 	gReplaceAction      = rune('g') // s/foo/bar/g is the glob suffix which means we replace ALL the matches within a line not just the first
 	transliterateAction = rune('t')
-	scrollAction        = rune('z')
+	setPagerAction      = rune('z')
 	joinAction          = rune('j')
 	simpleReplaceAction = rune('s') // Substitute CMD
 	regexReplaceAction  = rune('S')
@@ -48,7 +48,7 @@ var cmds = []rune{
 	markAction,
 	searchAction,
 	transliterateAction,
-	scrollAction,
+	setPagerAction,
 	joinAction,
 	simpleReplaceAction,
 	regexReplaceAction,
