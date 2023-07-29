@@ -99,7 +99,7 @@ func lexAction(l *lexer) stateFn {
 		return lexAddress(itemDestination)(l)
 	}
 
-	if l.acceptOne(string(simpleReplaceAction)) {
+	if l.acceptOne(string([]rune{simpleReplaceAction, regexReplaceAction})) {
 		l.emit(itemAction)
 		delim := l.next()
 		// stderr.Log(string(delim))
