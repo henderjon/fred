@@ -15,10 +15,19 @@ const (
 	printTypeLit
 )
 
-func doPrint(b buffer, l1, l2, printType int) error {
+func doPrint(b buffer, l1, l2, pager int, printType int) error {
+	var err error
+
 	if l1 <= 0 || l1 > b.getNumLines() { // NOTE: l2 is not bound by last line; may be a problem
 		return errors.New("doPrint; invalid address")
 	}
+
+	// stderr.Log(l1, l2, pager)
+	l1, l2, err = makeContext(b, l1, l2, pager)
+	if err != nil {
+		return err
+	}
+	// stderr.Log(l1, l2, pager)
 
 	for n := l1; n <= l2; n++ {
 		if n > b.getNumLines() {
@@ -37,6 +46,23 @@ func doPrint(b buffer, l1, l2, printType int) error {
 
 	b.setCurline(l2)
 
+	return nil
+}
+
+func setPager(p *int, num string) error {
+	if len(num) > 0 {
+		var (
+			err error
+			n   int
+		)
+
+		n, err = strconv.Atoi(num)
+		if err != nil {
+			return fmt.Errorf("invalid number: %s; %s", num, err.Error())
+		}
+
+		*p = n
+	}
 	return nil
 }
 
@@ -271,4 +297,9 @@ func doTransliterate(b buffer, l1, l2 int, pattern, replace string) error {
 		b.replaceText(new.String(), idx)
 	}
 	return err
+}
+
+func doMirrorLines(b buffer, l1, l2 int) error {
+	b.reverse(l1, l2)
+	return nil
 }

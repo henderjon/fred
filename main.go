@@ -13,6 +13,7 @@ const prompt = ":"
 var (
 	stderr = logger.NewDropLogger(os.Stderr)
 	stdin  = bufio.NewScanner(os.Stdin)
+	pager  = 0
 )
 
 func main() {
@@ -80,15 +81,15 @@ func doCmd(cmd command, b buffer) error {
 
 	switch cmd.action {
 	case 0:
-		return doPrint(b, line1, line2, printTypeNum) // maybe print
+		return doPrint(b, line1, line2, pager, printTypeNum) // maybe print
 	case eqAction:
 		return doPrintAddress(b, line2)
 	case printAction:
-		return doPrint(b, line1, line2, printTypeReg)
+		return doPrint(b, line1, line2, pager, printTypeReg)
 	case printNumsAction:
-		return doPrint(b, line1, line2, printTypeNum)
+		return doPrint(b, line1, line2, pager, printTypeNum)
 	case printLiteralAction:
-		return doPrint(b, line1, line2, printTypeLit)
+		return doPrint(b, line1, line2, pager, printTypeLit)
 	case appendAction:
 		return doAppend(b, line1)
 	case insertAction:
@@ -109,7 +110,10 @@ func doCmd(cmd command, b buffer) error {
 		return doJoinLines(b, line1, line2, cmd.pattern)
 	case transliterateAction:
 		return doTransliterate(b, line1, line2, cmd.pattern, cmd.substitution)
-		// case scrollAction:
+	case mirrorAction:
+		return doMirrorLines(b, line1, line2)
+	case scrollAction:
+		return setPager(&pager, cmd.destination)
 	}
 
 	stderr.Log(line1, line2)

@@ -197,3 +197,17 @@ func guardAddress(addr string, current, last int) (int, error) {
 
 	return i, nil
 }
+
+func makeContext(b buffer, l1, l2, pager int) (int, int, error) {
+	l1 = l1 - pager
+	if l1 < 0 {
+		l1 = 0
+	}
+
+	l2 = l2 + pager
+	if l2 > b.getLastline() {
+		l2 = b.getLastline()
+	}
+
+	return l1, l2, nil
+}

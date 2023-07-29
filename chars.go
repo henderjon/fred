@@ -53,6 +53,7 @@ var (
 	changeAction       = rune('c')
 	eqAction           = rune('=')
 	moveAction         = rune('m')
+	mirrorAction       = rune('M')
 	copyAction         = rune('k')
 	// markAction       = rune(' ')
 	searchAction        = rune('/') // /re/... establishes the ADDRESSES for the lines against which to execute cmd
@@ -80,6 +81,7 @@ var cmds = []rune{
 	changeAction,
 	eqAction,
 	moveAction,
+	mirrorAction,
 	copyAction,
 	searchAction,
 	transliterateAction,
