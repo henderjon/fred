@@ -2,6 +2,11 @@ package main
 
 import "errors"
 
+const (
+	zero = "1"
+	end  = "$"
+)
+
 type parser struct{}
 
 func (p *parser) run(input string) (*command, error) {

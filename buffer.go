@@ -1,7 +1,5 @@
 package main
 
-type bufferLines []bufferLine
-
 func (b bufferLine) String() string {
 	return string(b.txt)
 }

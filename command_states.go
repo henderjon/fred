@@ -53,16 +53,6 @@ func isSpace(r rune) bool {
 	return unicode.IsSpace(r)
 }
 
-// isAlphaNumeric reports whether r is alphabetic, digit, or underscore.
-func isAlphaNumeric(r rune) bool {
-	return r == '_' || unicode.IsLetter(r) || unicode.IsDigit(r)
-}
-
-// isAlphaNumeric reports whether r is alphabetic, digit, or underscore.
-func isNumeric(r rune) bool {
-	return unicode.IsDigit(r)
-}
-
 // isAlpha reports whether r is alphabetic
 func isAlpha(r rune) bool {
 	return r == '_' || unicode.IsLetter(r)

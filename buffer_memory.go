@@ -19,11 +19,11 @@ func newMemoryBuf() buffer {
 	}
 }
 
-func (b *memoryBuf) clear() {
-	b.curline = 0
-	b.lastline = 0
-	b.lines = make([]bufferLine, 1)
-}
+// func (b *memoryBuf) clear() {
+// 	b.curline = 0
+// 	b.lastline = 0
+// 	b.lines = make([]bufferLine, 1)
+// }
 
 func (b memoryBuf) getNumLines() int {
 	return len(b.lines) - 1 // take one back for the zero index

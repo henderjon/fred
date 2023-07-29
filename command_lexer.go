@@ -13,7 +13,6 @@ type stateFn func(*lexer) stateFn
 type lexer struct {
 	name  string    // the name of the input; used only for error reports.
 	input string    // the string being scanned.
-	state stateFn   // the next lexing function to enter
 	pos   int       // current position in the input.
 	start int       // start position of this item.
 	width int       // width of last rune read from input.
@@ -96,12 +95,6 @@ func (l *lexer) acceptUntil(invalid string) bool {
 	}
 	l.backup() // we're always going to move one too many but accept() already backs up
 	return i > 0
-}
-
-// lineNumber reports which line we're on. Doing it this way
-// means we don't have to worry about peek double counting.
-func (l *lexer) lineNumber() int {
-	return 1 + strings.Count(l.input[:l.pos], "\n")
 }
 
 // error returns an error token and terminates the scan by passing

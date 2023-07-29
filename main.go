@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 
@@ -11,25 +12,13 @@ import (
 const prompt = ":"
 
 var (
-	stderr = logger.NewDropLogger(os.Stderr)
-	stdin  = bufio.NewScanner(os.Stdin)
-	pager  = 0
+	stderr  = logger.NewDropLogger(os.Stderr)
+	stdin   = bufio.NewScanner(os.Stdin)
+	errQuit = errors.New("goodbye")
+	pager   = 0
 )
 
 func main() {
-	// input := `10,15s/pattern/substitute/`
-	// input := `10,25g/mm/s/and/for/g`
-	// c, err := (&parser{}).run(input)
-	// if err != nil {
-	// 	stderr.Log(err)
-	// }
-
-	// if c != nil {
-	// 	stderr.Log(input, c.String())
-	// } else {
-	// 	stderr.Log(input, "nil command")
-	// }
-
 	b := newMemoryBuf()
 	b = fillDemo(b)
 
