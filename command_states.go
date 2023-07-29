@@ -80,7 +80,8 @@ func lexAddress(t itemType) stateFn {
 
 		switch true {
 		default:
-			return l.errorf("invalid or missing address/destination: %s", l.current())
+			l.emit(t)
+			// return l.errorf("invalid or missing address/destination: %s", l.current())
 		case l.acceptRun("$."):
 			l.emit(t)
 		case l.acceptRun("01234567890"):
