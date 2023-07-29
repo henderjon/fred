@@ -21,14 +21,17 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 		return errors.New("doPrint; invalid address")
 	}
 
-	// stderr.Log(l1, l2, pager)
+	prevCurline := l2
 	l1, l2, err = makeContext(b, l1, l2, pager)
 	if err != nil {
 		return err
 	}
-	// stderr.Log(b.getCurline())
 
 	for n := l1; n <= l2; n++ {
+		mark := " "
+		if n == prevCurline {
+			mark = "*"
+		}
 		if n > b.getNumLines() {
 			break
 		}
@@ -37,7 +40,7 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 		default:
 			fmt.Printf("%2d) %s\n", n, line)
 		case printTypeNum:
-			fmt.Printf("%2d) %s\n", n, line)
+			fmt.Printf("%s%2d) %s\n", mark, n, line)
 		case printTypeLit:
 			fmt.Printf("%2d) %+q\n", n, line)
 		}
