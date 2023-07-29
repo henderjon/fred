@@ -47,6 +47,12 @@ func main() {
 			fmt.Fprintln(os.Stdout, err.Error())
 		}
 
+		if cmd == nil {
+			fmt.Println("invalid command")
+			fmt.Fprint(os.Stdout, prompt)
+			continue
+		}
+
 		// cursave := b.curline
 		if cmd.globalPrefix {
 			// doCmd over range of lines
