@@ -17,7 +17,6 @@ const (
 
 func doPrint(b buffer, l1, l2, pager int, printType int) error {
 	var err error
-
 	if l1 <= 0 || l1 > b.getNumLines() { // NOTE: l2 is not bound by last line; may be a problem
 		return errors.New("doPrint; invalid address")
 	}
@@ -27,7 +26,7 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 	if err != nil {
 		return err
 	}
-	// stderr.Log(l1, l2, pager)
+	// stderr.Log(b.getCurline())
 
 	for n := l1; n <= l2; n++ {
 		if n > b.getNumLines() {
@@ -63,6 +62,8 @@ func setPager(p *int, num string) error {
 
 		*p = n
 	}
+
+	fmt.Printf("pager set to %d\n", *p)
 	return nil
 }
 
