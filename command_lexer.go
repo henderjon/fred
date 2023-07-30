@@ -97,6 +97,20 @@ func (l *lexer) acceptUntil(invalid string) bool {
 	return i > 0
 }
 
+func (l *lexer) bleed() {
+	var (
+		i int
+		n rune
+	)
+	for ; l.pos <= len(l.input); i++ {
+		n = l.next()
+		if n < 0 {
+			break
+		}
+	}
+	// l.backup() // we're always going to move one too many but accept() already backs up
+}
+
 // error returns an error token and terminates the scan by passing
 // back a nil pointer that will be the next state, terminating l.run.
 func (l *lexer) errorf(format string, args ...any) stateFn {

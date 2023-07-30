@@ -30,6 +30,7 @@ const (
 	itemAdditional
 	itemGlobalPrefix
 	itemReplaceNum
+	itemArg
 )
 
 var itemTypes = map[itemType]string{
@@ -42,7 +43,8 @@ var itemTypes = map[itemType]string{
 	itemPattern:        "itemPattern",
 	itemSubstitution:   "itemSubstitution",
 	itemDestination:    "itemDestination",
-	itemAdditional:     "itemAdditional",
-	itemGlobalPrefix:   "itemGlobalPrefix",
-	itemReplaceNum:     "itemReplaceNum",
+	// itemAdditional:     "itemAdditional",
+	itemGlobalPrefix: "itemGlobalPrefix",
+	itemReplaceNum:   "itemReplaceNum",
+	itemArg:          "itemArg",
 }

@@ -5,6 +5,7 @@ const (
 )
 
 var (
+	helpAction          = rune('h')
 	printAction         = rune('p')
 	printNumsAction     = rune('n')
 	printLiteralAction  = rune('l')
@@ -27,12 +28,16 @@ var (
 	simpleReplaceAction = rune('s') // Substitute CMD
 	regexReplaceAction  = rune('S')
 	editAction          = rune('e') // Edit command
-	fileAction          = rune('f') // File command
+	superEditAction     = rune('E') // Edit command
+	filenameAction      = rune('f') // File command
 	readAction          = rune('r') // read [file] command
 	writeAction         = rune('w') // write [file] command
+	superWriteAction    = rune('W') // write [file] command
+	shellAction         = rune('!')
 )
 
 var cmds = []rune{
+	helpAction,
 	printAction,
 	printNumsAction,
 	printLiteralAction,
@@ -53,7 +58,10 @@ var cmds = []rune{
 	simpleReplaceAction,
 	regexReplaceAction,
 	editAction,
-	fileAction,
+	superEditAction,
+	filenameAction,
 	readAction,
 	writeAction,
+	superWriteAction,
+	shellAction,
 }

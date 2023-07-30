@@ -13,6 +13,7 @@ func Test_parser_full_commands(t *testing.T) {
 		expErr     bool
 	}{
 		// typical usage
+		{"h", &command{action: helpAction}, false},
 		{"wq", &command{action: writeAction, subCommand: "q"}, false},
 		{"dp", &command{action: deleteAction, subCommand: "p"}, false},
 		{",n", &command{addrStart: "1", addrEnd: "$", action: printNumsAction}, false},
@@ -40,6 +41,16 @@ func Test_parser_full_commands(t *testing.T) {
 		{"10,25g|mm|m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: true, action: moveAction, destination: "35"}, false},
 		{"10,15j|mm|", &command{addrStart: "10", addrEnd: "15", pattern: "mm", action: joinAction}, false},
 		{"10,15t|foo|bar|", &command{addrStart: "10", addrEnd: "15", pattern: "foo", substitution: "bar", action: transliterateAction}, false},
+		{"e path/file.ext", &command{action: editAction, argument: "path/file.ext"}, false},
+		{"E path/file.ext", &command{action: superEditAction, argument: "path/file.ext"}, false},
+		{"e !grep -riF \"fatty fatpants\" .", &command{action: editAction, subCommand: "!", argument: "grep -riF \"fatty fatpants\" ."}, false},
+		{"f path/file.ext", &command{action: filenameAction, argument: "path/file.ext"}, false},
+		{"r path/file.ext", &command{action: readAction, argument: "path/file.ext"}, false},
+		{"r !grep -riF \"fatty fatpants\" .", &command{action: readAction, subCommand: "!", argument: "grep -riF \"fatty fatpants\" ."}, false},
+		{"w path/file.ext", &command{action: writeAction, argument: "path/file.ext"}, false},
+		{"w !grep -riF \"fatty fatpants\" .", &command{action: writeAction, subCommand: "!", argument: "grep -riF \"fatty fatpants\" ."}, false},
+		{"W path/file.ext", &command{action: superWriteAction, argument: "path/file.ext"}, false},
+		{"!grep -riF \"fatty fatpants\" .", &command{action: shellAction, argument: "grep -riF \"fatty fatpants\" ."}, false},
 		// testing edge cases
 		{"12", &command{addrStart: "12"}, false},
 		{"-12", &command{addrStart: "-12"}, false},

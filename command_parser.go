@@ -32,18 +32,20 @@ func (p *parser) run(input string) (*command, error) {
 			c.setAction(rune(i.val[0]))
 		case itemDestination:
 			c.setDestination(i.val)
-		case itemAdditional:
-			c.setSubCommand(i.val)
+		// case itemAdditional:
+		// c.setSubCommand(i.val)
 		case itemAddressPattern:
 			c.setAddrPattern(i.val)
 		case itemPattern:
 			c.setPattern(i.val)
 		case itemGlobalPrefix:
 			c.setGlobalPrefix(true)
-		case itemReplaceNum:
+		case itemReplaceNum: // this takes the
 			c.setReplaceNum(i.val)
 		case itemSubstitution:
 			c.setSubstitution(i.val)
+		case itemArg:
+			c.setArgument(i.val)
 		case itemError:
 			return nil, errors.New(i.val)
 		case itemEOF: // no more items

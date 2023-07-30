@@ -22,6 +22,9 @@ func lexDef(l *lexer) stateFn {
 		case strings.ContainsRune("+-0123456789.$", r):
 			l.backup()
 			return lexAddress(itemAddress)(l)
+		case r == shellAction:
+			l.emit(itemAction)
+			return lexArg
 		case r == eqAction:
 			l.emit(itemAction)
 		case r == gSearchAction:
@@ -84,21 +87,20 @@ func lexAddress(t itemType) stateFn {
 
 // lexCommand checks a run for being a valid command
 func lexAction(l *lexer) stateFn {
+	switch true {
 	// these commands need a destination
-	if l.acceptOne(string([]rune{moveAction, copyAction, setPagerAction})) {
+	case l.acceptOne(string([]rune{moveAction, copyAction, setPagerAction})):
 		l.emit(itemAction)
 		return lexAddress(itemDestination)(l)
-	}
 
-	if l.acceptOne(string([]rune{joinAction})) {
+	// consider arg vs pattern
+	case l.acceptOne(string([]rune{joinAction})):
 		l.emit(itemAction)
 		delim := l.next()
 		// stderr.Log(string(delim))
 		l.ignore() // ignore the delim
 		return lexPattern(delim, itemPattern)(l)
-	}
-
-	if l.acceptOne(string([]rune{simpleReplaceAction, regexReplaceAction, transliterateAction})) {
+	case l.acceptOne(string([]rune{simpleReplaceAction, regexReplaceAction, transliterateAction})):
 		l.emit(itemAction)
 		delim := l.next()
 		// stderr.Log(string(delim))
@@ -106,14 +108,14 @@ func lexAction(l *lexer) stateFn {
 		lexPattern(delim, itemPattern)(l)
 		lexPattern(delim, itemSubstitution)(l)
 		return lexReplaceNum(l)
-	}
-
-	if l.acceptOne(string(cmds)) {
-		// stderr.Log(l.current())
+	case l.acceptOne(string(cmds)):
 		l.emit(itemAction)
+		// some commands take a space and more info; later when I deviate from traditional ed, maybe take spaces all over
+		if space := l.peek(); isSpace(space) || space == shellAction {
+			return lexArg(l)
+		}
 		return lexDef
 	}
-
 	return l.errorf("unknown command: %s", l.current())
 }
 
@@ -151,5 +153,19 @@ func lexReplaceNum(l *lexer) stateFn {
 		return lexDef
 	}
 
+	return lexDef
+}
+
+func lexArg(l *lexer) stateFn {
+	if l.acceptRun(" ") {
+		l.ignore()
+	}
+
+	if l.acceptRun(string(shellAction)) {
+		l.emit(itemAction)
+	}
+
+	l.bleed()
+	l.emit(itemArg)
 	return lexDef
 }
