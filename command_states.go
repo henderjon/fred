@@ -56,11 +56,6 @@ func isSpace(r rune) bool {
 	return unicode.IsSpace(r)
 }
 
-// isAlpha reports whether r is alphabetic
-func isAlpha(r rune) bool {
-	return r == '_' || unicode.IsLetter(r)
-}
-
 func isAction(r rune) bool {
 	return strings.ContainsRune(string(cmds), r)
 }

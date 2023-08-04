@@ -6,7 +6,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func Test_parser_full_commands(t *testing.T) {
+func Test_parser(t *testing.T) {
 	tests := []struct {
 		input      string
 		expCommand *command

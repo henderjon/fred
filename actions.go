@@ -161,6 +161,7 @@ func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	mark++ // we added our new content here, let's move it to where we want it to be
 	b.bulkMove(mark, mark+(l2-l1), l3)
 
+	b.setCurline(l3)
 	return nil
 }
 
@@ -181,6 +182,7 @@ func doSimpleReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 		b.replaceText(new, idx)
 	}
 
+	b.setCurline(l2)
 	return err
 }
 
