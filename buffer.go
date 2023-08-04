@@ -1,5 +1,7 @@
 package main
 
+import "io"
+
 func (b bufferLine) String() string {
 	return string(b.txt)
 }
@@ -10,6 +12,7 @@ type bufferLine struct {
 }
 
 type buffer interface {
+	io.ReadWriter
 	// defaultLines(start, end string) (int, int, error)
 	defLines(start, end string, l1, l2 int) (int, int, error)
 	// defaultLine(addr string) (int, error)
@@ -18,6 +21,9 @@ type buffer interface {
 	getCurline() int
 	setLastline(i int)
 	getLastline() int
+
+	getFilename() string
+	setFilename(fname string)
 
 	insertAfter(idx int) error
 	putText(line string) error

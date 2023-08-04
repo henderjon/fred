@@ -19,7 +19,7 @@ var (
 )
 
 func main() {
-	b := newMemoryBuf()
+	b := newMemoryBuf("")
 	b = fillDemo(b)
 
 	cmdParser := &parser{}

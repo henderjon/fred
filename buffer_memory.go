@@ -1,22 +1,86 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"strconv"
+	"strings"
 )
 
 type memoryBuf struct {
 	curline  int
 	lastline int
 	lines    []bufferLine
+	filename string
 }
 
-func newMemoryBuf() buffer {
+func newMemoryBuf(fname string) buffer {
 	return &memoryBuf{
 		curline:  0,
 		lastline: 0,
 		lines:    make([]bufferLine, 1),
+		filename: fname,
 	}
+}
+
+func (b *memoryBuf) getFilename() string {
+	return b.filename
+}
+
+func (b *memoryBuf) setFilename(fname string) {
+	b.filename = fname
+}
+
+func (b *memoryBuf) Write(by []byte) (int, error) {
+	var (
+		err     error
+		line    string
+		byCount int
+		buf     = bytes.NewBuffer(by)
+	)
+
+	for {
+		line, err = buf.ReadString('\n')
+		if err != nil {
+			break
+		}
+
+		b.putText(strings.TrimRight(line, "\n\r"))
+		byCount += len(line)
+	}
+
+	if err == io.EOF {
+		err = nil
+	}
+
+	return byCount, err
+}
+
+func (b *memoryBuf) Read(p []byte) (int, error) {
+	var (
+		err     error
+		byCount int
+	)
+
+	for i := 1; i < b.getNumLines(); i++ {
+		if byCount >= len(p) {
+			return byCount, err
+		}
+
+		line := b.getLine(i)
+		for _, b := range []byte(line) {
+			if byCount >= len(p) {
+				return byCount, err
+			}
+			p = append(p, b)
+			byCount++
+		}
+		// if we read out lines, should we add newlines?
+		p = append(p, '\n')
+		byCount++
+	}
+	return byCount, err
 }
 
 // func (b *memoryBuf) clear() {
