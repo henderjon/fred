@@ -320,11 +320,11 @@ func doReadFile(b buffer, l1 int, filename string) error {
 	var err error
 	b.setCurline(l1)
 
-	if len(filename) == 0 {
-		filename = b.getFilename()
+	if len(filename) > 0 {
+		b.setFilename(filename)
 	}
 
-	f, err := os.Open(filename)
+	f, err := os.Open(b.getFilename())
 	if err != nil {
 		return err
 	}
@@ -340,10 +340,6 @@ func doReadFile(b buffer, l1 int, filename string) error {
 		b.putText(fs.Text())
 	}
 
-	if len(b.getFilename()) == 0 {
-		b.setFilename(filename)
-	}
-
 	return err
 }
 
@@ -352,12 +348,12 @@ func doWriteFile(b buffer, l1, l2 int, filename string) error {
 	var err error
 	b.setCurline(l1)
 
-	if len(filename) == 0 {
-		filename = b.getFilename()
+	if len(filename) > 0 {
+		b.setFilename(filename)
 	}
 
 	// f, err := os.Create(filename)
-	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0755)
+	f, err := os.OpenFile(b.getFilename(), os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
@@ -421,4 +417,14 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer b
 		fmt.Fprintln(os.Stdout, "!")
 		return err
 	}
+}
+
+func doSetFilename(b buffer, filename string) error {
+	if len(filename) > 0 {
+		b.setFilename(filename)
+	}
+
+	fmt.Fprintln(os.Stdout, b.getFilename())
+
+	return nil
 }

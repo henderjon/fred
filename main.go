@@ -111,6 +111,8 @@ func doCmd(cmd command, b buffer) error {
 		return setPager(&pager, cmd.destination)
 	case shellAction:
 		return doExternalShell(b, line1, line2, cmd.argument)(false, os.Stdout)
+	case filenameAction:
+		return doSetFilename(b, cmd.argument)
 	case readAction: // read into the current buffer either shell output or a file
 		if cmd.subCommand == string(shellAction) {
 			b.setCurline(line1)
