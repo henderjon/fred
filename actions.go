@@ -18,7 +18,7 @@ const (
 func doPrint(b buffer, l1, l2, pager int, printType int) error {
 	var err error
 	if l1 <= 0 || l1 > b.getNumLines() { // NOTE: l2 is not bound by last line; may be a problem
-		return errors.New("doPrint; invalid address")
+		return fmt.Errorf("doPrint; invalid address; %d; %d", l1, l2)
 	}
 
 	prevCurline := l2
