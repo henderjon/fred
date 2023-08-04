@@ -383,7 +383,6 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer b
 
 		// fill a temp buffer to act as stdin
 		if readFromBuffer {
-			stderr.Log(stdin)
 			stdin = &(bytes.Buffer{})
 			for i := l1; i <= l2; i++ {
 				stdin.Write([]byte(b.getLine(i)))
