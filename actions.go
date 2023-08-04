@@ -382,11 +382,12 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer b
 	return func(readFromBuffer bool, stdout io.Writer) error {
 		var (
 			err   error
-			stdin *bytes.Buffer
+			stdin io.ReadWriter = nil
 		)
 
 		// fill a temp buffer to act as stdin
 		if readFromBuffer {
+			stderr.Log(stdin)
 			stdin = &(bytes.Buffer{})
 			for i := l1; i <= l2; i++ {
 				stdin.Write([]byte(b.getLine(i)))
@@ -411,6 +412,8 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer b
 		}
 
 		cmd := exec.Command(args[0], args[1:]...)
+
+		// stderr.Fatal(stdin, stdout)
 		cmd.Stdin = stdin
 		cmd.Stdout = stdout
 		cmd.Stderr = os.Stderr
