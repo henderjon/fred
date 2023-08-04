@@ -109,6 +109,20 @@ func doCmd(cmd command, b buffer) error {
 		return doMirrorLines(b, line1, line2)
 	case setPagerAction:
 		return setPager(&pager, cmd.destination)
+	case shellAction:
+		return doExternalShell(b, line1, line2, cmd.argument)(false, os.Stdout)
+	case readAction: // read into the current buffer either shell output or a file
+		if cmd.subCommand == string(shellAction) {
+			b.setCurline(line1)
+			return doExternalShell(b, line1, line2, cmd.argument)(false, b)
+		}
+		return doReadFile(b, line1, cmd.argument)
+	case writeAction: // write the current buffer to either shell (stdin) or a file
+		if cmd.subCommand == string(shellAction) {
+			b.setCurline(line1)
+			return doExternalShell(b, line1, line2, cmd.argument)(true, os.Stdout)
+		}
+		return doWriteFile(b, line1, line2, cmd.argument)
 	}
 
 	stderr.Log(line1, line2)

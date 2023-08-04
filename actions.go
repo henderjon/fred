@@ -1,8 +1,13 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -306,4 +311,104 @@ func doTransliterate(b buffer, l1, l2 int, pattern, replace string) error {
 func doMirrorLines(b buffer, l1, l2 int) error {
 	b.reverse(l1, l2)
 	return nil
+}
+
+// doReadFile adds the contents of filename and adds them to the buffer after l1
+func doReadFile(b buffer, l1 int, filename string) error {
+	var err error
+	b.setCurline(l1)
+
+	if len(filename) == 0 {
+		filename = b.getFilename()
+	}
+
+	f, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+
+	fs := bufio.NewScanner(f)
+	fs.Split(bufio.ScanLines)
+	for fs.Scan() {
+		err = fs.Err()
+		if err != nil {
+			break
+		}
+
+		b.putText(fs.Text())
+	}
+
+	if len(b.getFilename()) == 0 {
+		b.setFilename(filename)
+	}
+
+	return err
+}
+
+// doReadFile adds the contents of filename and adds them to the buffer after l1
+func doWriteFile(b buffer, l1, l2 int, filename string) error {
+	var err error
+	b.setCurline(l1)
+
+	if len(filename) == 0 {
+		filename = b.getFilename()
+	}
+
+	// TODO: only write l1 thru l2
+	// stdin := &(bytes.Buffer{})
+	// for i := l1; i <= l2; i++ {
+	// 	stdin.Write([]byte(b.getLine(i)))
+	// }
+
+	// f, err := os.Create(filename)
+	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(f, b)
+
+	return err
+}
+
+func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer bool, stdout io.Writer) error {
+	return func(readFromBuffer bool, stdout io.Writer) error {
+		var (
+			err   error
+			stdin *bytes.Buffer
+		)
+
+		// fill a temp buffer to act as stdin
+		if readFromBuffer {
+			stdin = &(bytes.Buffer{})
+			for i := l1; i <= l2; i++ {
+				stdin.Write([]byte(b.getLine(i)))
+			}
+		}
+
+		cmds := strings.TrimSpace(command)
+
+		// hide all escaped '%'
+		cmds = strings.ReplaceAll(cmds, `\%`, string(rune(26)))
+		// replace '%' with filename
+		cmds = strings.ReplaceAll(cmds, `%`, b.getFilename())
+		// put the '%' back
+		cmds = strings.ReplaceAll(cmds, string(rune(26)), `%`)
+
+		buf := bufio.NewScanner(strings.NewReader(cmds))
+		buf.Split(bufio.ScanWords)
+
+		var args []string
+		for buf.Scan() {
+			args = append(args, os.ExpandEnv(buf.Text()))
+		}
+
+		cmd := exec.Command(args[0], args[1:]...)
+		cmd.Stdin = stdin
+		cmd.Stdout = stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		fmt.Fprintln(os.Stdout, "!")
+		return err
+	}
 }
