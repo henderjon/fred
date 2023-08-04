@@ -354,19 +354,24 @@ func doWriteFile(b buffer, l1, l2 int, filename string) error {
 		filename = b.getFilename()
 	}
 
-	// TODO: only write l1 thru l2
-	// stdin := &(bytes.Buffer{})
-	// for i := l1; i <= l2; i++ {
-	// 	stdin.Write([]byte(b.getLine(i)))
-	// }
-
 	// f, err := os.Create(filename)
 	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
 
-	_, err = io.Copy(f, b)
+	defer f.Close()
+
+	// TODO: only write l1 thru l2
+	// for i := l1; i <= l2; i++ {
+	// 	f.Write([]byte(b.getLine(i)))
+	// 	f.Write([]byte{'\n'})
+	// }
+
+	for i := 1; i <= b.getLastline(); i++ {
+		f.Write([]byte(b.getLine(i)))
+		f.Write([]byte{'\n'})
+	}
 
 	return err
 }
