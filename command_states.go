@@ -35,7 +35,7 @@ func lexDef(l *lexer) stateFn {
 		case r == searchAction:
 			l.ignore() // ignore the delim
 			return lexPattern(r, itemAddressPattern)
-		case isAlpha(r):
+		case isAction(r):
 			l.backup()
 			return lexAction
 		case r == ',':
@@ -59,6 +59,10 @@ func isSpace(r rune) bool {
 // isAlpha reports whether r is alphabetic
 func isAlpha(r rune) bool {
 	return r == '_' || unicode.IsLetter(r)
+}
+
+func isAction(r rune) bool {
+	return strings.ContainsRune(string(cmds), r)
 }
 
 func lexErr(l *lexer) stateFn {
@@ -100,6 +104,9 @@ func lexAction(l *lexer) stateFn {
 		// stderr.Log(string(delim))
 		l.ignore() // ignore the delim
 		return lexPattern(delim, itemPattern)(l)
+	case l.acceptOne(string([]rune{putMarkAction, getMarkAction})):
+		l.emit(itemAction)
+		return lexArg(l)
 	case l.acceptOne(string([]rune{simpleReplaceAction, regexReplaceAction, transliterateAction})):
 		l.emit(itemAction)
 		delim := l.next()
