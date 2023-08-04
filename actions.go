@@ -110,7 +110,7 @@ func doChange(b buffer, l1, l2 int) error {
 }
 
 func doMove(b buffer, l1, l2 int, dest string) error {
-	l3, err := guardAddress(dest, b.getCurline(), b.getLastline())
+	l3, err := guardAddress(b, dest)
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func doMove(b buffer, l1, l2 int, dest string) error {
 func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	var err error
 
-	l3, err := guardAddress(dest, b.getCurline(), b.getLastline())
+	l3, err := guardAddress(b, dest)
 	if err != nil {
 		return err
 	}

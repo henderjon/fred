@@ -10,7 +10,8 @@ type bufferLine struct {
 }
 
 type buffer interface {
-	defaultLines(start, end string) (int, int, error)
+	// defaultLines(start, end string) (int, int, error)
+	defLines(start, end string, l1, l2 int) (int, int, error)
 	// defaultLine(addr string) (int, error)
 	getNumLines() int
 	setCurline(i int)

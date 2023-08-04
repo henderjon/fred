@@ -68,7 +68,8 @@ func doCmd(cmd command, b buffer) error {
 	}
 
 	// some commands require addresses
-	line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd)
+	// line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd)
+	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
 	}

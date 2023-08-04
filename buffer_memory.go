@@ -25,8 +25,9 @@ func newMemoryBuf() buffer {
 // 	b.lines = make([]bufferLine, 1)
 // }
 
-func (b memoryBuf) getNumLines() int {
-	return len(b.lines) - 1 // take one back for the zero index
+func (b *memoryBuf) getNumLines() int {
+	return b.getLastline()
+	// return len(b.lines) - 1 // take one back for the zero index
 }
 
 func (b *memoryBuf) setCurline(i int) {
@@ -45,7 +46,7 @@ func (b *memoryBuf) getLastline() int {
 	return b.lastline
 }
 
-func (b memoryBuf) insertAfter(idx int) error {
+func (b *memoryBuf) insertAfter(idx int) error {
 	var err error
 
 	b.curline = idx
@@ -88,11 +89,11 @@ func (b *memoryBuf) putText(line string) error {
 	return nil
 }
 
-func (b memoryBuf) getText(idx int) string {
+func (b *memoryBuf) getText(idx int) string {
 	return b.lines[idx].txt
 }
 
-func (b memoryBuf) replaceText(line string, idx int) error {
+func (b *memoryBuf) replaceText(line string, idx int) error {
 	if idx < 1 || idx > b.getLastline() {
 		return fmt.Errorf("cannot replace text; invalid address; %d", idx)
 	}
@@ -101,7 +102,7 @@ func (b memoryBuf) replaceText(line string, idx int) error {
 	return nil
 }
 
-func (b memoryBuf) bulkMove(from, to, dest int) {
+func (b *memoryBuf) bulkMove(from, to, dest int) {
 	if dest < from-1 {
 		b.reverse(dest+1, from-1)
 		b.reverse(from, to)
@@ -113,15 +114,15 @@ func (b memoryBuf) bulkMove(from, to, dest int) {
 	}
 }
 
-func (b memoryBuf) putMark(idx int, m bool) {
+func (b *memoryBuf) putMark(idx int, m bool) {
 	b.lines[idx].mark = m
 }
 
-func (b memoryBuf) getMark(idx int) bool {
+func (b *memoryBuf) getMark(idx int) bool {
 	return b.lines[idx].mark
 }
 
-func (b memoryBuf) reverse(from, to int) {
+func (b *memoryBuf) reverse(from, to int) {
 	var tmp bufferLine
 	for from < to {
 		tmp = b.lines[from]
@@ -132,82 +133,59 @@ func (b memoryBuf) reverse(from, to int) {
 	}
 }
 
-func (b memoryBuf) nextLine(n int) int {
+func (b *memoryBuf) nextLine(n int) int {
 	if n >= b.lastline {
 		return 0
 	}
 	return n + 1
 }
 
-func (b memoryBuf) prevLine(n int) int {
+func (b *memoryBuf) prevLine(n int) int {
 	if n <= 0 {
 		return b.lastline
 	}
 	return n - 1
 }
 
-func (b memoryBuf) getLine(idx int) string {
+func (b *memoryBuf) getLine(idx int) string {
 	return b.lines[idx].String()
 }
 
-// defaultLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
-func (b memoryBuf) defaultLines(start, end string) (int, int, error) {
-	var err error
+// defLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
+func (b *memoryBuf) defLines(start, end string, l1, l2 int) (int, int, error) {
+	var (
+		err    error
+		i1, i2 int
+	)
 
-	var line1 int
-	line1, err = guardAddress(start, b.getCurline(), b.getLastline())
-	if err != nil {
-		return 0, 0, err
+	if len(start) == 0 && len(end) == 0 {
+		return l1, l2, nil
 	}
 
-	line2 := line1
-	if len(end) > 0 {
-		line2, err = guardAddress(end, b.getCurline(), b.getLastline())
+	if start == "." || start == "" { // if no address was given, use the current line
+		i1 = b.getCurline()
+	} else {
+		i1, err = strconv.Atoi(start)
 		if err != nil {
-			return 0, 0, err
+			return 0, 0, fmt.Errorf("invalid address (start): %s; %s", start, err.Error())
 		}
 	}
 
-	if line1 > line2 || line1 <= 0 {
-		// we might get a "0" from the command, let them know we don't like that
-		return 0, 0, fmt.Errorf("defaultLines; invalid range; %d, %d", line1, line2)
+	switch true {
+	case end == "$":
+		i2 = b.getLastline()
+	case end == "":
+		i2 = i1
+	default:
+		i2, err = strconv.Atoi(end)
+		if err != nil {
+			return 0, 0, fmt.Errorf("invalid address (end): %s; %s", end, err.Error())
+		}
 	}
 
-	return line1, line2, nil // page 188
-}
-
-// converts a string address into a number with special cases for '.', '$', and ”. Start/end addresses are guarded against '0' elsewhere (in defaultLines) but allowed in destinations
-func guardAddress(addr string, current, last int) (int, error) {
-	if addr == "." || addr == "" { // if no address was given, use the current line
-		return current, nil
+	if i1 > i2 || i1 <= 0 {
+		return 0, 0, fmt.Errorf("defaultLines; invalid range; %d, %d", i1, i2)
 	}
 
-	if addr == "$" {
-		return last, nil
-	}
-
-	i, err := strconv.Atoi(addr)
-	if err != nil {
-		return 0, fmt.Errorf("invalid address: %s; %s", addr, err.Error())
-	}
-
-	if i < 0 || i > last {
-		return 0, fmt.Errorf("invalid address: %s", addr)
-	}
-
-	return i, nil
-}
-
-func makeContext(b buffer, l1, l2, pager int) (int, int, error) {
-	l1 = l1 - pager
-	if l1 < 0 {
-		l1 = 1
-	}
-
-	l2 = l2 + pager
-	if l2 > b.getLastline() {
-		l2 = b.getLastline()
-	}
-
-	return l1, l2, nil
+	return i1, i2, nil
 }
