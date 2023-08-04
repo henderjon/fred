@@ -18,7 +18,8 @@ var (
 	moveAction          = rune('m')
 	mirrorAction        = rune('M')
 	copyAction          = rune('k')
-	markAction          = rune('\'')
+	putMarkAction       = rune('\'')
+	getMarkAction       = rune('"')
 	searchAction        = rune('/') // /re/... establishes the ADDRESSES for the lines against which to execute cmd
 	gSearchAction       = rune('g') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
 	gReplaceAction      = rune('g') // s/foo/bar/g is the glob suffix which means we replace ALL the matches within a line not just the first
@@ -50,7 +51,8 @@ var cmds = []rune{
 	moveAction,
 	mirrorAction,
 	copyAction,
-	markAction,
+	putMarkAction,
+	getMarkAction,
 	searchAction,
 	transliterateAction,
 	setPagerAction,
