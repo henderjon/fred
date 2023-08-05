@@ -9,18 +9,20 @@ import (
 )
 
 type memoryBuf struct {
-	curline  int
-	lastline int
-	lines    []bufferLine
-	filename string
+	curline        int
+	lastline       int
+	lines          []bufferLine
+	filename       string
+	previousSearch string
 }
 
 func newMemoryBuf(fname string) buffer {
 	return &memoryBuf{
-		curline:  0,
-		lastline: 0,
-		lines:    make([]bufferLine, 1),
-		filename: fname,
+		curline:        0,
+		lastline:       0,
+		lines:          make([]bufferLine, 1),
+		filename:       fname,
+		previousSearch: "",
 	}
 }
 
@@ -210,6 +212,13 @@ func (b *memoryBuf) prevLine(n int) int {
 func (b *memoryBuf) getLine(idx int) string {
 	return b.lines[idx].txt
 }
+
+func (b *memoryBuf) setPreviousSearch(pattern string) {
+	b.previousSearch = pattern
+}
+
+func (b *memoryBuf) getPreviousSearch() string {
+	return b.previousSearch
 }
 
 // defLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively

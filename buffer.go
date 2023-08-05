@@ -21,6 +21,8 @@ type buffer interface {
 	getLastline() int
 	getFilename() string
 	setFilename(fname string)
+	setPreviousSearch(pattern string)
+	getPreviousSearch() string
 	insertAfter(idx int) error
 	putText(line string) error
 	getLine(idx int) string

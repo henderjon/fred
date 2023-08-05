@@ -117,6 +117,8 @@ func doCmd(cmd command, b buffer) error {
 		return doToggleMarkLine(b, line1, line2)
 	case getMarkAction:
 		return doGetMarkedLine(b)
+	case searchAction:
+		return doGetNextMatchedLine(b, cmd.addrPattern)
 	case readAction: // read into the current buffer either shell output or a file
 		if cmd.subCommand == string(shellAction) {
 			b.setCurline(line1)

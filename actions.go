@@ -449,3 +449,25 @@ func doGetMarkedLine(b buffer) error {
 	}
 	return nil
 }
+
+func doGetNextMatchedLine(b buffer, pattern string) error {
+	if len(pattern) == 0 {
+		pattern = b.getPreviousSearch()
+	}
+
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return err
+	}
+
+	b.setPreviousSearch(pattern)
+
+	for i := b.nextLine(b.getCurline()); i != b.getCurline(); i = b.nextLine(i) {
+		if re.MatchString(b.getLine(i)) {
+			fmt.Printf("%2d) %s\n", i, b.getLine(i))
+			b.setCurline(i)
+			return nil
+		}
+	}
+	return nil
+}

@@ -33,8 +33,9 @@ func lexDef(l *lexer) stateFn {
 			l.ignore() // ignore the delim
 			return lexPattern(delim, itemAddressPattern)
 		case r == searchAction:
-			l.ignore() // ignore the delim
-			return lexPattern(r, itemAddressPattern)
+			l.emit(itemAction)
+			// l.ignore() // ignore the delim
+			return lexPattern(searchAction, itemAddressPattern)
 		case isAction(r):
 			l.backup()
 			return lexAction
