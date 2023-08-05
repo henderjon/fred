@@ -126,11 +126,8 @@ func lexAction(l *lexer) stateFn {
 func lexPattern(delim rune, t itemType) stateFn {
 	var level int
 	return stateFn(func(l *lexer) stateFn {
-		// reject empty patterns
-		if !l.acceptUntil(string(delim)) {
-			return l.errorf("empty pattern or substitution or missing delim")
-		}
-
+		// consume anything until next delim; allow empty patterns
+		l.acceptUntil(string(delim))
 		if delim == l.peek() {
 			l.emit(t)
 			l.acceptRun(string(delim))
