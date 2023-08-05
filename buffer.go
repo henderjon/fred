@@ -13,24 +13,34 @@ type bufferLine struct {
 
 type buffer interface {
 	io.ReadWriter
+
 	defLines(start, end string, l1, l2 int) (int, int, error)
 	getNumLines() int
+
 	setCurline(i int)
 	getCurline() int
+
 	setLastline(i int)
 	getLastline() int
+
 	getFilename() string
 	setFilename(fname string)
+
 	setPreviousSearch(pattern string)
 	getPreviousSearch() string
+
 	insertAfter(idx int) error
-	putText(line string) error
+
+	putLine(line string) error
 	getLine(idx int) string
-	replaceText(line string, idx int) error
+	replaceLine(line string, idx int) error
+
 	bulkMove(from, to, dest int)
+	reverse(from, to int)
+
 	putMark(idx int, m bool)
 	getMark(idx int) bool
-	reverse(from, to int)
+
 	nextLine(n int) int
 	prevLine(n int) int
 }

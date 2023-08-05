@@ -48,7 +48,7 @@ func (b *memoryBuf) Write(by []byte) (int, error) {
 			break
 		}
 
-		b.putText(strings.TrimRight(line, "\n\r"))
+		b.putLine(strings.TrimRight(line, "\n\r"))
 		byCount += len(line)
 	}
 
@@ -127,7 +127,7 @@ func (b *memoryBuf) insertAfter(idx int) error {
 			return nil
 		}
 
-		err = b.putText(line)
+		err = b.putLine(line)
 		if err != nil {
 			return err
 		}
@@ -135,8 +135,8 @@ func (b *memoryBuf) insertAfter(idx int) error {
 	return err
 }
 
-// putText adds a new lines to the end of the buffer then moves them into place
-func (b *memoryBuf) putText(line string) error {
+// putLine adds a new lines to the end of the buffer then moves them into place
+func (b *memoryBuf) putLine(line string) error {
 	b.lastline++
 	newLine := bufferLine{
 		txt:  line,
@@ -155,7 +155,7 @@ func (b *memoryBuf) putText(line string) error {
 	return nil
 }
 
-func (b *memoryBuf) replaceText(line string, idx int) error {
+func (b *memoryBuf) replaceLine(line string, idx int) error {
 	if idx < 1 || idx > b.getLastline() {
 		return fmt.Errorf("cannot replace text; invalid address; %d", idx)
 	}

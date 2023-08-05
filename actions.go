@@ -156,7 +156,7 @@ func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	b.setCurline(mark)
 
 	for i := l1; i <= l2; i++ {
-		err = b.putText(b.getLine(i))
+		err = b.putLine(b.getLine(i))
 		if err != nil {
 			return err
 		}
@@ -183,7 +183,7 @@ func doSimpleReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 	for idx := l1; idx <= l2; idx++ {
 		old := b.getLine(idx)
 		new := strings.Replace(old, pattern, replace, n)
-		b.replaceText(new, idx)
+		b.replaceLine(new, idx)
 	}
 
 	b.setCurline(l2)
@@ -245,7 +245,7 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 		}
 
 		new.WriteString(old[p:])
-		b.replaceText(new.String(), idx)
+		b.replaceLine(new.String(), idx)
 	}
 	return err
 }
@@ -260,7 +260,7 @@ func doJoinLines(b buffer, l1, l2 int, sep string) error {
 		sep = " "
 	}
 
-	// this should prevent putText() from moving the lines since we'll be doing
+	// this should prevent putLine() from moving the lines since we'll be doing
 	// it ourselves
 	b.setCurline(b.getLastline())
 	for idx := l1; idx <= l2; idx++ {
@@ -271,7 +271,7 @@ func doJoinLines(b buffer, l1, l2 int, sep string) error {
 	}
 
 	// add them to the end of the bufferLines
-	err = b.putText(strings.TrimSuffix(new.String(), sep))
+	err = b.putLine(strings.TrimSuffix(new.String(), sep))
 	if err != nil {
 		return err
 	}
@@ -309,7 +309,7 @@ func doTransliterate(b buffer, l1, l2 int, pattern, replace string) error {
 			}
 			new.WriteRune(newRune)
 		}
-		b.replaceText(new.String(), idx)
+		b.replaceLine(new.String(), idx)
 	}
 	return err
 }
@@ -341,7 +341,7 @@ func doReadFile(b buffer, l1 int, filename string) error {
 			break
 		}
 
-		b.putText(fs.Text())
+		b.putLine(fs.Text())
 	}
 
 	return err
