@@ -27,7 +27,7 @@ func lexDef(l *lexer) stateFn {
 			return lexArg
 		case r == eqAction:
 			l.emit(itemAction)
-		case r == gSearchAction:
+		case r == globalSearchAction:
 			l.emit(itemGlobalPrefix)
 			delim := l.next()
 			l.ignore() // ignore the delim

@@ -85,10 +85,11 @@ func Test_parser(t *testing.T) {
 		{"5,8g/^f[ob]ar/p", &command{addrStart: "5", addrEnd: "8", action: printAction, globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
 		{"g/^f[ob]ar/", &command{globalPrefix: true, addrPattern: `^f[ob]ar`}, false},
 		{"g/b.g/", &command{globalPrefix: true, addrPattern: `b.g`}, false},
-		{"g//", nil, true},   //itemEmptyPattern
+		{"g//", &command{globalPrefix: true, addrPattern: ""}, false}, //itemEmptyPattern
 		{"g/b.z", nil, true}, //itemMissingDelim
-		{"/re/p", &command{action: printAction, addrPattern: `re`}, false},
-		{"/re/m35", &command{action: moveAction, addrPattern: `re`, destination: "35"}, false},
+		{"/re/p", &command{action: searchAction, subCommand: "p", addrPattern: `re`}, false},
+		{"/re/m35", &command{action: searchAction, subCommand: "m", addrPattern: `re`, destination: "35"}, false},
+		{"//", &command{action: searchAction, addrPattern: ""}, false},
 	} //itemEmpty
 
 	for _, test := range tests {
