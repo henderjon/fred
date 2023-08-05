@@ -432,8 +432,10 @@ func doSetFilename(b buffer, filename string) error {
 	return nil
 }
 
-func doToggleMarkLine(b buffer, l1 int) error {
-	b.putMark(l1, !b.getMark(l1))
+func doToggleMarkLine(b buffer, l1, l2 int) error {
+	for i := l1; i <= l2; i++ {
+		b.putMark(i, !b.getMark(i))
+	}
 	return nil
 }
 

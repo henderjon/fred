@@ -114,7 +114,7 @@ func doCmd(cmd command, b buffer) error {
 	case filenameAction:
 		return doSetFilename(b, cmd.argument)
 	case putMarkAction:
-		return doToggleMarkLine(b, line1)
+		return doToggleMarkLine(b, line1, line2)
 	case getMarkAction:
 		return doGetMarkedLine(b)
 	case readAction: // read into the current buffer either shell output or a file
