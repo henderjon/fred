@@ -34,6 +34,7 @@ func (b *memoryBuf) setFilename(fname string) {
 	b.filename = fname
 }
 
+// Write fulfills io.Writer
 func (b *memoryBuf) Write(by []byte) (int, error) {
 	var (
 		err     error
@@ -59,6 +60,7 @@ func (b *memoryBuf) Write(by []byte) (int, error) {
 	return byCount, err
 }
 
+// Read fulfills io.Reader
 func (b *memoryBuf) Read(p []byte) (int, error) {
 	var (
 		err     error
@@ -112,6 +114,7 @@ func (b *memoryBuf) getLastline() int {
 	return b.lastline
 }
 
+// insertAfter gets input from the user and puts it at the given position
 func (b *memoryBuf) insertAfter(idx int) error {
 	var err error
 
@@ -155,6 +158,7 @@ func (b *memoryBuf) putLine(line string) error {
 	return nil
 }
 
+// replaceLine changes the line to the new text at the given index
 func (b *memoryBuf) replaceLine(line string, idx int) error {
 	if idx < 1 || idx > b.getLastline() {
 		return fmt.Errorf("cannot replace text; invalid address; %d", idx)
@@ -164,6 +168,7 @@ func (b *memoryBuf) replaceLine(line string, idx int) error {
 	return nil
 }
 
+// bulkMove takes the given lines and puts them at dest
 func (b *memoryBuf) bulkMove(from, to, dest int) {
 	if dest < from-1 {
 		b.reverse(dest+1, from-1)
@@ -176,14 +181,17 @@ func (b *memoryBuf) bulkMove(from, to, dest int) {
 	}
 }
 
+// putMark sets the mark of the line at the given index
 func (b *memoryBuf) putMark(idx int, m bool) {
 	b.lines[idx].mark = m
 }
 
+// getMark gets the mark of the line at the given index
 func (b *memoryBuf) getMark(idx int) bool {
 	return b.lines[idx].mark
 }
 
+// reverse rearranges the given lines in reverse
 func (b *memoryBuf) reverse(from, to int) {
 	var tmp bufferLine
 	for from < to {
@@ -195,6 +203,7 @@ func (b *memoryBuf) reverse(from, to int) {
 	}
 }
 
+// nextLine returns the next index in the buffer, looping to 0 after lastline
 func (b *memoryBuf) nextLine(n int) int {
 	if n >= b.lastline {
 		return 0
@@ -202,6 +211,7 @@ func (b *memoryBuf) nextLine(n int) int {
 	return n + 1
 }
 
+// prevLine returns the previous index in the buffer, looping to lastline after 0
 func (b *memoryBuf) prevLine(n int) int {
 	if n <= 0 {
 		return b.lastline
@@ -209,14 +219,17 @@ func (b *memoryBuf) prevLine(n int) int {
 	return n - 1
 }
 
+// returns the text of the line at the given index
 func (b *memoryBuf) getLine(idx int) string {
 	return b.lines[idx].txt
 }
 
+// store the last successful search pattern
 func (b *memoryBuf) setPreviousSearch(pattern string) {
 	b.previousSearch = pattern
 }
 
+// get the last successful search pattern
 func (b *memoryBuf) getPreviousSearch() string {
 	return b.previousSearch
 }
