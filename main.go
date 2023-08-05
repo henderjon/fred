@@ -113,6 +113,10 @@ func doCmd(cmd command, b buffer) error {
 		return doExternalShell(b, line1, line2, cmd.argument)(false, os.Stdout)
 	case filenameAction:
 		return doSetFilename(b, cmd.argument)
+	case putMarkAction:
+		return doToggleMarkLine(b, line1)
+	case getMarkAction:
+		return doGetMarkedLine(b)
 	case readAction: // read into the current buffer either shell output or a file
 		if cmd.subCommand == string(shellAction) {
 			b.setCurline(line1)

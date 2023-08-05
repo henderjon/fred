@@ -33,10 +33,15 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 	}
 
 	for n := l1; n <= l2; n++ {
-		mark := " "
-		if n == prevCurline {
-			mark = "*"
+		mark := ""
+		if b.getMark((n)) {
+			mark += "-"
 		}
+
+		if n == prevCurline {
+			mark += "*"
+		}
+
 		if n > b.getNumLines() {
 			break
 		}
@@ -45,7 +50,7 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 		default:
 			fmt.Printf("%2d) %s\n", n, line)
 		case printTypeNum:
-			fmt.Printf("%s%2d) %s\n", mark, n, line)
+			fmt.Printf("%2s%2d) %s\n", mark, n, line)
 		case printTypeLit:
 			fmt.Printf("%2d) %+q\n", n, line)
 		}
@@ -425,5 +430,21 @@ func doSetFilename(b buffer, filename string) error {
 
 	fmt.Fprintln(os.Stdout, b.getFilename())
 
+	return nil
+}
+
+func doToggleMarkLine(b buffer, l1 int) error {
+	b.putMark(l1, !b.getMark(l1))
+	return nil
+}
+
+func doGetMarkedLine(b buffer) error {
+	for i := b.nextLine(b.getCurline()); i != b.getCurline(); i = b.nextLine(i) {
+		if b.getMark(i) {
+			fmt.Printf("%2d) %s\n", i, b.getText(i))
+			b.setCurline(i)
+			return nil
+		}
+	}
 	return nil
 }
