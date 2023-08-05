@@ -13,21 +13,17 @@ type bufferLine struct {
 
 type buffer interface {
 	io.ReadWriter
-	// defaultLines(start, end string) (int, int, error)
 	defLines(start, end string, l1, l2 int) (int, int, error)
-	// defaultLine(addr string) (int, error)
 	getNumLines() int
 	setCurline(i int)
 	getCurline() int
 	setLastline(i int)
 	getLastline() int
-
 	getFilename() string
 	setFilename(fname string)
-
 	insertAfter(idx int) error
 	putText(line string) error
-	getText(idx int) string
+	getLine(idx int) string
 	replaceText(line string, idx int) error
 	bulkMove(from, to, dest int)
 	putMark(idx int, m bool)
@@ -35,7 +31,6 @@ type buffer interface {
 	reverse(from, to int)
 	nextLine(n int) int
 	prevLine(n int) int
-	getLine(idx int) string
 }
 
 // TODO: track a drity buffer for save dialog on quit

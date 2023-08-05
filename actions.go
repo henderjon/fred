@@ -26,7 +26,6 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 		return fmt.Errorf("doPrint; invalid address; %d; %d", l1, l2)
 	}
 
-	prevCurline := l2
 	l1, l2, err = makeContext(b, l1, l2, pager)
 	if err != nil {
 		return err
@@ -38,14 +37,14 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 			mark += "-"
 		}
 
-		if n == prevCurline {
+		if n == b.getCurline() {
 			mark += "*"
 		}
 
 		if n > b.getNumLines() {
 			break
 		}
-		line := b.getText(n)
+		line := b.getLine(n)
 		switch printType {
 		default:
 			fmt.Printf("%2d) %s\n", n, line)
@@ -157,7 +156,7 @@ func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	b.setCurline(mark)
 
 	for i := l1; i <= l2; i++ {
-		err = b.putText(b.getText(i))
+		err = b.putText(b.getLine(i))
 		if err != nil {
 			return err
 		}
@@ -182,7 +181,7 @@ func doSimpleReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 	}
 
 	for idx := l1; idx <= l2; idx++ {
-		old := b.getText(idx)
+		old := b.getLine(idx)
 		new := strings.Replace(old, pattern, replace, n)
 		b.replaceText(new, idx)
 	}
@@ -215,7 +214,7 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 	for idx := l1; idx <= l2; idx++ {
 		var (
 			p   int
-			old = b.getText(idx)
+			old = b.getLine(idx)
 			new strings.Builder
 		)
 
@@ -266,7 +265,7 @@ func doJoinLines(b buffer, l1, l2 int, sep string) error {
 	b.setCurline(b.getLastline())
 	for idx := l1; idx <= l2; idx++ {
 		// copy all lines and combine them
-		old := b.getText(idx)
+		old := b.getLine(idx)
 		new.WriteString(strings.TrimSpace(old))
 		new.WriteString(sep)
 	}
@@ -298,7 +297,7 @@ func doTransliterate(b buffer, l1, l2 int, pattern, replace string) error {
 
 	for idx := l1; idx <= l2; idx++ {
 		var new strings.Builder
-		old := b.getText(idx)
+		old := b.getLine(idx)
 		for _, oldRune := range old {
 			newRune := oldRune
 			for patternIdx, patternRune := range pattern {
@@ -441,7 +440,7 @@ func doToggleMarkLine(b buffer, l1 int) error {
 func doGetMarkedLine(b buffer) error {
 	for i := b.nextLine(b.getCurline()); i != b.getCurline(); i = b.nextLine(i) {
 		if b.getMark(i) {
-			fmt.Printf("%2d) %s\n", i, b.getText(i))
+			fmt.Printf("%2d) %s\n", i, b.getLine(i))
 			b.setCurline(i)
 			return nil
 		}

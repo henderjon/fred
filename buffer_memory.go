@@ -153,10 +153,6 @@ func (b *memoryBuf) putText(line string) error {
 	return nil
 }
 
-func (b *memoryBuf) getText(idx int) string {
-	return b.lines[idx].txt
-}
-
 func (b *memoryBuf) replaceText(line string, idx int) error {
 	if idx < 1 || idx > b.getLastline() {
 		return fmt.Errorf("cannot replace text; invalid address; %d", idx)
@@ -212,7 +208,8 @@ func (b *memoryBuf) prevLine(n int) int {
 }
 
 func (b *memoryBuf) getLine(idx int) string {
-	return b.lines[idx].String()
+	return b.lines[idx].txt
+}
 }
 
 // defLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
