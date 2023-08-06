@@ -1,9 +1,11 @@
 package main
 
-import "io"
+import (
+	"io"
+)
 
 func (b bufferLine) String() string {
-	return string(b.txt)
+	return b.txt
 }
 
 type bufferLine struct {
@@ -11,6 +13,7 @@ type bufferLine struct {
 	mark bool
 }
 
+// buffer is the interface for our content. It is large because of the accessor methods which are not idiomatic, but good practice.
 type buffer interface {
 	io.ReadWriter
 
