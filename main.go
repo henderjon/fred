@@ -46,7 +46,7 @@ func main() {
 
 		// cursave := b.curline
 		if cmd.globalPrefix {
-			err = doGlob(*cmd, b)
+			doGlob(*cmd, b)
 		} else {
 			err = doCmd(*cmd, b)
 			switch true {
@@ -181,10 +181,7 @@ func doGlob(cmd command, b buffer) error {
 		cmd.addrEnd = ""
 		b.setCurline(i)
 		// stderr.Fatal(cmd)
-		err = doCmd(cmd, b)
-		if err != nil {
-			stderr.Log(err)
-		}
+		doCmd(cmd, b)
 		b.putMark(i, false)
 		b.setCurline(i)
 	}
