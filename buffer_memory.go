@@ -294,8 +294,16 @@ func (b *memoryBuf) scanForward(start, end int) func() (int, bool) {
 func (b *memoryBuf) scanReverse(start, end int) func() (int, bool) {
 	i := start + 1
 	return func() (int, bool) {
-		i = b.prevLine(i) // TODO: this will always start after the current line ... ?
-		return i, i != start+1
+		i = b.prevLine(i)
+		if (start == end || end == -1) && i != start+1 { // full loop
+			return i, true
+		}
+
+		if (start != end && end != -1) && i == end {
+			return i, true
+		}
+
+		return i, false
 	}
 }
 
