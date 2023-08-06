@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"regexp"
+	"strings"
 
 	"github.com/henderjon/logger"
 )
@@ -19,13 +21,14 @@ var (
 )
 
 func main() {
+	var err error
 	b := newMemoryBuf("")
 	b = fillDemo(b)
 
 	cmdParser := &parser{}
 	fmt.Fprint(os.Stdout, prompt)
 	for stdin.Scan() { // main loop
-		err := stdin.Err()
+		err = stdin.Err()
 		if err != nil {
 			break
 		}
@@ -43,9 +46,9 @@ func main() {
 
 		// cursave := b.curline
 		if cmd.globalPrefix {
-			// doCmd over range of lines
+			err = doGlob(*cmd, b)
 		} else {
-			err := doCmd(*cmd, b)
+			err = doCmd(*cmd, b)
 			switch true {
 			case err == errQuit:
 				fmt.Fprintln(os.Stdout, err.Error())
@@ -68,7 +71,6 @@ func doCmd(cmd command, b buffer) error {
 	}
 
 	// some commands require addresses
-	// line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd)
 	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
@@ -137,4 +139,58 @@ func doCmd(cmd command, b buffer) error {
 	stderr.Log(cmd)
 
 	return err
+}
+
+func doGlob(cmd command, b buffer) error {
+	if len(cmd.addrPattern) == 0 {
+		return fmt.Errorf("missing address pattern")
+	}
+
+	re, err := regexp.Compile(cmd.addrPattern)
+	if err != nil {
+		return err
+	}
+
+	start := b.getCurline()
+	scan := b.scanForward(start, start)
+	for {
+		i, ok := scan()
+		if !ok {
+			break
+		}
+
+		if re.MatchString(b.getLine(i)) {
+			b.putMark(i, true)
+			continue
+		}
+		b.putMark(i, false)
+	}
+
+	scan = b.scanForward(start, start)
+	for {
+		i, ok := scan()
+		if !ok {
+			break
+		}
+
+		if !b.getMark(i) || strings.ContainsRune(string([]rune{globalSearchAction}), cmd.action) {
+			continue
+		}
+
+		cmd.addrStart = ""
+		cmd.addrEnd = ""
+		b.setCurline(i)
+		// stderr.Fatal(cmd)
+		err = doCmd(cmd, b)
+		if err != nil {
+			stderr.Log(err)
+		}
+		b.putMark(i, false)
+		b.setCurline(i)
+	}
+
+	return nil
+
+	// loop over buffer, mark lines the match in order to keep track of what's been done because doCmd/do* can alter the buffer
+	// loop over buffer, execute command on each marked line
 }

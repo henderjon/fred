@@ -60,7 +60,7 @@ func Test_doDelete(t *testing.T) {
 		doDelete(controlBuffer, test.l1, test.l2)
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
-			t.Errorf("given: %d,%dd; -got/+want\n%s", test.l1, test.l2, diff)
+			t.Errorf("-got/+want\n%s", diff)
 		}
 
 	}
@@ -104,7 +104,7 @@ func Test_doMove(t *testing.T) {
 		doMove(controlBuffer, test.l1, test.l2, test.dest)
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
-			t.Errorf("given: %d,%dd; -got/+want\n%s", test.l1, test.l2, diff)
+			t.Errorf("-got/+want\n%s", diff)
 		}
 
 	}
@@ -154,7 +154,7 @@ func Test_doCopyNPaste(t *testing.T) {
 		doCopyNPaste(controlBuffer, test.l1, test.l2, test.dest)
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
-			t.Errorf("given: %d,%dd; -got/+want\n%s", test.l1, test.l2, diff)
+			t.Errorf("-got/+want\n%s", diff)
 		}
 
 	}
@@ -198,7 +198,49 @@ func Test_doSimpleReplace(t *testing.T) {
 		doSimpleReplace(controlBuffer, test.l1, test.l2, "or", "-", test.num)
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
-			t.Errorf("given: %d,%dd; -got/+want\n%s", test.l1, test.l2, diff)
+			t.Errorf("-got/+want\n%s", diff)
+		}
+
+	}
+}
+func Test_doGlob(t *testing.T) {
+	tests := []struct {
+		cmd      command
+		expected buffer
+	}{
+		{command{
+			// addrStart:    "",
+			// addrEnd:      "",
+			addrPattern:  "[1-5]",
+			action:       simpleReplaceAction,
+			pattern:      "or",
+			substitution: "%",
+			replaceNum:   "-1",
+			// destination:  "",
+			// subCommand:   "",
+			// argument:     "",
+			globalPrefix: true,
+		}, &memoryBuf{
+			curline:  5,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``, mark: false},
+				{txt: `1 L%em ipsum dol% sit amet, consectetur adipiscing elit. M%bi sed ante eu ...`, mark: false},
+				{txt: `2 Duis ut p%ta mi, eu %nare %ci. Etiam sed vehicula %ci. ...`, mark: false},
+				{txt: `3 Nunc scelerisque urna a erat gravida p%ttit%. Donec pulvinar leo urna, id ...`, mark: false},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+			},
+			filename: "filename",
+		}},
+	}
+
+	for _, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		doGlob(test.cmd, controlBuffer)
+
+		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
+			t.Errorf("-got/+want\n%s", diff)
 		}
 
 	}

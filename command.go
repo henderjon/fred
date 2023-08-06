@@ -76,7 +76,7 @@ func (c *command) setGlobalPrefix(b bool) {
 
 func (c *command) setReplaceNum(s string) {
 	if s == string(globalReplaceAction) {
-		c.replaceNum = "-1" // zero means all
+		c.replaceNum = "-1" // zero should mean all but is the zero value
 		return
 	}
 

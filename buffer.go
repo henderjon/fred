@@ -43,6 +43,9 @@ type buffer interface {
 
 	nextLine(n int) int
 	prevLine(n int) int
+
+	scanForward(int, int) func() (int, bool)
+	scanReverse(int, int) func() (int, bool)
 }
 
 // TODO: track a drity buffer for save dialog on quit
