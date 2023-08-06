@@ -46,7 +46,10 @@ func main() {
 
 		// cursave := b.curline
 		if cmd.globalPrefix {
-			doGlob(*cmd, b)
+			err = doGlob(*cmd, b)
+			if err != nil {
+				fmt.Fprintln(os.Stdout, err.Error())
+			}
 		} else {
 			err = doCmd(*cmd, b)
 			switch true {
@@ -150,9 +153,14 @@ func doGlob(cmd command, b buffer) error {
 	if err != nil {
 		return err
 	}
+	// some commands require addresses
+	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, b.getCurline(), b.getCurline())
+	if err != nil {
+		return err
+	}
 
-	start := b.getCurline()
-	scan := b.scanForward(start, start)
+	stderr.Log(line1, line2)
+	scan := b.scanForward(line1, line2)
 	for {
 		i, ok := scan()
 		if !ok {
@@ -166,7 +174,7 @@ func doGlob(cmd command, b buffer) error {
 		b.putMark(i, false)
 	}
 
-	scan = b.scanForward(start, start)
+	scan = b.scanForward(line1, line2)
 	for {
 		i, ok := scan()
 		if !ok {
@@ -180,7 +188,6 @@ func doGlob(cmd command, b buffer) error {
 		cmd.addrStart = ""
 		cmd.addrEnd = ""
 		b.setCurline(i)
-		// stderr.Fatal(cmd)
 		doCmd(cmd, b)
 		b.putMark(i, false)
 		b.setCurline(i)
@@ -188,6 +195,7 @@ func doGlob(cmd command, b buffer) error {
 
 	return nil
 
+	//1,2g/[1-5]/s/or/%/g
 	// loop over buffer, mark lines the match in order to keep track of what's been done because doCmd/do* can alter the buffer
 	// loop over buffer, execute command on each marked line
 }

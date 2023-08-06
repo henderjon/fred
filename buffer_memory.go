@@ -275,35 +275,37 @@ func (b *memoryBuf) defLines(start, end string, l1, l2 int) (int, int, error) {
 
 // scanForward returns a func that walks the buffer's indices in a forward loop
 func (b *memoryBuf) scanForward(start, end int) func() (int, bool) {
-	i := start - 1
+	stop := false
+	i := start - 1 // remove 1 because nextLine advances one
 	return func() (int, bool) {
 		i = b.nextLine(i)
 		if (start == end || end == -1) && i != start-1 { // full loop
-			return i, true
+			return i, !stop
 		}
 
-		if (start != end && end != -1) && i == end {
-			return i, true
+		if (start != end && end != -1) && i != end+1 {
+			return i, !stop
 		}
 
-		return i, false
+		return i, stop
 	}
 }
 
 // scanReverse returns a func that walks the buffer's indices in a reverse loop
 func (b *memoryBuf) scanReverse(start, end int) func() (int, bool) {
-	i := start + 1
+	stop := false
+	i := start + 1 // add 1 because nextLine removes one
 	return func() (int, bool) {
 		i = b.prevLine(i)
 		if (start == end || end == -1) && i != start+1 { // full loop
-			return i, true
+			return i, !stop
 		}
 
 		if (start != end && end != -1) && i == end {
-			return i, true
+			return i, !stop
 		}
 
-		return i, false
+		return i, stop
 	}
 }
 

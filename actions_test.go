@@ -233,6 +233,31 @@ func Test_doGlob(t *testing.T) {
 			},
 			filename: "filename",
 		}},
+		{command{
+			addrStart:    "1",
+			addrEnd:      "2",
+			addrPattern:  "[1-5]",
+			action:       simpleReplaceAction,
+			pattern:      "or",
+			substitution: "%",
+			replaceNum:   "-1",
+			// destination:  "",
+			// subCommand:   "",
+			// argument:     "",
+			globalPrefix: true,
+		}, &memoryBuf{
+			curline:  2,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``, mark: false},
+				{txt: `1 L%em ipsum dol% sit amet, consectetur adipiscing elit. M%bi sed ante eu ...`, mark: false},
+				{txt: `2 Duis ut p%ta mi, eu %nare %ci. Etiam sed vehicula %ci. ...`, mark: false},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+			},
+			filename: "filename",
+		}},
 	}
 
 	for _, test := range tests {
