@@ -115,16 +115,13 @@ func (b *memoryBuf) getLastline() int {
 }
 
 // insertAfter gets input from the user and puts it at the given position
-func (b *memoryBuf) insertAfter(idx int) error {
-	var err error
-
+func (b *memoryBuf) insertAfter(input interactor, idx int) error {
 	b.curline = idx
-	for stdin.Scan() { // NOTE: use io.Writer
-		if err := stdin.Err(); err != nil {
+	for {
+		line, err := input("")
+		if err != nil {
 			return err
 		}
-
-		line := stdin.Text()
 
 		if len(line) == 1 && line[0] == '.' {
 			return nil
@@ -135,7 +132,6 @@ func (b *memoryBuf) insertAfter(idx int) error {
 			return err
 		}
 	}
-	return err
 }
 
 // putLine adds a new lines to the end of the buffer then moves them into place

@@ -86,15 +86,15 @@ func doPrintAddress(b buffer, l2 int) error {
 	return nil
 }
 
-func doAppend(b buffer, l1 int) error {
-	return b.insertAfter(l1)
+func doAppend(input interactor, b buffer, l1 int) error {
+	return b.insertAfter(input, l1)
 }
 
-func doInsert(b buffer, l1 int) error {
+func doInsert(input interactor, b buffer, l1 int) error {
 	if l1 <= 1 {
-		return b.insertAfter(0)
+		return b.insertAfter(input, 0)
 	}
-	return b.insertAfter(l1)
+	return b.insertAfter(input, l1)
 }
 
 // doDelete moves a range of lines to the end of the buffer then decreases the last line to "forget" about the lines at the end
@@ -110,12 +110,12 @@ func doDelete(b buffer, l1, l2 int) error {
 	return nil
 }
 
-func doChange(b buffer, l1, l2 int) error {
+func doChange(input interactor, b buffer, l1, l2 int) error {
 	err := doDelete(b, l1, l2)
 	if err != nil {
 		return err
 	}
-	return b.insertAfter(b.prevLine(l1))
+	return b.insertAfter(input, b.prevLine(l1))
 }
 
 func doMove(b buffer, l1, l2 int, dest string) error {

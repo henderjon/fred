@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
+	"os"
 	"strconv"
 )
 
@@ -39,4 +42,16 @@ func guardAddress(b buffer, addr string) (int, error) {
 	}
 
 	return i, nil
+}
+
+type interactor func(prompt string) (string, error)
+
+// getInput creates a func that prints a message and takes
+func getInput(in io.Reader, out io.Writer) interactor {
+	stdin := bufio.NewScanner(os.Stdin)
+	return interactor(func(prompt string) (string, error) {
+		fmt.Fprint(out, prompt)
+		stdin.Scan()
+		return stdin.Text(), stdin.Err()
+	})
 }

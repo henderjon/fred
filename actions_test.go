@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -261,8 +262,9 @@ func Test_doGlob(t *testing.T) {
 	}
 
 	for _, test := range tests {
+		input := getInput(os.Stdin, os.Stdout)
 		controlBuffer := getTestActionBuffer()
-		doGlob(test.cmd, controlBuffer)
+		doGlob(test.cmd, controlBuffer, input)
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)

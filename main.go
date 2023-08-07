@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"os"
@@ -14,44 +13,44 @@ import (
 const prompt = ":"
 
 var (
-	stderr  = logger.NewDropLogger(os.Stderr)
-	stdin   = bufio.NewScanner(os.Stdin)
+	stderr = logger.NewDropLogger(os.Stderr)
+	// stdin   = bufio.NewScanner(os.Stdin)
 	errQuit = errors.New("goodbye")
 	pager   = 0
 )
 
 func main() {
-	var err error
+	var cursave = 1
 	b := newMemoryBuf("")
 	b = fillDemo(b)
 
 	cmdParser := &parser{}
-	fmt.Fprint(os.Stdout, prompt)
-	for stdin.Scan() { // main loop
-		err = stdin.Err()
+	input := getInput(os.Stdin, os.Stdout)
+	for { // main loop
+		line, err := input(prompt)
 		if err != nil {
 			break
 		}
 
-		cmd, err := cmdParser.run(stdin.Text())
+		cmd, err := cmdParser.run(line)
 		if err != nil {
 			fmt.Fprintln(os.Stdout, err.Error())
 		}
 
+		cursave = b.getCurline()
 		if cmd == nil {
 			fmt.Println("invalid command")
-			fmt.Fprint(os.Stdout, prompt)
+			b.setCurline(cursave)
 			continue
 		}
 
-		// cursave := b.curline
 		if cmd.globalPrefix {
-			err = doGlob(*cmd, b)
+			err = doGlob(*cmd, b, input)
 			if err != nil {
 				fmt.Fprintln(os.Stdout, err.Error())
 			}
 		} else {
-			err = doCmd(*cmd, b)
+			err = doCmd(*cmd, b, input)
 			switch true {
 			case err == errQuit:
 				fmt.Fprintln(os.Stdout, err.Error())
@@ -60,11 +59,11 @@ func main() {
 				fmt.Fprintln(os.Stdout, err.Error())
 			}
 		}
-		fmt.Fprint(os.Stdout, prompt)
+		// fmt.Fprint(os.Stdout, prompt)
 	}
 }
 
-func doCmd(cmd command, b buffer) error {
+func doCmd(cmd command, b buffer, input interactor) error {
 	var err error
 
 	// some commands do not require addresses
@@ -91,13 +90,13 @@ func doCmd(cmd command, b buffer) error {
 	case printLiteralAction:
 		return doPrint(b, line1, line2, pager, printTypeLit)
 	case appendAction:
-		return doAppend(b, line1)
+		return doAppend(input, b, line1)
 	case insertAction:
-		return doInsert(b, line1)
+		return doInsert(input, b, line1)
 	case deleteAction:
 		return doDelete(b, line1, line2)
 	case changeAction:
-		return doChange(b, line1, line2)
+		return doChange(input, b, line1, line2)
 	case moveAction:
 		return doMove(b, line1, line2, cmd.destination)
 	case copyAction:
@@ -144,7 +143,7 @@ func doCmd(cmd command, b buffer) error {
 	return err
 }
 
-func doGlob(cmd command, b buffer) error {
+func doGlob(cmd command, b buffer, input interactor) error {
 	if len(cmd.addrPattern) == 0 {
 		return fmt.Errorf("missing address pattern")
 	}
@@ -159,7 +158,6 @@ func doGlob(cmd command, b buffer) error {
 		return err
 	}
 
-	stderr.Log(line1, line2)
 	scan := b.scanForward(line1, line2)
 	for {
 		i, ok := scan()
@@ -188,7 +186,7 @@ func doGlob(cmd command, b buffer) error {
 		cmd.addrStart = ""
 		cmd.addrEnd = ""
 		b.setCurline(i)
-		doCmd(cmd, b)
+		doCmd(cmd, b, input)
 		b.putMark(i, false)
 		b.setCurline(i)
 	}

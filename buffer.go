@@ -32,7 +32,7 @@ type buffer interface {
 	setPreviousSearch(pattern string)
 	getPreviousSearch() string
 
-	insertAfter(idx int) error
+	insertAfter(input interactor, idx int) error
 
 	putLine(line string) error
 	getLine(idx int) string
