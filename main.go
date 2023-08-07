@@ -32,14 +32,11 @@ func main() {
 			break
 		}
 
-		cmd, err := cmdParser.run(line)
-		if err != nil {
-			fmt.Fprintln(os.Stdout, err.Error())
-		}
-
 		cursave = b.getCurline()
-		if cmd == nil {
-			fmt.Println("invalid command")
+
+		cmd, err := cmdParser.run(line)
+		if cmd == nil || err != nil {
+			fmt.Fprintf(os.Stdout, "invalid command; %s\n", err.Error())
 			b.setCurline(cursave)
 			continue
 		}
