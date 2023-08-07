@@ -17,6 +17,7 @@ func getTestBuffer() buffer {
 			{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
 		},
 		filename: "filename",
+		search:   search{},
 	}
 }
 

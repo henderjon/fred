@@ -29,8 +29,8 @@ type buffer interface {
 	getFilename() string
 	setFilename(fname string)
 
-	setPreviousSearch(pattern string)
-	getPreviousSearch() string
+	setPreviousSearch(search)
+	getPreviousSearch() search
 
 	insertAfter(input interactor, idx int) error
 

@@ -119,7 +119,9 @@ func doCmd(cmd command, b buffer, input interactor) error {
 	case getMarkAction:
 		return doGetMarkedLine(b)
 	case searchAction:
-		return doGetNextMatchedLine(b, cmd.addrPattern)
+		return doGetNextMatchedLine(b, cmd.addrPattern, true)
+	case searchRevAction:
+		return doGetNextMatchedLine(b, cmd.addrPattern, false)
 	case readAction: // read into the current buffer either shell output or a file
 		if cmd.subCommand == string(shellAction) {
 			b.setCurline(line1)

@@ -450,9 +450,10 @@ func doGetMarkedLine(b buffer) error {
 	return nil
 }
 
-func doGetNextMatchedLine(b buffer, pattern string) error {
-	if len(pattern) == 0 {
-		pattern = b.getPreviousSearch()
+func doGetNextMatchedLine(b buffer, pattern string, forward bool) error {
+	prevSearch := b.getPreviousSearch()
+	if len(pattern) == 0 { // no pattern means to repeat the last search
+		pattern = prevSearch.pattern
 	}
 
 	re, err := regexp.Compile(pattern)
@@ -460,9 +461,22 @@ func doGetNextMatchedLine(b buffer, pattern string) error {
 		return err
 	}
 
-	b.setPreviousSearch(pattern)
+	b.setPreviousSearch(search{
+		reverse: !forward,
+		pattern: pattern,
+	})
 
-	for i := b.nextLine(b.getCurline()); i != b.getCurline(); i = b.nextLine(i) {
+	scan := b.scanForward(b.nextLine(b.getCurline()), b.nextLine(b.getCurline()))
+	if !forward {
+		scan = b.scanReverse(b.prevLine(b.getCurline()), b.prevLine(b.getCurline()))
+	}
+
+	for {
+		i, ok := scan()
+		if !ok {
+			break
+		}
+
 		if re.MatchString(b.getLine(i)) {
 			fmt.Printf("%2d) %s\n", i, b.getLine(i))
 			b.setCurline(i)

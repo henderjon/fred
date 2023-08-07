@@ -60,7 +60,7 @@ func Test_doDelete(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doDelete(controlBuffer, test.l1, test.l2)
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
 		}
 
@@ -104,7 +104,7 @@ func Test_doMove(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doMove(controlBuffer, test.l1, test.l2, test.dest)
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
 		}
 
@@ -154,7 +154,7 @@ func Test_doCopyNPaste(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doCopyNPaste(controlBuffer, test.l1, test.l2, test.dest)
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
 		}
 
@@ -198,7 +198,7 @@ func Test_doSimpleReplace(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doSimpleReplace(controlBuffer, test.l1, test.l2, "or", "-", test.num)
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
 		}
 
@@ -266,7 +266,7 @@ func Test_doGlob(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doGlob(test.cmd, controlBuffer, input)
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
 		}
 

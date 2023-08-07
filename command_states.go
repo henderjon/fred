@@ -32,10 +32,9 @@ func lexDef(l *lexer) stateFn {
 			delim := l.next()
 			l.ignore() // ignore the delim
 			return lexPattern(delim, itemAddressPattern)
-		case r == searchAction:
+		case strings.ContainsRune(string([]rune{searchAction, searchRevAction}), r):
 			l.emit(itemAction)
-			// l.ignore() // ignore the delim
-			return lexPattern(searchAction, itemAddressPattern)
+			return lexPattern(r, itemAddressPattern)
 		case isAction(r):
 			l.backup()
 			return lexAction

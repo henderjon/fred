@@ -5,6 +5,6 @@ type search struct {
 	pattern string
 }
 
-func (s search) isZero() bool {
-	return len(s.pattern) == 0
-}
+// func (s search) isEmpty() bool {
+// 	return len(s.pattern) == 0
+// }
