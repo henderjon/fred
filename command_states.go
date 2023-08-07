@@ -45,8 +45,9 @@ func lexDef(l *lexer) stateFn {
 			l.emit(itemEOF)
 			return nil
 		default:
-			return lexErr
-			// return nil //l.errorf("unrecognized character in action: %#U", r)
+			l.errorf("unrecognized character in action: %s", string(r))
+			// return lexErr
+			return nil
 		}
 	}
 	// return nil
@@ -59,11 +60,6 @@ func isSpace(r rune) bool {
 
 func isAction(r rune) bool {
 	return strings.ContainsRune(string(cmds), r)
-}
-
-func lexErr(l *lexer) stateFn {
-	l.emit(itemError)
-	return nil
 }
 
 // lexAddress parses a value that represents an address in the command
