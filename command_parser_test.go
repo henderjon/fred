@@ -53,6 +53,7 @@ func Test_parser(t *testing.T) {
 		{"E path/file.ext", &command{action: superEditAction, argument: "path/file.ext"}, false},
 		{"e !grep -riF \"fatty fatpants\" .", &command{action: editAction, subCommand: '!', argument: "grep -riF \"fatty fatpants\" ."}, false},
 		{"f path/file.ext", &command{action: filenameAction, argument: "path/file.ext"}, false},
+		{"e path/file.ext", &command{action: editAction, argument: "path/file.ext"}, false},
 		{"r path/file.ext", &command{action: readAction, argument: "path/file.ext"}, false},
 		{"5r path/file.ext", &command{addrStart: "5", action: readAction, argument: "path/file.ext"}, false},
 		{"r !grep -riF \"fatty fatpants\" .", &command{action: readAction, subCommand: '!', argument: "grep -riF \"fatty fatpants\" ."}, false},
