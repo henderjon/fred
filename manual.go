@@ -68,7 +68,11 @@ DIFFERENCES WITH THE ORIGINAL ED
 NOTES
   - During development, it came to light that using Rob Pike's lexer/parser
     would not only yield non-global readable code, but it would also lend the
-	code base to being testable.
+	  code base to being testable.
+  - There are times when verbosity was chosen over brevity for the sake of
+    clarity. Certainly, there are places where this code takes the long way
+    around ("brute force" so to speak). Perhaps over time this code base will
+    evolve.
 
 EXAMPLES
   $ {{.Bin}} -h
