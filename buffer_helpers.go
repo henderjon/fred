@@ -70,3 +70,29 @@ func getInput(in io.Reader, out io.Writer) interactor {
 		return stdin.Text(), stdin.Err()
 	})
 }
+
+func simpleNReplace(subject, pattern, replace string, n int) string {
+	idx := strings.Index(subject, pattern)
+	if idx == -1 {
+		return subject
+	}
+
+	count := 1
+	for ; count < n; count++ {
+		i := strings.Index(subject[idx+len(pattern):], pattern)
+		if i == -1 {
+			break
+		}
+		idx += i + len(pattern)
+	}
+
+	if idx+len(pattern) > len(subject) || count < n {
+		return subject
+	}
+
+	var rtn strings.Builder
+	rtn.WriteString(subject[:idx])
+	rtn.WriteString(replace)
+	rtn.WriteString(subject[idx+len(pattern):])
+	return rtn.String()
+}

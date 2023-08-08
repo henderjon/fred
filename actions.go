@@ -181,8 +181,15 @@ func doSimpleReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 	}
 
 	for idx := l1; idx <= l2; idx++ {
+		var new string
 		old := b.getLine(idx)
-		new := strings.Replace(old, pattern, replace, n)
+		if n < 0 {
+			// replace first n matches; always -1 (all)
+			new = strings.Replace(old, pattern, replace, n)
+		} else {
+			// replace nth match
+			new = simpleNReplace(old, pattern, replace, n)
+		}
 		b.replaceLine(new, idx)
 	}
 
@@ -224,16 +231,20 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 
 		// this finds the indexes of the matches
 		submatches := re.FindAllStringSubmatchIndex(old, n)
-		for n := 0; n < len(submatches); n++ {
+		for i := 0; i < len(submatches); i++ {
+			// this catch allows us to do nth replacements
+			if n != -1 && n-1 != i { // adjust for 0 index
+				continue
+			}
 			// expand any $1 replacements; this takes the text input 'old' and
 			// using the indexes from 'submatches[n]' replaces it with the
 			// expanded replacement in 'replace' and appends it to 'result' in
 			// other words, result is what should go into the new string
-			result := re.ExpandString(result, replace, old, submatches[n])
+			result := re.ExpandString(result, replace, old, submatches[i])
 			// create a new string add the characters of the old string from the
 			// beginning of the last match (or zero) to the beginning of the
 			// current match (we're currently iterating)
-			new.WriteString(old[p:submatches[n][0]])
+			new.WriteString(old[p:submatches[i][0]])
 			// add the replacement value to the new string
 			new.WriteString(string(result))
 			// move the cursor to the index of the end of the current match so
@@ -241,11 +252,12 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 			// the index of the beginning of the next match of the old string to
 			// the new string. in effect, make sure we add the bits of the old
 			// string that didn't match to the new string.
-			p = submatches[n][1]
+			p = submatches[i][1]
 		}
 
 		new.WriteString(old[p:])
 		b.replaceLine(new.String(), idx)
+		b.setCurline(idx)
 	}
 	return err
 }

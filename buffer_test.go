@@ -115,3 +115,27 @@ func Test_scan(t *testing.T) {
 		}
 	}
 }
+
+func Test_simpleNReplace(t *testing.T) {
+	tests := []struct {
+		subject  string
+		pattern  string
+		replace  string
+		n        int
+		expected string
+	}{
+		{"one one one one one", "one", "two", 3, "one one two one one"},
+		{"one one one one one", "one", "two", 1, "two one one one one"},
+		{"one one one one one", "one", "two", 6, "one one one one one"},
+		{"one one one one one", "six", "two", 6, "one one one one one"},
+	}
+
+	for _, test := range tests {
+		result := simpleNReplace(test.subject, test.pattern, test.replace, test.n)
+
+		if diff := cmp.Diff(result, test.expected); diff != "" {
+			t.Errorf("given: %s; -got/+want\n%s", test.subject, diff)
+		}
+
+	}
+}

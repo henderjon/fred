@@ -163,10 +163,12 @@ func Test_doCopyNPaste(t *testing.T) {
 func Test_doSimpleReplace(t *testing.T) {
 	tests := []struct {
 		l1, l2   int
+		pattern  string
+		replace  string
 		num      string
 		expected buffer
 	}{
-		{2, 4, "1", &memoryBuf{
+		{2, 4, "or", "-", "1", &memoryBuf{
 			curline:  4,
 			lastline: 5,
 			lines: []bufferLine{
@@ -179,7 +181,20 @@ func Test_doSimpleReplace(t *testing.T) {
 			},
 			filename: "filename",
 		}},
-		{2, 4, "-1", &memoryBuf{
+		{1, 5, "or", "-", "3", &memoryBuf{
+			curline:  5,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``, mark: false},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. M-bi sed ante eu ...`, mark: false},
+				{txt: `2 Duis ut porta mi, eu ornare -ci. Etiam sed vehicula orci. ...`, mark: false},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+			},
+			filename: "filename",
+		}},
+		{2, 4, "or", "-", "-1", &memoryBuf{
 			curline:  4,
 			lastline: 5,
 			lines: []bufferLine{
@@ -196,7 +211,67 @@ func Test_doSimpleReplace(t *testing.T) {
 
 	for _, test := range tests {
 		controlBuffer := getTestActionBuffer()
-		doSimpleReplace(controlBuffer, test.l1, test.l2, "or", "-", test.num)
+		doSimpleReplace(controlBuffer, test.l1, test.l2, test.pattern, test.replace, test.num)
+
+		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+			t.Errorf("-got/+want\n%s", diff)
+		}
+
+	}
+}
+
+func Test_doRegexReplace(t *testing.T) {
+	tests := []struct {
+		l1, l2   int
+		pattern  string
+		replace  string
+		num      string
+		expected buffer
+	}{
+		{2, 4, "or", "-", "1", &memoryBuf{
+			curline:  4,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``, mark: false},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
+				{txt: `2 Duis ut p-ta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
+				{txt: `3 Nunc scelerisque urna a erat gravida p-ttitor. Donec pulvinar leo urna, id ...`, mark: false},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+			},
+			filename: "filename",
+		}},
+		{1, 5, "or", "-", "3", &memoryBuf{
+			curline:  5,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``, mark: false},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. M-bi sed ante eu ...`, mark: false},
+				{txt: `2 Duis ut porta mi, eu ornare -ci. Etiam sed vehicula orci. ...`, mark: false},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+			},
+			filename: "filename",
+		}},
+		{2, 4, "or", "-", "-1", &memoryBuf{
+			curline:  4,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``, mark: false},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
+				{txt: `2 Duis ut p-ta mi, eu -nare -ci. Etiam sed vehicula -ci. ...`, mark: false},
+				{txt: `3 Nunc scelerisque urna a erat gravida p-ttit-. Donec pulvinar leo urna, id ...`, mark: false},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+			},
+			filename: "filename",
+		}},
+	}
+
+	for _, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		doRegexReplace(controlBuffer, test.l1, test.l2, test.pattern, test.replace, test.num)
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
