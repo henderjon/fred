@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -116,7 +115,8 @@ func doInsert(input interactor, b buffer, l1 int) error {
 // doDelete moves a range of lines to the end of the buffer then decreases the last line to "forget" about the lines at the end
 func doDelete(b buffer, l1, l2 int) error {
 	if l1 <= 0 {
-		return errors.New("doDelete; invalid address")
+		l1 = 1
+		// return fmt.Errorf("doDelete; invalid addresses; %d, %d", l1, l2)
 	}
 
 	ll := b.getLastline()
