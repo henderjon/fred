@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func makeContext(b buffer, l1, l2, pager int) (int, int, error) {
@@ -42,6 +43,20 @@ func guardAddress(b buffer, addr string) (int, error) {
 	}
 
 	return i, nil
+}
+
+type stringable interface {
+	string | rune | []byte
+}
+
+// contains checks haystack for needle, given that needle can be cast to a string; guards against empty string false positives
+func contains[T stringable](haystack string, needle T) bool {
+	find := string(needle)
+	if len(find) == 0 {
+		return false
+	}
+
+	return strings.Contains(haystack, find)
 }
 
 type interactor func(prompt string) (string, error)

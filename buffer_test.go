@@ -2,6 +2,8 @@ package main
 
 import (
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func getTestBuffer() buffer {
@@ -76,6 +78,40 @@ func Test_guardAddresss(t *testing.T) {
 
 		if i != test.expected {
 			t.Errorf("error converting first address; given '%s'; got %d; want %d", test.addr, i, test.expected)
+		}
+	}
+}
+
+func Test_scan(t *testing.T) {
+	controlBuffer := getTestBuffer()
+	tests := []struct {
+		label    string
+		scanner  func() (int, bool)
+		expected []int
+	}{
+		{"forward: 1, 5-1", controlBuffer.scanForward(1, 5-1), []int{1, 2, 3, 4, 5}},
+		{"forward: 3, 5-3", controlBuffer.scanForward(3, 5-3), []int{3, 4, 5}},
+		{"forward: 2, 4-2", controlBuffer.scanForward(2, 4-2), []int{2, 3, 4}},
+		{"forward: 4, 5", controlBuffer.scanForward(4, 5), []int{4, 5, 0, 1, 2, 3}},
+		{"reverse: 5, 5-1", controlBuffer.scanReverse(1, 5-1), []int{1, 0, 5, 4, 3}},
+		{"reverse: 3, 5-3", controlBuffer.scanReverse(3, 5-3), []int{3, 2, 1}},
+		{"reverse: 2, 4-2", controlBuffer.scanReverse(2, 4-2), []int{2, 1, 0}},
+		{"reverse: 2, 2-4", controlBuffer.scanReverse(2, 4-2), []int{2, 1, 0}},
+		{"reverse: 4, 5", controlBuffer.scanReverse(4, 5), []int{4, 3, 2, 1, 0, 5}},
+	}
+
+	for _, test := range tests {
+		results := make([]int, 0)
+		for {
+			i, ok := test.scanner()
+			if !ok {
+				break
+			}
+			results = append(results, i)
+		}
+
+		if diff := cmp.Diff(results, test.expected); diff != "" {
+			t.Errorf("given: %s; -got/+want\n%s", test.label, diff)
 		}
 	}
 }

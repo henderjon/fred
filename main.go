@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strings"
 
 	"github.com/henderjon/logger"
 )
@@ -41,7 +40,7 @@ func main() {
 			continue
 		}
 
-		if cmd.globalPrefix {
+		if contains(string(prefixes), cmd.globalPrefix) {
 			err = doGlob(*cmd, b, input)
 			if err != nil {
 				fmt.Fprintln(os.Stdout, err.Error())
@@ -123,13 +122,13 @@ func doCmd(cmd command, b buffer, input interactor) error {
 	case searchRevAction:
 		return doGetNextMatchedLine(b, cmd.addrPattern, false)
 	case readAction: // read into the current buffer either shell output or a file
-		if cmd.subCommand == string(shellAction) {
+		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line2, cmd.argument)(false, b)
 		}
 		return doReadFile(b, line1, cmd.argument)
 	case writeAction: // write the current buffer to either shell (stdin) or a file
-		if cmd.subCommand == string(shellAction) {
+		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line2, cmd.argument)(true, os.Stdout)
 		}
@@ -142,6 +141,7 @@ func doCmd(cmd command, b buffer, input interactor) error {
 	return err
 }
 
+// doGlob is *big* because we're not using globals and it's called from a scope where it doesn't share information like the original implementation
 func doGlob(cmd command, b buffer, input interactor) error {
 	if len(cmd.addrPattern) == 0 {
 		return fmt.Errorf("missing address pattern")
@@ -151,48 +151,63 @@ func doGlob(cmd command, b buffer, input interactor) error {
 	if err != nil {
 		return err
 	}
+
 	// some commands require addresses
 	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
 	}
 
-	scan := b.scanForward(line1, line2)
+	// 'v' & 'V' do inverted search but are "global prefixes"
+	invertSearch := contains(string([]rune{globalNegSearchAction, globalNegIntSearchAction}), cmd.globalPrefix)
+
+	// needed later to restore cursor after glob
+	cursave := b.getCurline()
+
+	// our scan takes an upper bound number of iterations
+	numLines := line2 - line1
+	if numLines <= 0 {
+		numLines = b.getLastline() // all lines
+	}
+
+	scan := b.scanForward(line1, numLines)
 	for {
 		i, ok := scan()
 		if !ok {
 			break
 		}
 
-		if re.MatchString(b.getLine(i)) {
+		if re.MatchString(b.getLine(i)) != invertSearch {
 			b.putMark(i, true)
 			continue
 		}
 		b.putMark(i, false)
 	}
 
-	scan = b.scanForward(line1, line2)
+	// scan will loop once for every line even if the action is destructive so it can lap itself
+	// this shouldn't be an issue if we're handling getMark()s well and restoring curline when we're done
+	scan = b.scanForward(line1, numLines)
 	for {
 		i, ok := scan()
 		if !ok {
 			break
 		}
 
-		if !b.getMark(i) || strings.ContainsRune(string([]rune{globalSearchAction}), cmd.action) {
+		if !b.getMark(i) || contains(string(prefixes), cmd.action) {
 			continue
 		}
 
 		cmd.addrStart = ""
 		cmd.addrEnd = ""
+		b.putMark(i, false)
 		b.setCurline(i)
 		doCmd(cmd, b, input)
-		b.putMark(i, false)
 		b.setCurline(i)
 	}
 
+	b.setCurline(b.nextLine(cursave))
 	return nil
 
-	//1,2g/[1-5]/s/or/%/g
 	// loop over buffer, mark lines the match in order to keep track of what's been done because doCmd/do* can alter the buffer
 	// loop over buffer, execute command on each marked line
 }

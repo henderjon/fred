@@ -220,9 +220,9 @@ func Test_doGlob(t *testing.T) {
 			// destination:  "",
 			// subCommand:   "",
 			// argument:     "",
-			globalPrefix: true,
+			globalPrefix: "g",
 		}, &memoryBuf{
-			curline:  5,
+			curline:  2,
 			lastline: 5,
 			lines: []bufferLine{
 				{txt: ``, mark: false},
@@ -245,7 +245,7 @@ func Test_doGlob(t *testing.T) {
 			// destination:  "",
 			// subCommand:   "",
 			// argument:     "",
-			globalPrefix: true,
+			globalPrefix: "g",
 		}, &memoryBuf{
 			curline:  2,
 			lastline: 5,
@@ -261,13 +261,13 @@ func Test_doGlob(t *testing.T) {
 		}},
 	}
 
-	for _, test := range tests {
+	for i, test := range tests {
 		input := getInput(os.Stdin, os.Stdout)
 		controlBuffer := getTestActionBuffer()
 		doGlob(test.cmd, controlBuffer, input)
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
-			t.Errorf("-got/+want\n%s", diff)
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
 		}
 
 	}

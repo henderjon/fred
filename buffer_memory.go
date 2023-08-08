@@ -269,17 +269,23 @@ func (b *memoryBuf) defLines(start, end string, l1, l2 int) (int, int, error) {
 	return i1, i2, nil
 }
 
-// scanForward returns a func that walks the buffer's indices in a forward loop
-func (b *memoryBuf) scanForward(start, end int) func() (int, bool) {
+// scanForward returns a func that walks the buffer's indices in a forward loop. As an implementation detail, the number of lines is the number of non-zero lines.
+func (b *memoryBuf) scanForward(start, num int) func() (int, bool) {
 	stop := false
-	i := start - 1 // remove 1 because nextLine advances one
-	return func() (int, bool) {
-		i = b.nextLine(i)
-		if (start == end || end == -1) && i != start-1 { // full loop
-			return i, !stop
-		}
+	i := b.prevLine(start) // remove 1 because nextLine advances one
 
-		if (start != end && end != -1) && i != end+1 {
+	num = func(x int) int {
+		if x < 0 {
+			return -x
+		}
+		return x
+	}(num)
+
+	n := 0
+	return func() (int, bool) {
+		if n <= num { // if we loop back, we'll return '0' so have to stop a '>' and not '>="
+			n++
+			i = b.nextLine(i)
 			return i, !stop
 		}
 
@@ -288,16 +294,22 @@ func (b *memoryBuf) scanForward(start, end int) func() (int, bool) {
 }
 
 // scanReverse returns a func that walks the buffer's indices in a reverse loop
-func (b *memoryBuf) scanReverse(start, end int) func() (int, bool) {
+func (b *memoryBuf) scanReverse(start, num int) func() (int, bool) {
 	stop := false
-	i := start + 1 // add 1 because nextLine removes one
-	return func() (int, bool) {
-		i = b.prevLine(i)
-		if (start == end || end == -1) && i != start+1 { // full loop
-			return i, !stop
-		}
+	i := b.nextLine(start) // remove 1 because nextLine advances one
 
-		if (start != end && end != -1) && i == end {
+	num = func(x int) int {
+		if x < 0 {
+			return -x
+		}
+		return x
+	}(num)
+
+	n := 0
+	return func() (int, bool) {
+		if n <= num { // if we loop back, we'll return '0' so have to stop a '>' and not '>="
+			n++
+			i = b.prevLine(i)
 			return i, !stop
 		}
 

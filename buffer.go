@@ -47,6 +47,7 @@ type buffer interface {
 	nextLine(n int) int
 	prevLine(n int) int
 
+	// these two funcs could be combined but clear is better than clever
 	scanForward(int, int) func() (int, bool)
 	scanReverse(int, int) func() (int, bool)
 }

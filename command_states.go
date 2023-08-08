@@ -27,7 +27,7 @@ func lexDef(l *lexer) stateFn {
 			return lexArg
 		case r == eqAction:
 			l.emit(itemAction)
-		case r == globalSearchAction:
+		case isGlobalPrefix(r):
 			l.emit(itemGlobalPrefix)
 			delim := l.next()
 			l.ignore() // ignore the delim
@@ -59,6 +59,15 @@ func isSpace(r rune) bool {
 
 func isAction(r rune) bool {
 	return strings.ContainsRune(string(cmds), r)
+}
+
+func isGlobalPrefix(r rune) bool {
+	return strings.ContainsRune(string([]rune{
+		globalSearchAction,
+		globalIntSearchAction,
+		globalNegSearchAction,
+		globalNegIntSearchAction,
+	}), r)
 }
 
 // lexAddress parses a value that represents an address in the command
