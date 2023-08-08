@@ -10,30 +10,28 @@ import (
 	"github.com/henderjon/logger"
 )
 
-const prompt = ":"
-
 var (
 	stderr = logger.NewDropLogger(os.Stderr)
 	// stdin   = bufio.NewScanner(os.Stdin)
 	errQuit = errors.New("goodbye")
-	pager   = 5
+	pager   = 0
 )
 
 func main() {
 	opts := getParams()
-	var cursave = 1
+	pager = opts.general.pager
 	b := newMemoryBuf(opts.general.filename)
 	b = fillDemo(b)
 
 	cmdParser := &parser{}
 	input := getInput(os.Stdin, os.Stdout)
 	for { // main loop
-		line, err := input(prompt)
+		line, err := input(opts.general.prompt)
 		if err != nil {
 			break
 		}
 
-		cursave = b.getCurline()
+		cursave := b.getCurline()
 
 		cmd, err := cmdParser.run(line)
 		if cmd == nil || err != nil {
