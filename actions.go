@@ -32,6 +32,9 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 	}
 
 	for n := l1; n <= l2; n++ {
+		if n == 0 {
+			continue // hide the '0' line
+		}
 		mark := ""
 		if b.getMark((n)) {
 			mark += "-"
