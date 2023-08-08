@@ -69,7 +69,7 @@ demo: local
 
 .PHONY: test
 test: dep check
-	go test -covermode=count ./...
+	GOEXPERIMENT=loopvar go test -covermode=count ./...
 
 .PHONY: test-cover
 test-cover:
@@ -83,10 +83,10 @@ test-cover:
 
 .PHONY: local
 local: dep check
-	go build -ldflags $(LDFLAGS) -o $(BINDIR)/$(BIN)
+	GOEXPERIMENT=loopvar go build -ldflags $(LDFLAGS) -o $(BINDIR)/$(BIN)
 
 .PHONY: prod
 prod: dep check
-	GOWORK=off go build -ldflags $(LDFLAGS) -o $(BINDIR)/$(BIN)
+	GOEXPERIMENT=loopvar GOWORK=off go build -ldflags $(LDFLAGS) -o $(BINDIR)/$(BIN)
 
 
