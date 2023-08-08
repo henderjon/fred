@@ -48,6 +48,9 @@ func main() {
 		} else {
 			err = doCmd(*cmd, b, input)
 			switch true {
+			case cmd.subCommand == quitAction:
+				fmt.Fprintln(os.Stdout, errQuit)
+				os.Exit(0)
 			case err == errQuit:
 				fmt.Fprintln(os.Stdout, err.Error())
 				os.Exit(0)
@@ -55,7 +58,6 @@ func main() {
 				fmt.Fprintln(os.Stdout, err.Error())
 			}
 		}
-		// fmt.Fprint(os.Stdout, prompt)
 	}
 }
 
