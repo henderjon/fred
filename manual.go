@@ -49,16 +49,21 @@ WHY
   - Understand ed(1)
   - Create a re-readable code base not written by a proper genius
   - Use as few external libs as possible
-  - Preserve the spirit of ed(1) as fewer and fewer common devs work in advanced C
+  - Preserve the spirit of ed(1) as fewer and fewer common devs work in
+    advanced, genius-level C
   - Avoid global state even at cost
 
 DIFFERENCES WITH THE ORIGINAL ED
   - As of now, {{.Bin}} does not support the interactive elements of 'G' and 'V'
   - In {{.Bin}}, the 'z' (scroll) command is used to set a 'pager' that displays
-    n line before and after the current line. This has the added effect of
-	moving the current line forward n lines.
+    n line(s) before and after the current line. This has the added effect of
+	moving the current line forward n lines. This is applied to all un-bound
+	print commands.
   - In {{.Bin}}, 'H' isn't necessary as all errors are displayed as hiding them
     doesn't seem all the necessary.
+  - Some of the default line/ranges have been tweaked to reflect how the author
+    uses ed(1).
+  - Showing line numbers is default.
 
 NOTES
   - During development, it came to light that using Rob Pike's lexer/parser
