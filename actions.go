@@ -44,30 +44,30 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 		}
 
 		if n == b.getCurline() {
-			mark += "\u2192"
+			mark += "\u2192" // →
+			// mark += "\u2588" // █
 		}
 
 		if n > b.getNumLines() {
 			break
 		}
 
-		gutter := 0
-		for total := b.getNumLines(); total > 0; total /= 10 {
-			gutter++
-		}
+		// gutter := 0
+		// for total := b.getNumLines(); total > 0; total /= 10 {
+		// 	gutter++
+		// }
 
-		gutterStr := fmt.Sprintf("%%-2s%%%dd", gutter)
+		// gutterStr := fmt.Sprintf("%%-2s%%%dd \u2502", gutter)
+		// gutterStr = fmt.Sprintf(gutterStr, mark, n)
 
 		line := b.getLine(n)
 		switch printType {
 		default:
-			fmt.Println(line)
+			fmt.Printf("%-2s%s\n", mark, line)
 		case printTypeNum:
-			gutterStr += "\u2502 %s\n"
-			fmt.Printf(gutterStr, mark, n, line)
+			fmt.Printf("%-2s%d\t%s\n", mark, n, line)
 		case printTypeLit:
-			gutterStr += "\u2502 %+q\n"
-			fmt.Printf(gutterStr, n, line)
+			fmt.Printf("%-2s %d\t%+q\n", mark, n, line)
 		}
 	}
 
