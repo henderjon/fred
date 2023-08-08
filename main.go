@@ -124,6 +124,16 @@ func doCmd(cmd command, b buffer, input interactor) error {
 		return doGetNextMatchedLine(b, cmd.addrPattern, true)
 	case searchRevAction:
 		return doGetNextMatchedLine(b, cmd.addrPattern, false)
+	case editAction: // read into the current buffer either shell output or a file
+		if line1, err = clearBuffer(b); err != nil {
+			return err
+		}
+
+		if cmd.subCommand == shellAction {
+			b.setCurline(line1)
+			return doExternalShell(b, line1, line1, cmd.argument)(false, b)
+		}
+		return doReadFile(b, line1, cmd.argument)
 	case readAction: // read into the current buffer either shell output or a file
 		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
