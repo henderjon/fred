@@ -21,7 +21,7 @@ func main() {
 	opts := getParams()
 	pager = opts.general.pager
 	b := newMemoryBuf(opts.general.filename)
-	b = fillDemo(b)
+	// b = fillDemo(b)
 
 	cmdParser := &parser{}
 	input := getInput(os.Stdin, os.Stdout)
