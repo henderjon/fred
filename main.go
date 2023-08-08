@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"regexp"
@@ -15,12 +16,13 @@ var (
 	stderr = logger.NewDropLogger(os.Stderr)
 	// stdin   = bufio.NewScanner(os.Stdin)
 	errQuit = errors.New("goodbye")
-	pager   = 0
+	pager   = 5
 )
 
 func main() {
+	opts := getParams()
 	var cursave = 1
-	b := newMemoryBuf("")
+	b := newMemoryBuf(opts.general.filename)
 	b = fillDemo(b)
 
 	cmdParser := &parser{}
@@ -75,6 +77,9 @@ func doCmd(cmd command, b buffer, input interactor) error {
 	}
 
 	switch cmd.action {
+	case helpAction:
+		flag.Usage()
+		return nil
 	case 0: // rune default (empty action)
 		return doPrint(b, line1, line2, pager, printTypeNum)
 	case eqAction:
