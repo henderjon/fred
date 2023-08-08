@@ -26,6 +26,8 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 		return fmt.Errorf("doPrint; invalid address; %d; %d", l1, l2)
 	}
 
+	b.setCurline(l1)
+
 	l1, l2, err = makeContext(b, l1, l2, pager)
 	if err != nil {
 		return err
@@ -35,6 +37,7 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 		if n == 0 {
 			continue // hide the '0' line
 		}
+
 		mark := ""
 		if b.getMark((n)) {
 			mark += "-"
