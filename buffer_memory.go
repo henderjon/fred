@@ -285,12 +285,9 @@ func (b *memoryBuf) scanForward(start, num int) func() (int, bool) {
 	stop := false
 	i := b.prevLine(start) // remove 1 because nextLine advances one
 
-	num = func(x int) int {
-		if x < 0 {
-			return -x
-		}
-		return x
-	}(num)
+	if num < 0 {
+		num = b.getNumLines()
+	}
 
 	n := 0
 	return func() (int, bool) {
@@ -309,12 +306,9 @@ func (b *memoryBuf) scanReverse(start, num int) func() (int, bool) {
 	stop := false
 	i := b.nextLine(start) // remove 1 because nextLine advances one
 
-	num = func(x int) int {
-		if x < 0 {
-			return -x
-		}
-		return x
-	}(num)
+	if num < 0 {
+		num = b.getNumLines()
+	}
 
 	n := 0
 	return func() (int, bool) {

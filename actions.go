@@ -485,13 +485,19 @@ func doGetMarkedLine(b buffer, mark string) error {
 		mk = rune(mark[0])
 	}
 
-	for i := b.nextLine(b.getCurline()); i != b.getCurline(); i = b.nextLine(i) {
+	scan := b.scanForward(b.nextLine(b.getCurline()), b.getNumLines())
+	for {
+		i, ok := scan()
+		if !ok {
+			break
+		}
+
 		if b.hasMark(i, mk) {
 			fmt.Printf("%2d) %s\n", i, b.getLine(i))
 			b.setCurline(i)
-			return nil
 		}
 	}
+
 	return nil
 }
 
@@ -511,9 +517,9 @@ func doGetNextMatchedLine(b buffer, pattern string, forward bool) error {
 		pattern: pattern,
 	})
 
-	scan := b.scanForward(b.nextLine(b.getCurline()), b.nextLine(b.getCurline()))
+	scan := b.scanForward(b.nextLine(b.getCurline()), b.getNumLines())
 	if !forward {
-		scan = b.scanReverse(b.prevLine(b.getCurline()), b.prevLine(b.getCurline()))
+		scan = b.scanReverse(b.prevLine(b.getCurline()), b.getNumLines())
 	}
 
 	for {
