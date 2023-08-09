@@ -12,12 +12,28 @@ func getTestActionBuffer() buffer {
 		curline:  1,
 		lastline: 5,
 		lines: []bufferLine{
-			{txt: ``, mark: false},
-			{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-			{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
-			{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
-			{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-			{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+			{txt: ``},
+			{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+			{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+			{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+			{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+			{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+		},
+		filename: "filename",
+	}
+}
+
+func getTestMarkedActionBuffer() buffer {
+	return &memoryBuf{
+		curline:  1,
+		lastline: 5,
+		lines: []bufferLine{
+			{txt: ``},
+			{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: mark},
+			{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: mark},
+			{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: mark},
+			{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: mark},
+			{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: mark},
 		},
 		filename: "filename",
 	}
@@ -32,12 +48,12 @@ func Test_doDelete(t *testing.T) {
 			curline:  1,
 			lastline: 2,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
-				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
 			},
 			filename: "filename",
 		}},
@@ -45,12 +61,12 @@ func Test_doDelete(t *testing.T) {
 			curline:  0,
 			lastline: 0,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
 		}},
@@ -76,12 +92,12 @@ func Test_doMove(t *testing.T) {
 			curline:  5,
 			lastline: 5,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
-				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
 			},
 			filename: "filename",
 		}},
@@ -89,12 +105,12 @@ func Test_doMove(t *testing.T) {
 			curline:  2,
 			lastline: 5,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
+				{txt: ``},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
 			},
 			filename: "filename",
 		}},
@@ -121,15 +137,15 @@ func Test_doCopyNPaste(t *testing.T) {
 			curline:  5,
 			lastline: 8,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
-				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
 			},
 			filename: "filename",
 		}},
@@ -137,14 +153,14 @@ func Test_doCopyNPaste(t *testing.T) {
 			curline:  0,
 			lastline: 7,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+				{txt: ``},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
 		}},
@@ -172,12 +188,12 @@ func Test_doSimpleReplace(t *testing.T) {
 			curline:  4,
 			lastline: 5,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut p-ta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida p-ttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut p-ta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida p-ttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
 		}},
@@ -185,12 +201,12 @@ func Test_doSimpleReplace(t *testing.T) {
 			curline:  5,
 			lastline: 5,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. M-bi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut porta mi, eu ornare -ci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. M-bi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare -ci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
 		}},
@@ -198,12 +214,12 @@ func Test_doSimpleReplace(t *testing.T) {
 			curline:  4,
 			lastline: 5,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut p-ta mi, eu -nare -ci. Etiam sed vehicula -ci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida p-ttit-. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut p-ta mi, eu -nare -ci. Etiam sed vehicula -ci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida p-ttit-. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
 		}},
@@ -232,12 +248,12 @@ func Test_doRegexReplace(t *testing.T) {
 			curline:  4,
 			lastline: 5,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut p-ta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida p-ttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut p-ta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida p-ttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
 		}},
@@ -245,12 +261,12 @@ func Test_doRegexReplace(t *testing.T) {
 			curline:  5,
 			lastline: 5,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. M-bi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut porta mi, eu ornare -ci. Etiam sed vehicula orci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. M-bi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare -ci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
 		}},
@@ -258,12 +274,12 @@ func Test_doRegexReplace(t *testing.T) {
 			curline:  4,
 			lastline: 5,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut p-ta mi, eu -nare -ci. Etiam sed vehicula -ci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida p-ttit-. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut p-ta mi, eu -nare -ci. Etiam sed vehicula -ci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida p-ttit-. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
 		}},
@@ -300,12 +316,12 @@ func Test_doGlob(t *testing.T) {
 			curline:  2,
 			lastline: 5,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 L%em ipsum dol% sit amet, consectetur adipiscing elit. M%bi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut p%ta mi, eu %nare %ci. Etiam sed vehicula %ci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida p%ttit%. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+				{txt: ``},
+				{txt: `1 L%em ipsum dol% sit amet, consectetur adipiscing elit. M%bi sed ante eu ...`},
+				{txt: `2 Duis ut p%ta mi, eu %nare %ci. Etiam sed vehicula %ci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida p%ttit%. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
 		}},
@@ -325,12 +341,12 @@ func Test_doGlob(t *testing.T) {
 			curline:  2,
 			lastline: 5,
 			lines: []bufferLine{
-				{txt: ``, mark: false},
-				{txt: `1 L%em ipsum dol% sit amet, consectetur adipiscing elit. M%bi sed ante eu ...`, mark: false},
-				{txt: `2 Duis ut p%ta mi, eu %nare %ci. Etiam sed vehicula %ci. ...`, mark: false},
-				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: false},
-				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: false},
-				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: false},
+				{txt: ``},
+				{txt: `1 L%em ipsum dol% sit amet, consectetur adipiscing elit. M%bi sed ante eu ...`},
+				{txt: `2 Duis ut p%ta mi, eu %nare %ci. Etiam sed vehicula %ci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
 		}},
@@ -343,6 +359,70 @@ func Test_doGlob(t *testing.T) {
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+
+	}
+}
+
+func Test_doSetMarkLine_1(t *testing.T) {
+	tests := []struct {
+		l1, l2   int
+		argument string
+		expected buffer
+	}{
+		{2, 4, "foo", &memoryBuf{
+			curline:  1,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: 'f'},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: 'f'},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`, mark: 'f'},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+			},
+			filename: "filename",
+		}},
+	}
+
+	for _, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		doSetMarkLine(controlBuffer, test.l1, test.l2, test.argument)
+
+		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+			t.Errorf("-got/+want\n%s", diff)
+		}
+
+	}
+}
+
+func Test_doSetMarkLine_2(t *testing.T) {
+	tests := []struct {
+		l1, l2   int
+		argument string
+		expected buffer
+	}{
+		{4, 5, "", &memoryBuf{
+			curline:  1,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`, mark: mark},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: mark},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`, mark: mark},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+			},
+			filename: "filename",
+		}},
+	}
+
+	for _, test := range tests {
+		controlBuffer := getTestMarkedActionBuffer()
+		doSetMarkLine(controlBuffer, test.l1, test.l2, test.argument)
+
+		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+			t.Errorf("-got/+want\n%s", diff)
 		}
 
 	}

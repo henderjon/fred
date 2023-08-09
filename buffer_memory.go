@@ -139,7 +139,7 @@ func (b *memoryBuf) putLine(line string) error {
 	b.lastline++
 	newLine := bufferLine{
 		txt:  line,
-		mark: false,
+		mark: null,
 	}
 
 	// some operations (e.g. `c`) use the last line as scratch space while other simply add new lines
@@ -178,13 +178,17 @@ func (b *memoryBuf) bulkMove(from, to, dest int) {
 }
 
 // putMark sets the mark of the line at the given index
-func (b *memoryBuf) putMark(idx int, m bool) {
-	b.lines[idx].mark = m
+func (b *memoryBuf) putMark(idx int, r rune) {
+	b.lines[idx].mark = r
 }
 
 // getMark gets the mark of the line at the given index
-func (b *memoryBuf) getMark(idx int) bool {
+func (b *memoryBuf) getMark(idx int) rune {
 	return b.lines[idx].mark
+}
+
+func (b *memoryBuf) hasMark(idx int, r rune) bool {
+	return b.getMark(idx) == r
 }
 
 // reverse rearranges the given lines in reverse

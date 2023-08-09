@@ -4,13 +4,18 @@ import (
 	"io"
 )
 
+const (
+	null = '\x00'
+	mark = '\x01'
+)
+
 func (b bufferLine) String() string {
 	return b.txt
 }
 
 type bufferLine struct {
 	txt  string
-	mark bool
+	mark rune
 }
 
 // buffer is the interface for our content. It is large because of the accessor methods which are not idiomatic, but good practice.
@@ -20,32 +25,33 @@ type buffer interface {
 	defLines(start, end string, l1, l2 int) (int, int, error)
 	getNumLines() int
 
-	setCurline(i int)
+	setCurline(int)
 	getCurline() int
 
-	setLastline(i int)
+	setLastline(int)
 	getLastline() int
 
 	getFilename() string
-	setFilename(fname string)
+	setFilename(string)
 
 	setPreviousSearch(search)
 	getPreviousSearch() search
 
 	insertAfter(input interactor, idx int) error
 
-	putLine(line string) error
-	getLine(idx int) string
-	replaceLine(line string, idx int) error
+	putLine(string) error
+	getLine(int) string
+	replaceLine(string, int) error
 
 	bulkMove(from, to, dest int)
 	reverse(from, to int)
 
-	putMark(idx int, m bool)
-	getMark(idx int) bool
+	putMark(int, rune)
+	getMark(int) rune
+	hasMark(int, rune) bool
 
-	nextLine(n int) int
-	prevLine(n int) int
+	nextLine(int) int
+	prevLine(int) int
 
 	// these two funcs could be combined but clear is better than clever
 	scanForward(int, int) func() (int, bool)

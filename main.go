@@ -126,9 +126,9 @@ func doCmd(cmd command, b buffer, input interactor) error {
 	case filenameAction:
 		return doSetFilename(b, cmd.argument)
 	case putMarkAction:
-		return doToggleMarkLine(b, line1, line2)
+		return doSetMarkLine(b, line1, line2, cmd.argument)
 	case getMarkAction:
-		return doGetMarkedLine(b)
+		return doGetMarkedLine(b, cmd.argument)
 	case searchAction:
 		return doGetNextMatchedLine(b, cmd.addrPattern, true)
 	case searchRevAction:
@@ -200,10 +200,11 @@ func doGlob(cmd command, b buffer, input interactor) error {
 		}
 
 		if re.MatchString(b.getLine(i)) != invertSearch {
-			b.putMark(i, true)
+			b.putMark(i, mark)
 			continue
 		}
-		b.putMark(i, false)
+		// previously, we blanked every line's mark creating un/marked lines. If marks can be any rune, we only need to assert the mark of the lines we care about, right?
+		// b.putMark(i, null)
 	}
 
 	// scan will loop once for every line even if the action is destructive so it can lap itself
@@ -215,13 +216,13 @@ func doGlob(cmd command, b buffer, input interactor) error {
 			break
 		}
 
-		if !b.getMark(i) || contains(string(prefixes), cmd.action) {
+		if !b.hasMark(i, mark) || contains(string(prefixes), cmd.action) {
 			continue
 		}
 
 		cmd.addrStart = ""
 		cmd.addrEnd = ""
-		b.putMark(i, false)
+		b.putMark(i, null)
 		b.setCurline(i)
 		doCmd(cmd, b, input)
 		b.setCurline(i)

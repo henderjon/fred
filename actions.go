@@ -37,14 +37,15 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 			continue // hide the '0' line
 		}
 
-		mark := ""
-		if b.getMark((n)) {
-			mark += "-"
+		mk := ""
+		if m := b.getMark(n); m != null && m != mark {
+			mk += string(m)
 		}
 
 		if n == b.getCurline() {
-			mark += "\u2192" // →
-			// mark += "\u2588" // █
+			// mk += "\u2192" // →
+			mk += "\u2022" // •
+			// mk += "\u2588" // █
 		}
 
 		if n > b.getNumLines() {
@@ -62,11 +63,11 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 		line := b.getLine(n)
 		switch printType {
 		default:
-			fmt.Printf("%-2s%s\n", mark, line)
+			fmt.Printf("%-2s%s\n", mk, line)
 		case printTypeNum:
-			fmt.Printf("%-2s%d\t%s\n", mark, n, line)
+			fmt.Printf("%-2s%d\t%s\n", mk, n, line)
 		case printTypeLit:
-			fmt.Printf("%-2s %d\t%+q\n", mark, n, line)
+			fmt.Printf("%-2s %d\t%+q\n", mk, n, line)
 		}
 	}
 
@@ -466,16 +467,26 @@ func doSetFilename(b buffer, filename string) error {
 	return nil
 }
 
-func doToggleMarkLine(b buffer, l1, l2 int) error {
+func doSetMarkLine(b buffer, l1, l2 int, mark string) error {
+	mk := null
+	if len(mark) > 0 {
+		mk = rune(mark[0])
+	}
+
 	for i := l1; i <= l2; i++ {
-		b.putMark(i, !b.getMark(i))
+		b.putMark(i, mk)
 	}
 	return nil
 }
 
-func doGetMarkedLine(b buffer) error {
+func doGetMarkedLine(b buffer, mark string) error {
+	mk := null
+	if len(mark) > 0 {
+		mk = rune(mark[0])
+	}
+
 	for i := b.nextLine(b.getCurline()); i != b.getCurline(); i = b.nextLine(i) {
-		if b.getMark(i) {
+		if b.hasMark(i, mk) {
 			fmt.Printf("%2d) %s\n", i, b.getLine(i))
 			b.setCurline(i)
 			return nil
