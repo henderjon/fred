@@ -42,11 +42,11 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 			mk += string(m)
 		}
 
-		if n == b.getCurline() {
-			// mk += "\u2192" // →
-			mk += "\u2022" // •
-			// mk += "\u2588" // █
-		}
+		// if n == b.getCurline() {
+		// mk += "\u2192" // →
+		// mk += "\u2022" // •
+		// mk += "\u2588" // █
+		// }
 
 		if n > b.getNumLines() {
 			break
