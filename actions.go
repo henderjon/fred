@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -357,7 +358,12 @@ func doReadFile(b buffer, l1 int, filename string) error {
 		b.setFilename(filename)
 	}
 
-	f, err := os.Open(b.getFilename())
+	absPath, err := filepath.Abs(b.getFilename())
+	if err != nil {
+		return err
+	}
+
+	f, err := os.Open(absPath)
 	if err != nil {
 		return err
 	}
