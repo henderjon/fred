@@ -22,10 +22,10 @@ const (
 func doPrint(b buffer, l1, l2, pager int, printType int) error {
 	var err error
 	if l1 <= 0 || l1 > b.getNumLines() { // NOTE: l2 is not bound by last line; may be a problem
-		return fmt.Errorf("doPrint; invalid address; %d; %d", l1, l2)
+		return fmt.Errorf("unable to print; invalid address; %d; %d", l1, l2)
 	}
 
-	b.setCurline(l1)
+	// b.setCurline(l1)
 
 	l1, l2, err = makeContext(b, l1, l2, pager)
 	if err != nil {
@@ -84,7 +84,7 @@ func setPager(p *int, num string) error {
 
 		n, err = strconv.Atoi(num)
 		if err != nil {
-			return fmt.Errorf("invalid number: %s; %s", num, err.Error())
+			return fmt.Errorf("unable to set pager; invalid number: %s; %s", num, err.Error())
 		}
 
 		*p = n
@@ -116,7 +116,7 @@ func doInsert(input interactor, b buffer, l1 int) error {
 func doDelete(b buffer, l1, l2 int) error {
 	if l1 <= 0 {
 		l1 = 1
-		// return fmt.Errorf("doDelete; invalid addresses; %d, %d", l1, l2)
+		// return fmt.Errorf("unable to delete; invalid addresses; %d, %d", l1, l2)
 	}
 
 	ll := b.getLastline()
@@ -142,7 +142,7 @@ func doMove(b buffer, l1, l2 int, dest string) error {
 
 	// guard against bad addressing
 	if (l1 <= 0 || l3 >= l1) && (l3 <= l2) {
-		return fmt.Errorf("invalid ranges; move '%d' through '%d' to '%d'?", l1, l2, l3)
+		return fmt.Errorf("invalid ranges; unable to move '%d' through '%d' to '%d'?", l1, l2, l3)
 	}
 
 	b.bulkMove(l1, l2, l3)
@@ -192,7 +192,7 @@ func doSimpleReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 	if len(num) > 0 {
 		n, err = strconv.Atoi(num)
 		if err != nil {
-			return fmt.Errorf("invalid number: %s; %s", num, err.Error())
+			return fmt.Errorf("unable to do a simple replace; invalid number: %s; %s", num, err.Error())
 		}
 	}
 
@@ -230,7 +230,7 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 	if len(num) > 0 {
 		n, err = strconv.Atoi(num)
 		if err != nil {
-			return fmt.Errorf("invalid number: %s; %s", num, err.Error())
+			return fmt.Errorf("unable to do a regex replace; invalid number: %s; %s", num, err.Error())
 		}
 	}
 

@@ -246,7 +246,7 @@ func (b *memoryBuf) defLines(start, end string, l1, l2 int) (int, int, error) {
 	} else {
 		i1, err = strconv.Atoi(start)
 		if err != nil {
-			return 0, 0, fmt.Errorf("invalid address (start): %s; %s", start, err.Error())
+			return 0, 0, fmt.Errorf("invalid buffer address (start): %s; %s", start, err.Error())
 		}
 	}
 
@@ -258,12 +258,12 @@ func (b *memoryBuf) defLines(start, end string, l1, l2 int) (int, int, error) {
 	default:
 		i2, err = strconv.Atoi(end)
 		if err != nil {
-			return 0, 0, fmt.Errorf("invalid address (end): %s; %s", end, err.Error())
+			return 0, 0, fmt.Errorf("invalid buffer address (end): %s; %s", end, err.Error())
 		}
 	}
 
 	if i1 > i2 || i1 <= 0 {
-		return 0, 0, fmt.Errorf("defaultLines; invalid range; %d, %d", i1, i2)
+		return 0, 0, fmt.Errorf("invalid buffer range; %d, %d", i1, i2)
 	}
 
 	return i1, i2, nil
