@@ -245,9 +245,14 @@ func (b *memoryBuf) defLines(start, end string, l1, l2 int) (int, int, error) {
 		return l1, l2, nil
 	}
 
-	if start == "." || start == "" { // if no address was given, use the current line
+	switch true {
+	case start == "": // if no address was given, use the current line
 		i1 = b.getCurline()
-	} else {
+	case start == ".": // if no address was given, use the current line
+		i1 = b.getCurline()
+	case start == "$": // if no address was given, use the current line
+		i1 = b.getLastline()
+	default:
 		i1, err = strconv.Atoi(start)
 		if err != nil {
 			return 0, 0, fmt.Errorf("invalid buffer address (start): %s; %s", start, err.Error())
@@ -257,6 +262,8 @@ func (b *memoryBuf) defLines(start, end string, l1, l2 int) (int, int, error) {
 	switch true {
 	case end == "$":
 		i2 = b.getLastline()
+	case end == ".":
+		i2 = b.getCurline()
 	case end == "":
 		i2 = i1
 	default:
