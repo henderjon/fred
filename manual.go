@@ -30,7 +30,7 @@ SYNOPSIS
   $ {{.Bin}} [-h|help]
 
 DESCRIPTION
-  {{.Bin}} is a terminal line-based text editor akin to ed(1). {{.Bin}} shared
+  {{.Bin}} is a terminal line-based text editor akin to ed(1). {{.Bin}} shares
   as much feature parity as possible with the ed(1) implementation found on
   macOS which, as is understood by the author, is closer to BSD's ed(1) than the
   GNU version.
@@ -64,6 +64,8 @@ DIFFERENCES WITH THE ORIGINAL ED
   - Some of the default line/ranges have been tweaked to reflect how the author
     uses ed(1).
   - Showing line numbers is default.
+  - Marking a line ('k') is omitted for now. Users can mark lines with ' and
+    retrieve them with "
 
 NOTES
   - During development, it came to light that using Rob Pike's lexer/parser
