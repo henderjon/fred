@@ -65,7 +65,7 @@ DIFFERENCES WITH THE ORIGINAL ED
     uses ed(1).
   - Showing line numbers is default.
   - Marking a line ('k') is omitted for now. Users can mark lines with ' and
-    retrieve them with "
+    retrieve them with ". Marking lines takes a single character as a label.
 
 NOTES
   - During development, it came to light that using Rob Pike's lexer/parser
