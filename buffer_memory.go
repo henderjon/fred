@@ -14,6 +14,7 @@ type memoryBuf struct {
 	lines    []bufferLine
 	filename string
 	search   search
+	dirty    bool
 }
 
 func newMemoryBuf() buffer {
@@ -23,6 +24,7 @@ func newMemoryBuf() buffer {
 		lines:    make([]bufferLine, 1),
 		filename: "",
 		search:   search{},
+		dirty:    false,
 	}
 }
 
@@ -32,6 +34,14 @@ func (b *memoryBuf) getFilename() string {
 
 func (b *memoryBuf) setFilename(fname string) {
 	b.filename = fname
+}
+
+func (b *memoryBuf) isDirty() bool {
+	return b.dirty
+}
+
+func (b *memoryBuf) setDirty(d bool) {
+	b.dirty = d
 }
 
 // Write fulfills io.Writer
@@ -161,6 +171,7 @@ func (b *memoryBuf) replaceLine(line string, idx int) error {
 	}
 
 	b.lines[idx].txt = line
+	b.setDirty(true)
 	return nil
 }
 
@@ -175,6 +186,7 @@ func (b *memoryBuf) bulkMove(from, to, dest int) {
 		b.reverse(to+1, dest)
 		b.reverse(from, dest)
 	}
+	b.setDirty(true) // sometimes neither if clause is satisfied
 }
 
 // putMark sets the mark of the line at the given index
@@ -201,6 +213,7 @@ func (b *memoryBuf) reverse(from, to int) {
 		from++
 		to--
 	}
+	b.setDirty(true)
 }
 
 // nextLine returns the next index in the buffer, looping to 0 after lastline

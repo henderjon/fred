@@ -68,7 +68,7 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 		case printTypeNum:
 			fmt.Printf("%-2s%d\t%s\n", mk, n, line)
 		case printTypeLit:
-			fmt.Printf("%-2s %d\t%+q\n", mk, n, line)
+			fmt.Printf("%-2s%d\t%+q\n", mk, n, line)
 		}
 	}
 
@@ -415,6 +415,7 @@ func doWriteFile(b buffer, l1, l2 int, filename string) error {
 		numbyt += n + 1 // \n is always 1
 	}
 
+	b.setDirty(false)
 	fmt.Fprintln(os.Stdout, numbyt)
 	return err
 }

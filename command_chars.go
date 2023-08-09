@@ -10,6 +10,7 @@ var (
 	printNumsAction          = rune('n')
 	printLiteralAction       = rune('l')
 	quitAction               = rune('q')
+	reallyQuitAction         = rune('Q')
 	appendAction             = rune('a')
 	deleteAction             = rune('d')
 	insertAction             = rune('i')
@@ -47,6 +48,7 @@ var cmds = []rune{
 	printNumsAction,
 	printLiteralAction,
 	quitAction,
+	reallyQuitAction,
 	appendAction,
 	deleteAction,
 	insertAction,

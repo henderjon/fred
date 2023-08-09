@@ -34,6 +34,9 @@ type buffer interface {
 	getFilename() string
 	setFilename(string)
 
+	isDirty() bool
+	setDirty(bool)
+
 	setPreviousSearch(search)
 	getPreviousSearch() search
 

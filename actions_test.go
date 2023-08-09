@@ -20,6 +20,7 @@ func getTestActionBuffer() buffer {
 			{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 		},
 		filename: "filename",
+		dirty:    false,
 	}
 }
 
@@ -56,6 +57,7 @@ func Test_doDelete(t *testing.T) {
 				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 		{1, 5, &memoryBuf{
 			curline:  0,
@@ -69,15 +71,16 @@ func Test_doDelete(t *testing.T) {
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 	}
 
-	for _, test := range tests {
+	for i, test := range tests {
 		controlBuffer := getTestActionBuffer()
 		doDelete(controlBuffer, test.l1, test.l2)
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
-			t.Errorf("-got/+want\n%s", diff)
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
 		}
 
 	}
@@ -100,6 +103,7 @@ func Test_doMove(t *testing.T) {
 				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 		{4, 5, "0", &memoryBuf{
 			curline:  2,
@@ -113,6 +117,7 @@ func Test_doMove(t *testing.T) {
 				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 	}
 
@@ -148,6 +153,7 @@ func Test_doCopyNPaste(t *testing.T) {
 				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 		{4, 5, "0", &memoryBuf{
 			curline:  0,
@@ -163,15 +169,19 @@ func Test_doCopyNPaste(t *testing.T) {
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 	}
 
-	for _, test := range tests {
+	for i, test := range tests {
 		controlBuffer := getTestActionBuffer()
-		doCopyNPaste(controlBuffer, test.l1, test.l2, test.dest)
+		err := doCopyNPaste(controlBuffer, test.l1, test.l2, test.dest)
+		if err != nil {
+			t.Error(err)
+		}
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
-			t.Errorf("-got/+want\n%s", diff)
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
 		}
 
 	}
@@ -196,6 +206,7 @@ func Test_doSimpleReplace(t *testing.T) {
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 		{1, 5, "or", "-", "3", &memoryBuf{
 			curline:  5,
@@ -209,6 +220,7 @@ func Test_doSimpleReplace(t *testing.T) {
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 		{2, 4, "or", "-", "-1", &memoryBuf{
 			curline:  4,
@@ -222,6 +234,7 @@ func Test_doSimpleReplace(t *testing.T) {
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 	}
 
@@ -256,6 +269,7 @@ func Test_doRegexReplace(t *testing.T) {
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 		{1, 5, "or", "-", "3", &memoryBuf{
 			curline:  5,
@@ -269,6 +283,7 @@ func Test_doRegexReplace(t *testing.T) {
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 		{2, 4, "or", "-", "-1", &memoryBuf{
 			curline:  4,
@@ -282,6 +297,7 @@ func Test_doRegexReplace(t *testing.T) {
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 	}
 
@@ -324,6 +340,7 @@ func Test_doGlob(t *testing.T) {
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 		{command{
 			addrStart:    "1",
@@ -349,6 +366,7 @@ func Test_doGlob(t *testing.T) {
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 			},
 			filename: "filename",
+			dirty:    true,
 		}},
 	}
 

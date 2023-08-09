@@ -13,8 +13,9 @@ import (
 var (
 	stderr = logger.NewDropLogger(os.Stderr)
 	// stdin   = bufio.NewScanner(os.Stdin)
-	errQuit = errors.New("goodbye")
-	pager   = 0
+	errQuit        = errors.New("goodbye")
+	errDirtyBuffer = errors.New("you have unsaved changes; use Q to quit without saving")
+	pager          = 0
 )
 
 func main() {
@@ -56,6 +57,10 @@ func main() {
 			err = doCmd(*cmd, b, input)
 			switch true {
 			case cmd.subCommand == quitAction:
+				if b.isDirty() {
+					fmt.Fprintln(os.Stdout, errDirtyBuffer)
+					continue
+				}
 				fmt.Fprintln(os.Stdout, errQuit)
 				os.Exit(0)
 			case err == errQuit:
@@ -73,7 +78,13 @@ func doCmd(cmd command, b buffer, input interactor) error {
 
 	// some commands do not require addresses
 	switch cmd.action {
+	case reallyQuitAction:
+		b.setDirty(false)
+		return errQuit
 	case quitAction:
+		if b.isDirty() {
+			return errDirtyBuffer
+		}
 		return errQuit
 	}
 
