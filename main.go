@@ -20,8 +20,15 @@ var (
 func main() {
 	opts := getParams()
 	pager = opts.general.pager
-	b := newMemoryBuf(opts.general.filename)
-	// b = fillDemo(b)
+	b := newMemoryBuf()
+
+	if len(opts.general.filename) > 0 {
+		err := doReadFile(b, b.getCurline(), opts.general.filename)
+		if err != nil {
+			fmt.Fprintln(os.Stdout, err.Error())
+			os.Exit(1)
+		}
+	}
 
 	cmdParser := &parser{}
 	input := getInput(os.Stdin, os.Stdout)

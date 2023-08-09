@@ -361,6 +361,7 @@ func doReadFile(b buffer, l1 int, filename string) error {
 		return err
 	}
 
+	numbyt := 0
 	fs := bufio.NewScanner(f)
 	fs.Split(bufio.ScanLines)
 	for fs.Scan() {
@@ -369,9 +370,11 @@ func doReadFile(b buffer, l1 int, filename string) error {
 			break
 		}
 
+		numbyt += len(fs.Text()) + 1 // \n is always 1
 		b.putLine(fs.Text())
 	}
 
+	fmt.Fprintln(os.Stdout, numbyt)
 	return err
 }
 
@@ -398,11 +401,14 @@ func doWriteFile(b buffer, l1, l2 int, filename string) error {
 	// 	f.Write([]byte{'\n'})
 	// }
 
+	numbyt := 0
 	for i := 1; i <= b.getLastline(); i++ {
-		f.Write([]byte(b.getLine(i)))
+		n, _ := f.Write([]byte(b.getLine(i)))
 		f.Write([]byte{'\n'})
+		numbyt += n + 1 // \n is always 1
 	}
 
+	fmt.Fprintln(os.Stdout, numbyt)
 	return err
 }
 

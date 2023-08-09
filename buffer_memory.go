@@ -16,12 +16,12 @@ type memoryBuf struct {
 	search   search
 }
 
-func newMemoryBuf(fname string) buffer {
+func newMemoryBuf() buffer {
 	return &memoryBuf{
 		curline:  0,
 		lastline: 0,
 		lines:    make([]bufferLine, 1),
-		filename: fname,
+		filename: "",
 		search:   search{},
 	}
 }
