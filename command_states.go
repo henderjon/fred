@@ -22,6 +22,9 @@ func lexDef(l *lexer) stateFn {
 		case strings.ContainsRune("+-0123456789.$", r):
 			l.backup()
 			return lexAddress(itemAddress)(l)
+		case isIncr(r):
+			l.emit(itemIncr)
+			return lexAddress(itemAddress)(l)
 		case r == shellAction:
 			l.emit(itemAction)
 			return lexArg
@@ -59,6 +62,10 @@ func isSpace(r rune) bool {
 
 func isAction(r rune) bool {
 	return strings.ContainsRune(string(cmds), r)
+}
+
+func isIncr(r rune) bool {
+	return strings.ContainsRune("<>", r)
 }
 
 func isGlobalPrefix(r rune) bool {

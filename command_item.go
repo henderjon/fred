@@ -23,6 +23,7 @@ const (
 	itemAddress
 	itemAddressPattern
 	itemRange
+	itemIncr
 	itemAction
 	itemPattern
 	itemSubstitution
@@ -39,6 +40,7 @@ var itemTypes = map[itemType]string{
 	itemAddress:        "itemAddress",        // a single address
 	itemAddressPattern: "itemAddressPattern", // find lines matching this pattern
 	itemRange:          "itemRange",          // a range of addresses
+	itemIncr:           "itemIncr",           // use relative addresses
 	itemAction:         "itemAction",
 	itemPattern:        "itemPattern",
 	itemSubstitution:   "itemSubstitution",

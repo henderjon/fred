@@ -115,7 +115,7 @@ func doCmd(cmd command, b buffer, input interactor, cache *cache) error {
 	}
 
 	// some commands require addresses
-	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, b.getCurline(), b.getCurline())
+	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
 	}
@@ -211,7 +211,7 @@ func doGlobMarks(cmd command, b buffer) error {
 	}
 
 	// some commands require addresses
-	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, b.getCurline(), b.getCurline())
+	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
 	}
@@ -245,7 +245,7 @@ func doGlobMarks(cmd command, b buffer) error {
 // doGlob is *big* because we're not using globals and it's called from a scope where it doesn't share information like the original implementation
 func doGlob(cmd command, b buffer, input interactor, cache *cache) error {
 	// some commands require addresses
-	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, b.getCurline(), b.getCurline())
+	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
 	}
@@ -291,7 +291,7 @@ func doGlob(cmd command, b buffer, input interactor, cache *cache) error {
 
 func doInteractiveGlob(cmd command, b buffer, input interactor, cache *cache, prompt string) error {
 	// some commands require addresses
-	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, b.getCurline(), b.getCurline())
+	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
 	}

@@ -32,8 +32,8 @@ func (p *parser) run(input string) (*command, error) {
 			c.setAction(rune(i.val[0]))
 		case itemDestination:
 			c.setDestination(i.val)
-		// case itemAdditional:
-		// c.setSubCommand(i.val)
+		case itemIncr:
+			c.setIncr(i.val)
 		case itemAddressPattern:
 			c.setAddrPattern(i.val)
 		case itemPattern:

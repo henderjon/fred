@@ -34,6 +34,12 @@ func Test_parser(t *testing.T) {
 		{"10'bar", &command{addrStart: "10", action: putMarkAction, argument: "bar"}, false},
 		{"10,25'b", &command{addrStart: "10", addrEnd: "25", action: putMarkAction, argument: "b"}, false},
 
+		{"10>5'b", &command{addrStart: "10", addrEnd: "5", addrIncr: ">", action: putMarkAction, argument: "b"}, false},
+		{"10<5'b", &command{addrStart: "10", addrEnd: "5", addrIncr: "<", action: putMarkAction, argument: "b"}, false},
+		{".<5'b", &command{addrStart: ".", addrEnd: "5", addrIncr: "<", action: putMarkAction, argument: "b"}, false},
+		{">5'b", &command{addrEnd: "5", addrIncr: ">", action: putMarkAction, argument: "b"}, false},
+		{">'b", &command{addrIncr: ">", action: putMarkAction, argument: "b"}, false},
+
 		{"\"b", &command{action: getMarkAction, argument: "b"}, false},
 		{"\"bar", &command{action: getMarkAction, argument: "bar"}, false},
 		{"\"b", &command{action: getMarkAction, argument: "b"}, false},

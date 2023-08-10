@@ -8,6 +8,7 @@ import (
 type command struct {
 	addrStart    string
 	addrEnd      string
+	addrIncr     string
 	addrPattern  string
 	action       rune
 	pattern      string
@@ -42,12 +43,13 @@ func (c *command) String() string {
 }
 
 func (c *command) setAddr(f string) {
-	if len(c.addrStart) == 0 {
-		c.addrStart = f
+	if len(c.addrIncr) > 0 ||
+		len(c.addrStart) > 0 {
+		c.addrEnd = f
 		return
 	}
 
-	c.addrEnd = f
+	c.addrStart = f
 }
 
 func (c *command) setAction(a rune) {
@@ -93,4 +95,8 @@ func (c *command) setArgument(s string) {
 
 func (c *command) setDestination(s string) {
 	c.destination = s
+}
+
+func (c *command) setIncr(s string) {
+	c.addrIncr = s
 }

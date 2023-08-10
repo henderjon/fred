@@ -240,7 +240,7 @@ func (b *memoryBuf) getLine(idx int) string {
 }
 
 // defLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
-func (b *memoryBuf) defLines(start, end string, l1, l2 int) (int, int, error) {
+func (b *memoryBuf) defLines(start, end, incr string, l1, l2 int) (int, int, error) {
 	var (
 		err    error
 		i1, i2 int
@@ -278,11 +278,36 @@ func (b *memoryBuf) defLines(start, end string, l1, l2 int) (int, int, error) {
 		}
 	}
 
+	i1, i2 = b.defIncr(incr, i1, i2)
+
 	if i1 > i2 || i1 <= 0 {
 		return 0, 0, fmt.Errorf("invalid buffer range; %d, %d", i1, i2)
 	}
 
 	return i1, i2, nil
+}
+
+func (b *memoryBuf) defIncr(incr string, start, rel int) (int, int) {
+	end := rel
+	if incr == ">" {
+		end = start + rel
+	}
+
+	if incr == "<" {
+		end = start
+		start -= rel
+	}
+
+	if start < 1 {
+		start = 1
+	}
+
+	if end > b.getLastline() {
+		end = b.getLastline()
+	}
+
+	return start, end
+
 }
 
 // scanForward returns a func that walks the buffer's indices in a forward loop. As an implementation detail, the number of lines is the number of non-zero lines.

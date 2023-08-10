@@ -100,7 +100,7 @@ func simpleNReplace(subject, pattern, replace string, n int) string {
 // clearBuffer blanks the current buffer. Long term this should probably be added to the buffer interface and handle checking for a dirty buffer ...
 func clearBuffer(b buffer) error {
 	// some commands require addresses
-	line1, line2, err := b.defLines("", "", b.getCurline(), b.getCurline())
+	line1, line2, err := b.defLines("", "", "", b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
 	}

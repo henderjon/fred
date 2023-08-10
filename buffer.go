@@ -22,7 +22,8 @@ type bufferLine struct {
 type buffer interface {
 	io.ReadWriter
 
-	defLines(start, end string, l1, l2 int) (int, int, error)
+	defLines(start, end, incr string, l1, l2 int) (int, int, error)
+	defIncr(incr string, start, rel int) (int, int)
 	getNumLines() int
 
 	setCurline(int)
