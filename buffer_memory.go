@@ -191,7 +191,9 @@ func (b *memoryBuf) bulkMove(from, to, dest int) {
 
 // putMark sets the mark of the line at the given index
 func (b *memoryBuf) putMark(idx int, r rune) {
-	b.lines[idx].mark = r
+	if idx != 0 { // do not allow the zero line to be marked
+		b.lines[idx].mark = r
+	}
 }
 
 // getMark gets the mark of the line at the given index
