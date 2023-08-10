@@ -147,9 +147,9 @@ func doCmd(cmd command, b buffer, input interactor, cache *cache) error {
 	case copyAction:
 		return doCopyNPaste(b, line1, line2, cmd.destination)
 	case simpleReplaceAction:
-		return doSimpleReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum)
+		return doSimpleReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
 	case regexReplaceAction:
-		return doRegexReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum)
+		return doRegexReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
 	case joinAction:
 		return doJoinLines(b, line1, line2, cmd.pattern)
 	case transliterateAction:

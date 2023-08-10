@@ -187,8 +187,21 @@ func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	return nil
 }
 
-func doSimpleReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
+func doSimpleReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) error {
 	var err error
+
+	prevReplace := cache.getPreviousReplace()
+	if len(pattern) == 0 { // no pattern means to repeat the last search
+		pattern = prevReplace.pattern
+		sub = prevReplace.replace
+		num = prevReplace.replaceNum
+	}
+
+	cache.setPreviousReplace(replace{
+		pattern:    pattern,
+		replace:    sub,
+		replaceNum: num,
+	})
 
 	n := 1 // default to 1; not -1 ("global")
 	if len(num) > 0 {
@@ -203,10 +216,10 @@ func doSimpleReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 		old := b.getLine(idx)
 		if n < 0 {
 			// replace first n matches; always -1 (all)
-			new = strings.Replace(old, pattern, replace, n)
+			new = strings.Replace(old, pattern, sub, n)
 		} else {
 			// replace nth match
-			new = simpleNReplace(old, pattern, replace, n)
+			new = simpleNReplace(old, pattern, sub, n)
 		}
 		b.replaceLine(new, idx)
 	}
@@ -215,11 +228,24 @@ func doSimpleReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 	return err
 }
 
-func doRegexReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
+func doRegexReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) error {
 	var (
 		err error
 		re  *regexp.Regexp
 	)
+
+	prevReplace := cache.getPreviousReplace()
+	if len(pattern) == 0 { // no pattern means to repeat the last search
+		pattern = prevReplace.pattern
+		sub = prevReplace.replace
+		num = prevReplace.replaceNum
+	}
+
+	cache.setPreviousReplace(replace{
+		pattern:    pattern,
+		replace:    sub,
+		replaceNum: num,
+	})
 
 	re, err = regexp.Compile(pattern)
 	if err != nil {
@@ -258,7 +284,7 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, replace, num string) error {
 			// using the indexes from 'submatches[n]' replaces it with the
 			// expanded replacement in 'replace' and appends it to 'result' in
 			// other words, result is what should go into the new string
-			result := re.ExpandString(result, replace, old, submatches[i])
+			result := re.ExpandString(result, sub, old, submatches[i])
 			// create a new string add the characters of the old string from the
 			// beginning of the last match (or zero) to the beginning of the
 			// current match (we're currently iterating)

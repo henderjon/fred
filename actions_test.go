@@ -240,7 +240,7 @@ func Test_doSimpleReplace(t *testing.T) {
 
 	for _, test := range tests {
 		controlBuffer := getTestActionBuffer()
-		doSimpleReplace(controlBuffer, test.l1, test.l2, test.pattern, test.replace, test.num)
+		doSimpleReplace(controlBuffer, test.l1, test.l2, test.pattern, test.replace, test.num, &cache{})
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
@@ -303,7 +303,7 @@ func Test_doRegexReplace(t *testing.T) {
 
 	for _, test := range tests {
 		controlBuffer := getTestActionBuffer()
-		doRegexReplace(controlBuffer, test.l1, test.l2, test.pattern, test.replace, test.num)
+		doRegexReplace(controlBuffer, test.l1, test.l2, test.pattern, test.replace, test.num, &cache{})
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
