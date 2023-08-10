@@ -75,9 +75,12 @@ var cmds = []rune{
 	shellAction,
 }
 
-var prefixes = []rune{
+var globsPre = []rune{
 	globalSearchAction,
-	globalIntSearchAction,
 	globalNegSearchAction,
+}
+
+var intrGlobsPre = []rune{
+	globalIntSearchAction,
 	globalNegIntSearchAction,
 }
