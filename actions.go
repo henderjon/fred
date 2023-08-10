@@ -508,8 +508,8 @@ func doGetMarkedLine(b buffer, mark string) error {
 	return nil
 }
 
-func doGetNextMatchedLine(b buffer, pattern string, forward bool) error {
-	prevSearch := b.getPreviousSearch()
+func doGetNextMatchedLine(b buffer, pattern string, forward bool, cache *cache) error {
+	prevSearch := cache.getPreviousSearch()
 	if len(pattern) == 0 { // no pattern means to repeat the last search
 		pattern = prevSearch.pattern
 	}
@@ -519,7 +519,7 @@ func doGetNextMatchedLine(b buffer, pattern string, forward bool) error {
 		return err
 	}
 
-	b.setPreviousSearch(search{
+	cache.setPreviousSearch(search{
 		reverse: !forward,
 		pattern: pattern,
 	})

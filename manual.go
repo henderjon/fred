@@ -75,6 +75,10 @@ NOTES
     clarity. Certainly, there are places where this code takes the long way
     around ("brute force" so to speak). Perhaps over time this code base will
     evolve.
+  - ed(1)'s original author was a proper genius and use recursion as their first
+    language. {{.Bin}} is the opposite. The long way around was taken as a way
+    of making the code base readable even at the expense of duplication and
+    verbosity.
 
 EXAMPLES
   $ {{.Bin}} -h

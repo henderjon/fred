@@ -37,9 +37,6 @@ type buffer interface {
 	isDirty() bool
 	setDirty(bool)
 
-	setPreviousSearch(search)
-	getPreviousSearch() search
-
 	insertAfter(input interactor, idx int) error
 
 	putLine(string) error

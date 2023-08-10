@@ -239,16 +239,6 @@ func (b *memoryBuf) getLine(idx int) string {
 	return b.lines[idx].txt
 }
 
-// store the last successful search pattern
-func (b *memoryBuf) setPreviousSearch(search search) {
-	b.search = search
-}
-
-// get the last successful search pattern
-func (b *memoryBuf) getPreviousSearch() search {
-	return b.search
-}
-
 // defLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
 func (b *memoryBuf) defLines(start, end string, l1, l2 int) (int, int, error) {
 	var (

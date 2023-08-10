@@ -22,6 +22,7 @@ func main() {
 	opts := getParams()
 	pager = opts.general.pager
 	b := newMemoryBuf()
+	cache := &cache{}
 
 	if len(opts.general.filename) > 0 {
 		err := doReadFile(b, b.getCurline(), opts.general.filename)
@@ -29,11 +30,13 @@ func main() {
 			fmt.Fprintln(os.Stdout, err.Error())
 			os.Exit(1)
 		}
+		b.setDirty(false) // loading the file on init isn't *actually* dirty
 	}
 
 	cmdParser := &parser{}
 	input := getInput(os.Stdin, os.Stdout)
 	for { // main loop
+		// line, err := input(fmt.Sprintf("%d%s", b.getCurline(), opts.general.prompt))
 		line, err := input(opts.general.prompt)
 		if err != nil {
 			break
@@ -49,12 +52,12 @@ func main() {
 		}
 
 		if contains(string(prefixes), cmd.globalPrefix) {
-			err = doGlob(*cmd, b, input)
+			err = doGlob(*cmd, b, input, cache)
 			if err != nil {
 				fmt.Fprintln(os.Stdout, err.Error())
 			}
 		} else {
-			err = doCmd(*cmd, b, input)
+			err = doCmd(*cmd, b, input, cache)
 			switch true {
 			case cmd.subCommand == quitAction:
 				if b.isDirty() {
@@ -73,7 +76,7 @@ func main() {
 	}
 }
 
-func doCmd(cmd command, b buffer, input interactor) error {
+func doCmd(cmd command, b buffer, input interactor, cache *cache) error {
 	var err error
 
 	// some commands do not require addresses
@@ -141,9 +144,9 @@ func doCmd(cmd command, b buffer, input interactor) error {
 	case getMarkAction:
 		return doGetMarkedLine(b, cmd.argument)
 	case searchAction:
-		return doGetNextMatchedLine(b, cmd.addrPattern, true)
+		return doGetNextMatchedLine(b, cmd.addrPattern, true, cache)
 	case searchRevAction:
-		return doGetNextMatchedLine(b, cmd.addrPattern, false)
+		return doGetNextMatchedLine(b, cmd.addrPattern, false, cache)
 	case editAction: // read into the current buffer either shell output or a file
 		if err = clearBuffer(b); err != nil {
 			return err
@@ -175,7 +178,7 @@ func doCmd(cmd command, b buffer, input interactor) error {
 }
 
 // doGlob is *big* because we're not using globals and it's called from a scope where it doesn't share information like the original implementation
-func doGlob(cmd command, b buffer, input interactor) error {
+func doGlob(cmd command, b buffer, input interactor, cache *cache) error {
 	if len(cmd.addrPattern) == 0 {
 		return fmt.Errorf("missing address pattern")
 	}
@@ -235,7 +238,7 @@ func doGlob(cmd command, b buffer, input interactor) error {
 		cmd.addrEnd = ""
 		b.putMark(i, null)
 		b.setCurline(i)
-		doCmd(cmd, b, input)
+		doCmd(cmd, b, input, cache)
 		b.setCurline(i)
 	}
 
