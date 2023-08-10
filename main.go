@@ -36,7 +36,6 @@ func main() {
 	cmdParser := &parser{}
 	input := getInput(os.Stdin, os.Stdout)
 	for { // main loop
-		// line, err := input(fmt.Sprintf("%d%s", b.getCurline(), opts.general.prompt))
 		line, err := input(opts.general.prompt)
 		if err != nil {
 			break
@@ -54,6 +53,11 @@ func main() {
 		// regular 'g' or 'v'
 		if contains(string(globsPre), cmd.globalPrefix) {
 			err = doGlobMarks(*cmd, b)
+			if err != nil {
+				fmt.Fprintln(os.Stdout, err.Error())
+				continue
+			}
+
 			err = doGlob(*cmd, b, input, cache)
 			if err != nil {
 				fmt.Fprintln(os.Stdout, err.Error())
@@ -64,6 +68,11 @@ func main() {
 		// interactive 'G' or 'V'
 		if contains(string(intrGlobsPre), cmd.globalPrefix) {
 			err = doGlobMarks(*cmd, b)
+			if err != nil {
+				fmt.Fprintln(os.Stdout, err.Error())
+				continue
+			}
+
 			err = doInteractiveGlob(*cmd, b, input, cache, opts.general.prompt)
 			if err != nil {
 				fmt.Fprintln(os.Stdout, err.Error())
