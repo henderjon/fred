@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"regexp"
 
 	"github.com/henderjon/logger"
 )
@@ -52,12 +51,6 @@ func main() {
 
 		// regular 'g' or 'v'
 		if contains(string(globsPre), cmd.globalPrefix) {
-			err = doGlobMarks(*cmd, b)
-			if err != nil {
-				fmt.Fprintln(os.Stdout, err.Error())
-				continue
-			}
-
 			err = doGlob(*cmd, b, input, cache)
 			if err != nil {
 				fmt.Fprintln(os.Stdout, err.Error())
@@ -67,12 +60,6 @@ func main() {
 
 		// interactive 'G' or 'V'
 		if contains(string(intrGlobsPre), cmd.globalPrefix) {
-			err = doGlobMarks(*cmd, b)
-			if err != nil {
-				fmt.Fprintln(os.Stdout, err.Error())
-				continue
-			}
-
 			err = doInteractiveGlob(*cmd, b, input, cache, opts.general.prompt)
 			if err != nil {
 				fmt.Fprintln(os.Stdout, err.Error())
@@ -206,15 +193,9 @@ func doCmd(cmd command, b buffer, input interactor, cache *cache) error {
 	return err
 }
 
-func doGlobMarks(cmd command, b buffer) error {
-	if len(cmd.addrPattern) == 0 {
-		return fmt.Errorf("missing address pattern")
-	}
-
-	re, err := regexp.Compile(cmd.addrPattern)
-	if err != nil {
-		return err
-	}
+// doGlob is *big* because we're not using globals and it's called from a scope where it doesn't share information like the original implementation
+func doGlob(cmd command, b buffer, input interactor, cache *cache) error {
+	var err error
 
 	// some commands require addresses
 	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
@@ -224,46 +205,18 @@ func doGlobMarks(cmd command, b buffer) error {
 
 	// 'v' & 'V' do inverted search but are "global prefixes"
 	invertSearch := contains(string([]rune{globalNegSearchAction, globalNegIntSearchAction}), cmd.globalPrefix)
-
-	// our scan takes an upper bound number of iterations
 	numLines := line2 - line1
-	if numLines <= 0 {
-		numLines = b.getLastline() // all lines
+	if numLines <= 0 { // I like big loops
+		numLines = b.getNumLines()
 	}
 
-	scan := b.scanForward(line1, numLines)
-	for {
-		i, ok := scan()
-		if !ok {
-			break
-		}
-
-		if re.MatchString(b.getLine(i)) != invertSearch {
-			b.putMark(i, mark)
-			continue
-		}
-		// previously, we blanked every line's mark creating un/marked lines. If marks can be any rune, we only need to assert the mark of the lines we care about, right?
-		// b.putMark(i, null)
-	}
-	return nil
-}
-
-// doGlob is *big* because we're not using globals and it's called from a scope where it doesn't share information like the original implementation
-func doGlob(cmd command, b buffer, input interactor, cache *cache) error {
-	// some commands require addresses
-	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
+	err = doMarkLines(b, line1, numLines, cmd.addrPattern, invertSearch)
 	if err != nil {
 		return err
 	}
 
 	// needed later to restore cursor after glob
 	cursave := b.getCurline()
-
-	// our scan takes an upper bound number of iterations
-	numLines := line2 - line1
-	if numLines <= 0 {
-		numLines = b.getLastline() // all lines
-	}
 
 	// scan will loop once for every line even if the action is destructive so it can lap itself
 	// this shouldn't be an issue if we're handling getMark()s well and restoring curline when we're done
@@ -296,20 +249,28 @@ func doGlob(cmd command, b buffer, input interactor, cache *cache) error {
 }
 
 func doInteractiveGlob(cmd command, b buffer, input interactor, cache *cache, prompt string) error {
+	var err error
+
 	// some commands require addresses
 	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
 	}
 
+	// 'v' & 'V' do inverted search but are "global prefixes"
+	invertSearch := contains(string([]rune{globalNegSearchAction, globalNegIntSearchAction}), cmd.globalPrefix)
+	numLines := line2 - line1
+	if numLines <= 0 { // I like big loops
+		numLines = b.getNumLines()
+	}
+
+	err = doMarkLines(b, line1, numLines, cmd.addrPattern, invertSearch)
+	if err != nil {
+		return err
+	}
+
 	// needed later to restore cursor after glob
 	cursave := b.getCurline()
-
-	// our scan takes an upper bound number of iterations
-	numLines := line2 - line1
-	if numLines <= 0 {
-		numLines = b.getLastline() // all lines
-	}
 
 	// scan will loop once for every line even if the action is destructive so it can lap itself
 	// this shouldn't be an issue if we're handling getMark()s well and restoring curline when we're done

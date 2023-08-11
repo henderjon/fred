@@ -352,7 +352,7 @@ func doBreakLines(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) 
 	// our scan takes an upper bound number of iterations
 	numLines := l2 - l1 // scan will handle <0
 
-	err = doMarkLines(b, l1, numLines, pattern)
+	err = doMarkLines(b, l1, numLines, pattern, false)
 	if err != nil {
 		return err
 	}
@@ -486,7 +486,7 @@ func doWriteFile(b buffer, l1, l2 int, filename string) error {
 	if len(filename) > 0 {
 		b.setFilename(filename)
 	}
-
+	// TODO: prompt for filename?
 	// f, err := os.Create(filename)
 	f, err := os.OpenFile(b.getFilename(), os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {

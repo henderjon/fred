@@ -373,7 +373,6 @@ func Test_doGlob(t *testing.T) {
 	for i, test := range tests {
 		input := getInput(os.Stdin, os.Stdout)
 		controlBuffer := getTestActionBuffer()
-		doGlobMarks(test.cmd, controlBuffer)
 		doGlob(test.cmd, controlBuffer, input, &cache{})
 
 		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {

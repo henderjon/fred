@@ -113,7 +113,7 @@ func clearBuffer(b buffer) error {
 	return doDelete(b, line1, line2)
 }
 
-func doMarkLines(b buffer, line1, numLines int, pattern string) error {
+func doMarkLines(b buffer, line1, numLines int, pattern string, invert bool) error {
 	if len(pattern) == 0 {
 		return fmt.Errorf("missing search pattern")
 	}
@@ -130,7 +130,7 @@ func doMarkLines(b buffer, line1, numLines int, pattern string) error {
 			break
 		}
 
-		if re.MatchString(b.getLine(i)) {
+		if re.MatchString(b.getLine(i)) != invert {
 			b.putMark(i, mark)
 		} else if b.getMark(i) == mark {
 			// previously marked lines that match should be ignored
