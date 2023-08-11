@@ -6,6 +6,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 type memoryBuf struct {
@@ -148,10 +149,11 @@ func (b *memoryBuf) insertAfter(input interactor, idx int) error {
 func (b *memoryBuf) putLine(line string) error {
 	b.lastline++
 	newLine := bufferLine{
-		txt:  line,
+		txt: strings.TrimRightFunc(line, func(r rune) bool {
+			return unicode.IsSpace(r)
+		}),
 		mark: null,
 	}
-
 	// some operations (e.g. `c`) use the last line as scratch space while other simply add new lines
 	if b.lastline <= len(b.lines)-1 {
 		b.lines[b.lastline] = newLine
