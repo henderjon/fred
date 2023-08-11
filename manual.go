@@ -66,6 +66,9 @@ DIFFERENCES WITH THE ORIGINAL ED
   - Showing line numbers is default.
   - Marking a line ('k') is omitted for now. Users can mark lines with ' and
     retrieve them with ". Marking lines takes a single character as a label.
+  - {{.Bin}} doesn't support arithmetic operators with address numbers (e.g +2
+    or -7). Instead, {{.Bin}} uses '<' as a look behind operator and '>' as a
+    look ahead operator.
 
 NOTES
   - During development, it came to light that using Rob Pike's lexer/parser

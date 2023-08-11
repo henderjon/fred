@@ -56,7 +56,7 @@ func Test_parser(t *testing.T) {
 		{"10,15j|mm|", &command{addrStart: "10", addrEnd: "15", pattern: "mm", action: joinAction}, false},
 		{"10,15t|foo|bar|", &command{addrStart: "10", addrEnd: "15", pattern: "foo", substitution: "bar", action: transliterateAction}, false},
 		{"e path/file.ext", &command{action: editAction, argument: "path/file.ext"}, false},
-		{"E path/file.ext", &command{action: superEditAction, argument: "path/file.ext"}, false},
+		{"E path/file.ext", &command{action: reallyEditAction, argument: "path/file.ext"}, false},
 		{"e !grep -riF \"fatty fatpants\" .", &command{action: editAction, subCommand: '!', argument: "grep -riF \"fatty fatpants\" ."}, false},
 		{"f path/file.ext", &command{action: filenameAction, argument: "path/file.ext"}, false},
 		{"e path/file.ext", &command{action: editAction, argument: "path/file.ext"}, false},

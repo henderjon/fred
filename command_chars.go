@@ -34,7 +34,7 @@ var (
 	simpleReplaceAction      = rune('s') // Substitute CMD
 	regexReplaceAction       = rune('S')
 	editAction               = rune('e') // Edit command
-	superEditAction          = rune('E') // Edit command
+	reallyEditAction         = rune('E') // Edit command
 	filenameAction           = rune('f') // File command
 	readAction               = rune('r') // read [file] command
 	writeAction              = rune('w') // write [file] command
@@ -67,7 +67,7 @@ var cmds = []rune{
 	simpleReplaceAction,
 	regexReplaceAction,
 	editAction,
-	superEditAction,
+	reallyEditAction,
 	filenameAction,
 	readAction,
 	writeAction,
