@@ -35,6 +35,9 @@ DESCRIPTION
   macOS which, as is understood by the author, is closer to BSD's ed(1) than the
   GNU version.
 
+  Because 'Clear is better than clever' and the author can't read genius level
+  C, brute force was employed in an attempt at clarity.
+
   The differences found follow the author's usage patterns. In other words, the
   differences between {{.Bin}} and the original ed(1) are based on how the
   author uses ed(1).
