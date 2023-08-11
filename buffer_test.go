@@ -93,7 +93,7 @@ func Test_scan(t *testing.T) {
 		{"forward: 3, 5-3", controlBuffer.scanForward(3, 5-3), []int{3, 4, 5}},
 		{"forward: 2, 4-2", controlBuffer.scanForward(2, 4-2), []int{2, 3, 4}},
 		{"forward: 4, 5", controlBuffer.scanForward(4, 5), []int{4, 5, 0, 1, 2, 3}},
-		{"forward: 1, 1", controlBuffer.scanForward(1, 1), []int{1}},
+		{"forward: 1, 0", controlBuffer.scanForward(1, 0), []int{1}},
 		{"reverse: 5, 5-1", controlBuffer.scanReverse(1, 5-1), []int{1, 0, 5, 4, 3}},
 		{"reverse: 3, 5-3", controlBuffer.scanReverse(3, 5-3), []int{3, 2, 1}},
 		{"reverse: 2, 4-2", controlBuffer.scanReverse(2, 4-2), []int{2, 1, 0}},
