@@ -77,7 +77,7 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 	return nil
 }
 
-func setPager(p *int, num string) error {
+func setPager(pager *int, num string) error {
 	if len(num) > 0 {
 		var (
 			err error
@@ -89,10 +89,10 @@ func setPager(p *int, num string) error {
 			return fmt.Errorf("unable to set pager; invalid number: %s; %s", num, err.Error())
 		}
 
-		*p = n
+		*pager = n
 	}
 
-	fmt.Printf("pager set to %d\n", *p)
+	fmt.Printf("pager set to %d\n", *pager)
 	return nil
 }
 
