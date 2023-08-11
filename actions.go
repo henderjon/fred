@@ -284,7 +284,7 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cache
 			// using the indexes from 'submatches[n]' replaces it with the
 			// expanded replacement in 'replace' and appends it to 'result' in
 			// other words, result is what should go into the new string
-			result := re.ExpandString(result, sub, old, submatches[i])
+			result := re.ExpandString(result, sub, old, submatches[i]) // submatches is [][]int .. the inner []int is the index of the beginning and the index of the end of the submatch
 			// create a new string add the characters of the old string from the
 			// beginning of the last match (or zero) to the beginning of the
 			// current match (we're currently iterating)
