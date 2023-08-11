@@ -29,7 +29,8 @@ func (c *command) String() string {
 		fmt.Fprintf(&cmd, ",%s", c.addrEnd)
 	}
 
-	fmt.Fprintf(&cmd, ") addrPattern(%s)", c.addrPattern)
+	fmt.Fprintf(&cmd, ") incr(%s)", c.addrIncr)
+	fmt.Fprintf(&cmd, " addrPattern(%s)", c.addrPattern)
 	fmt.Fprintf(&cmd, " action(%s)", string(c.action))
 	fmt.Fprintf(&cmd, " pattern(%s)", c.pattern)
 	fmt.Fprintf(&cmd, " substitution(%s)", c.substitution)
