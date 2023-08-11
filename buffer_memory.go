@@ -321,7 +321,7 @@ func (b *memoryBuf) scanForward(start, num int) func() (int, bool) {
 		num = b.getNumLines()
 	}
 
-	n := 0
+	n := 0 // this is essentially a do{}while() loop so '0' will execute once
 	return func() (int, bool) {
 		if n <= num { // if we loop back, we'll return '0' so have to stop a '>' and not '>="
 			n++
