@@ -6,7 +6,7 @@ PREFIX=$(HOME)
 ################################################################################
 #### BUILD VARS
 ################################################################################
-BIN=ffred
+BIN=fred
 BINDIR=bin
 HEAD=$(shell git describe --dirty --long --tags 2> /dev/null  || git rev-parse --short HEAD)
 TIMESTAMP=$(shell TZ=UTC date '+%FT%T %Z')
