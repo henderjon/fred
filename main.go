@@ -150,6 +150,8 @@ func doCmd(cmd command, b buffer, input interactor, cache *cache) error {
 		return doSimpleReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
 	case regexReplaceAction:
 		return doRegexReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
+	case breakAction:
+		return doBreakLines(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
 	case joinAction:
 		return doJoinLines(b, line1, line2, cmd.pattern)
 	case transliterateAction:

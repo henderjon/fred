@@ -339,6 +339,73 @@ func doJoinLines(b buffer, l1, l2 int, sep string) error {
 	return err
 }
 
+func doBreakLines(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) error {
+	if len(sub) > 0 {
+		return doRegexReplace(b, l1, l2, pattern, sub, num, cache)
+	}
+
+	var (
+		err error
+		re  *regexp.Regexp
+	)
+
+	// our scan takes an upper bound number of iterations
+	numLines := l2 - l1 // scan will handle <0
+
+	err = doMarkLines(b, l1, numLines, pattern)
+	if err != nil {
+		return err
+	}
+
+	re, err = regexp.Compile(pattern)
+	if err != nil {
+		return err
+	}
+
+	n := 1 // default to 1; not -1 ("global")
+	if len(num) > 0 {
+		n, err = strconv.Atoi(num)
+		if err != nil {
+			return fmt.Errorf("unable to do a regex replace; invalid number: %s; %s", num, err.Error())
+		}
+	}
+
+	// scan backwards because adding lines to the buffer will screw up our scan
+	scan := b.scanReverse(l2, numLines)
+	for {
+		idx, ok := scan()
+		if !ok {
+			break
+		}
+
+		b.setCurline(idx)
+
+		var p int
+		old := b.getLine(idx)
+
+		// go has no regex func for only doing ONE replacement. This uses a
+		// workaround to walk through the string and manually replace each match
+		// in order to emulate the behavior.
+
+		// this finds the indexes of the matches
+		submatches := re.FindAllStringSubmatchIndex(old, n)
+		for i := 0; i < len(submatches); i++ {
+			// this catch allows us to do nth replacements
+			if n != -1 && n-1 != i { // adjust for 0 index
+				continue
+			}
+			// for documentation see doRegexReplace
+			b.putLine(old[p:submatches[i][1]])
+			p = submatches[i][1]
+		}
+		b.putLine(old[p:])
+		doDelete(b, idx, idx)
+	}
+
+	b.setCurline(l2)
+	return err
+}
+
 func doTransliterate(b buffer, l1, l2 int, pattern, replace string) error {
 	var err error
 

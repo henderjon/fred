@@ -31,6 +31,7 @@ var (
 	transliterateAction      = rune('t')
 	setPagerAction           = rune('z')
 	joinAction               = rune('j')
+	breakAction              = rune('b')
 	simpleReplaceAction      = rune('s') // Substitute CMD
 	regexReplaceAction       = rune('S')
 	editAction               = rune('e') // Edit command
@@ -64,6 +65,7 @@ var cmds = []rune{
 	transliterateAction,
 	setPagerAction,
 	joinAction,
+	breakAction,
 	simpleReplaceAction,
 	regexReplaceAction,
 	editAction,

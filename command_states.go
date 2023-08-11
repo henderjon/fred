@@ -105,12 +105,13 @@ func lexAction(l *lexer) stateFn {
 		return lexAddress(itemDestination)(l)
 
 	// consider arg vs pattern
-	case l.acceptOne(string([]rune{joinAction})):
+	case l.acceptOne(string([]rune{joinAction, breakAction})): // TODO: join dones't need a replace num...?
 		l.emit(itemAction)
 		delim := l.next()
 		// stderr.Log(string(delim))
 		l.ignore() // ignore the delim
-		return lexPattern(delim, itemPattern)(l)
+		lexPattern(delim, itemPattern)(l)
+		return lexReplaceNum(l)
 	case l.acceptOne(string([]rune{putMarkAction, getMarkAction})):
 		l.emit(itemAction)
 		return lexArg(l)

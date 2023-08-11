@@ -39,6 +39,11 @@ func Test_parser(t *testing.T) {
 		{".<5'b", &command{addrStart: ".", addrEnd: "5", addrIncr: "<", action: putMarkAction, argument: "b"}, false},
 		{">5'b", &command{addrEnd: "5", addrIncr: ">", action: putMarkAction, argument: "b"}, false},
 		{">'b", &command{addrIncr: ">", action: putMarkAction, argument: "b"}, false},
+		{">5b", &command{addrEnd: "5", addrIncr: ">", action: breakAction}, false},
+		{"1,5b/e.//g", &command{addrStart: "1", addrEnd: "5", action: breakAction, pattern: "e.", replaceNum: "-1"}, false},
+		{">5b/really//", &command{addrEnd: "5", addrIncr: ">", action: breakAction, pattern: "really"}, false},
+		{">5b/really/", &command{addrEnd: "5", addrIncr: ">", action: breakAction, pattern: "really"}, false},
+		{">5b/really/g", &command{addrEnd: "5", addrIncr: ">", action: breakAction, pattern: "really", replaceNum: "-1"}, false},
 
 		{"\"b", &command{action: getMarkAction, argument: "b"}, false},
 		{"\"bar", &command{action: getMarkAction, argument: "bar"}, false},
@@ -51,6 +56,7 @@ func Test_parser(t *testing.T) {
 		{"10,25g|mm|s!and!for!p", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", action: simpleReplaceAction, pattern: "and", substitution: "for", subCommand: 'p'}, false},
 		{"10,25g/mm/s/and/for/g", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", replaceNum: "-1", action: simpleReplaceAction, pattern: "and", substitution: "for"}, false},
 		{"10,25g/mm/s/and/for/3", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", replaceNum: "3", action: simpleReplaceAction, pattern: "and", substitution: "for"}, false},
+		{"10,25g/mm/s/and/for/", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", action: simpleReplaceAction, pattern: "and", substitution: "for"}, false},
 		{"10,25g/mm/m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", action: moveAction, destination: "35"}, false},
 		{"10,25g|mm|m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", action: moveAction, destination: "35"}, false},
 		{"10,15j|mm|", &command{addrStart: "10", addrEnd: "15", pattern: "mm", action: joinAction}, false},
@@ -84,7 +90,7 @@ func Test_parser(t *testing.T) {
 		{"+12i", &command{addrStart: "+12", action: insertAction}, false},
 		{"   12 a  ", &command{addrStart: "12", action: appendAction}, false},
 		{"   12,a  ", &command{addrStart: "12", addrEnd: "$", action: appendAction}, false},
-		{"   12 b  ", nil, true},                                                     // unknown command
+		{"   12 o  ", nil, true},                                                     // unknown command
 		{"g/^f[ob]ar/", &command{globalPrefix: "g", addrPattern: `^f[ob]ar`}, false}, // missing address
 		{",g/^f[ob]ar/", &command{addrStart: "1", addrEnd: "$", globalPrefix: "g", addrPattern: `^f[ob]ar`}, false},
 		{"5,g/^f[ob]ar/", &command{addrStart: "5", addrEnd: "$", globalPrefix: "g", addrPattern: `^f[ob]ar`}, false},

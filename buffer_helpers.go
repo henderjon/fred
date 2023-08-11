@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -110,4 +111,32 @@ func clearBuffer(b buffer) error {
 	}
 
 	return doDelete(b, line1, line2)
+}
+
+func doMarkLines(b buffer, line1, numLines int, pattern string) error {
+	if len(pattern) == 0 {
+		return fmt.Errorf("missing search pattern")
+	}
+
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return err
+	}
+
+	scan := b.scanForward(line1, numLines)
+	for {
+		i, ok := scan()
+		if !ok {
+			break
+		}
+
+		if re.MatchString(b.getLine(i)) {
+			b.putMark(i, mark)
+		} else if b.getMark(i) == mark {
+			// previously marked lines that match should be ignored
+			b.putMark(i, null)
+		}
+
+	}
+	return nil
 }
