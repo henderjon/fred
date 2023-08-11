@@ -21,7 +21,7 @@ type lexer struct {
 
 // next returns the next rune in the input.
 func (l *lexer) next() rune {
-	if l.pos >= len(l.input) {
+	if len(l.input[l.pos:]) <= 0 {
 		l.width = 0
 		return eof
 	}
@@ -89,7 +89,7 @@ func (l *lexer) acceptRun(valid string) bool {
 func (l *lexer) acceptUntil(invalid string) bool {
 	var i int
 	for ; !l.accept(invalid); i++ {
-		if l.pos >= len(l.input) {
+		if l.width == 0 {
 			return false // if we run out of chars before we find our end
 		}
 	}

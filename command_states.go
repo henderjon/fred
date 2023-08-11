@@ -35,9 +35,6 @@ func lexDef(l *lexer) stateFn {
 			delim := l.next()
 			l.ignore() // ignore the delim
 			return lexPattern(delim, itemAddressPattern)
-		case strings.ContainsRune(string([]rune{searchAction, searchRevAction}), r):
-			l.emit(itemAction)
-			return lexPattern(r, itemAddressPattern)
 		case isAction(r):
 			l.backup()
 			return lexAction
@@ -103,14 +100,19 @@ func lexAction(l *lexer) stateFn {
 	case l.acceptOne(string([]rune{moveAction, copyAction, setPagerAction})):
 		l.emit(itemAction)
 		return lexAddress(itemDestination)(l)
-
-	// consider arg vs pattern
-	case l.acceptOne(string([]rune{joinAction, breakAction})): // TODO: join dones't need a replace num...?
+	case l.acceptOne(string([]rune{searchAction})):
+		l.emit(itemAction)
+		return lexPattern(searchAction, itemAddressPattern)
+	case l.acceptOne(string([]rune{searchRevAction})):
+		l.emit(itemAction)
+		return lexPattern(searchRevAction, itemAddressPattern)
+	case l.acceptOne(string([]rune{joinAction, breakAction})): // TODO: join doesn't need a replace num... consider arg vs pattern ... ?
 		l.emit(itemAction)
 		delim := l.next()
 		// stderr.Log(string(delim))
 		l.ignore() // ignore the delim
 		lexPattern(delim, itemPattern)(l)
+		// lexPattern(delim, itemSubstitution)(l)
 		return lexReplaceNum(l)
 	case l.acceptOne(string([]rune{putMarkAction, getMarkAction})):
 		l.emit(itemAction)
@@ -136,15 +138,15 @@ func lexAction(l *lexer) stateFn {
 
 // lexPattern checks for the regex pattern for 'g' and 's'
 func lexPattern(delim rune, t itemType) stateFn {
-	var level int
 	return stateFn(func(l *lexer) stateFn {
 		// consume anything until next delim; allow empty patterns
+
 		l.acceptUntil(string(delim))
+
 		if delim == l.peek() {
 			l.emit(t)
-			l.acceptRun(string(delim))
+			l.acceptOne(string(delim))
 			l.ignore()
-			level++
 		} else {
 			return l.errorf("missing the closing delim")
 		}
