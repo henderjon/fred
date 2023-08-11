@@ -86,6 +86,67 @@ NOTES
     of making the code base readable even at the expense of duplication and
     verbosity.
 
+COMMANDS
+  Most commands default to the current line but some take a range:
+    - (.) indicates a single line
+    - (,) indicates a range of lines
+
+  - (.)a   [append] Adds the provided input after the current line
+  - (,)b/regex/
+           [break]  Breaks the given line(s) after each occurrence of regex
+  - (,)c   [change] Removes the given line(s) before adding the provided input
+  - (,)d   [delete] Removes the given line(s)
+  - e file [edit] Clears the current buffer before loading the given file
+  - e !exe [edit] Clears the current buffer before loading the output of exe
+  - E file [edit] Acts the same as 'e' but without prompting for unsaved changes
+  - E !exe [edit] Acts the same as 'e' but without prompting for unsaved changes
+  - f name [file] Sets the filename of the current buffer
+  - G   globalIntSearchAction    =
+  - g   globalSearchAction       =
+  - h      [help] Shows this document
+  - (.)i   [insert] Adds the provided input before the current line.
+  - (,)j/sep/
+           [join] Joins the given lines using sep
+  - (,)k(.)
+           [copy] Duplicates the given line(s) to the given destination
+  - (,)l   [print] Prints the given line(s) but exposes hidden chars
+  - (,)M   [mirror] Reverses the order of the given line(s)
+  - (,)m(.)
+           [move] Moves the given line(s) to the given destination
+  - (,)n   [print] Prints the given line(s) but exposes line numbers
+  - (,)p   [print] Prints the given line(s)
+  - q      [quit] Prompt for unsaved changes, then Exit
+  - Q      [quit] Exit without prompting for unsaved changes
+  - (.)r file
+           [read] Loads the given file at the given address
+  - (.)r !exe
+           [read] Loads the output of exe at the given address
+  - (,)s/pat/sub/n
+           [substitute] Replaces nth pat with sub in the given line(s). If n
+           is 'g' or '-1' replace all occurrences. If n is absent only do the
+           first occurrence
+  - (,)S/pat/sub/n
+           [substitute] Replaces nth pat with sub in the given line(s). If n
+           is 'g' or '-1' replace all occurrences. If n is absent only do the
+           first occurrence
+  - (,)t/find/repl/
+           [transliterate] Replace each character in find with it corresponding
+           char from repl in the given line(s)
+  - V   globalNegIntSearchAction =
+  - v   globalNegSearchAction    =
+  - w file [write] Write the buffer to file
+  - zn     [pager] Set pager to n. Pager is the number of lines before and after
+           to show when printing lines.
+  - !exe   [shell] Execute exe in a shell
+  - (,)"a  [mark] Get all the lines marked with 'a' [any single character]
+  - /regex/
+           [search] Find the next line matching regex. Use '//' to repeat
+  - (,)'a  [mark] Mark each of the given lines with 'a' [any single character]
+  - \regex\
+           [search] Find the previous line matching regex. Use '\\' to repeat
+  - =      [print] Show only the line number of the current line
+
+
 EXAMPLES
   $ {{.Bin}} -h
 

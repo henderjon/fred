@@ -45,8 +45,7 @@ var itemTypes = map[itemType]string{
 	itemPattern:        "itemPattern",
 	itemSubstitution:   "itemSubstitution",
 	itemDestination:    "itemDestination",
-	// itemAdditional:     "itemAdditional",
-	itemGlobalPrefix: "itemGlobalPrefix",
-	itemReplaceNum:   "itemReplaceNum",
-	itemArg:          "itemArg",
+	itemGlobalPrefix:   "itemGlobalPrefix",
+	itemReplaceNum:     "itemReplaceNum",
+	itemArg:            "itemArg",
 }
