@@ -26,7 +26,7 @@ func getParams() allParams {
 	})
 
 	params := allParams{}
-	flag.BoolVar(&params.general.debug, "debug", false, "output the currently set path")
+	// flag.BoolVar(&params.general.debug, "debug", false, "output the currently set path")
 	flag.StringVar(&params.general.filename, "file", "", "edit `filename`; the last unnamed arg will be used if not provided")
 	flag.StringVar(&params.general.prompt, "prompt", ":", "the string to display at the beginning of each line")
 	// flag.IntVar(&params.general.gutter, "gutter", 2, "the space-padded width of the line number gutter")
