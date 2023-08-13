@@ -101,8 +101,11 @@ COMMANDS
   - E file [edit] Acts the same as 'e' but without prompting for unsaved changes
   - E !exe [edit] Acts the same as 'e' but without prompting for unsaved changes
   - f name [file] Sets the filename of the current buffer
-  - G   globalIntSearchAction    =
-  - g   globalSearchAction       =
+  - G/regex/
+           [global] Search all lines that match regex prompt for commands for
+           each line
+  - g/regex/
+           [global] Search all lines for regex
   - h      [help] Shows this document
   - (.)i   [insert] Adds the provided input before the current line.
   - (,)j/sep/
@@ -132,8 +135,11 @@ COMMANDS
   - (,)t/find/repl/
            [transliterate] Replace each character in find with it corresponding
            char from repl in the given line(s)
-  - V   globalNegIntSearchAction =
-  - v   globalNegSearchAction    =
+  - V/regex/
+           [global] Search all lines that do not match regex prompt for commands
+           for each line
+  - v/regex/
+           [global] Search all lines that do not match regex
   - w file [write] Write the buffer to file
   - zn     [pager] Set pager to n. Pager is the number of lines before and after
            to show when printing lines.
