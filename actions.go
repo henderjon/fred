@@ -479,14 +479,24 @@ func doReadFile(b buffer, l1 int, filename string) error {
 }
 
 // doReadFile adds the contents of filename and adds them to the buffer after l1
-func doWriteFile(b buffer, l1, l2 int, filename string) error {
+func doWriteFile(input interactor, b buffer, l1, l2 int, filename string) error {
 	var err error
 	b.setCurline(l1)
+
+	if len(b.getFilename()) <= 0 && len(filename) <= 0 {
+		filename, err = input("filename? ")
+		if err != nil {
+			return err
+		}
+		if len(filename) <= 0 {
+			return fmt.Errorf("cannot write empty file name")
+		}
+	}
 
 	if len(filename) > 0 {
 		b.setFilename(filename)
 	}
-	// TODO: prompt for filename?
+
 	// f, err := os.Create(filename)
 	f, err := os.OpenFile(b.getFilename(), os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {

@@ -184,7 +184,7 @@ func doCmd(cmd command, b buffer, input interactor, cache *cache) error {
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line2, cmd.argument)(true, os.Stdout)
 		}
-		return doWriteFile(b, line1, line2, cmd.argument)
+		return doWriteFile(input, b, line1, line2, cmd.argument)
 	}
 
 	stderr.Log(line1, line2)
