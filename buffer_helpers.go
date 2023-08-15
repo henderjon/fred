@@ -140,3 +140,15 @@ func doMarkLines(b buffer, line1, numLines int, pattern string, invert bool) err
 	}
 	return nil
 }
+
+func handleTabs(s string) string {
+	s = strings.ReplaceAll(s, `\\t`, "\x1A") // \x1A is just a placeholder
+	s = strings.ReplaceAll(s, `\t`, "\x09")
+	return strings.ReplaceAll(s, "\x1A", `\t`)
+}
+
+// func handleNewlines(s string) string {
+// 	s = strings.ReplaceAll(s, `\\n`, "\x1A")
+// 	s = strings.ReplaceAll(s, `\n`, "\n")
+// 	return strings.ReplaceAll(s, "\x1A", `\n`)
+// }

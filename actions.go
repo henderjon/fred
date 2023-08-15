@@ -247,6 +247,9 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cache
 		replaceNum: num,
 	})
 
+	pattern = handleTabs(pattern)
+	// sub = handleTabs(prevReplace.replace)
+
 	re, err = regexp.Compile(pattern)
 	if err != nil {
 		return err
