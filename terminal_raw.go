@@ -52,6 +52,5 @@ func (t *localTerm) println(a ...any) (n int, err error) {
 func (t *localTerm) input(prompt string) (string, error) {
 	t.term.SetPrompt(prompt)
 	ln, err := t.term.ReadLine()
-	// t.Fprintln("")
 	return string(ln), err
 }

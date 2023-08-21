@@ -10,8 +10,7 @@ import (
 )
 
 var (
-	stderr = logger.NewDropLogger(os.Stderr)
-	// stdin   = bufio.NewScanner(os.Stdin)
+	stderr         = logger.NewDropLogger(os.Stderr)
 	errQuit        = errors.New("goodbye")
 	errDirtyBuffer = errors.New("you have unsaved changes; use Q to quit without saving")
 	pager          = 0
@@ -42,7 +41,6 @@ func main() {
 	cmdParser := &parser{}
 	for { // main loop
 		var msg string
-		// inout.Fprint(os.Stdout, "\0337")
 		line, err := inout.input(opts.general.prompt)
 		if err != nil {
 			break
@@ -94,8 +92,6 @@ func main() {
 		case msg != "":
 			inout.println(msg)
 		}
-
-		// fmt.Fprint(os.Stdout, "\0338")
 	}
 }
 
