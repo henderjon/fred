@@ -13,14 +13,13 @@ var (
 	stderr         = logger.NewDropLogger(os.Stderr)
 	errQuit        = errors.New("goodbye")
 	errDirtyBuffer = errors.New("you have unsaved changes; use Q to quit without saving")
-	pager          = 0
 )
 
 func main() {
 	opts := getParams()
-	pager = opts.general.pager
 	b := newMemoryBuf()
 	cache := &cache{}
+	cache.setPager(opts.general.pager)
 
 	inout, destructor := newClassicTerm(os.Stdin, os.Stdout)
 	if !opts.general.classic { // if we switch these, the terminal gets stuck in raw
@@ -121,15 +120,15 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 		flag.Usage()
 		return "", nil
 	case 0: // rune default (empty action)
-		return "", doPrint(inout, b, line1, line2, pager, printTypeNum)
+		return "", doPrint(inout, b, line1, line2, cache.getPager(), printTypeNum)
 	case eqAction:
 		return doPrintAddress(b, line2)
 	case printAction:
-		return "", doPrint(inout, b, line1, line2, pager, printTypeReg)
+		return "", doPrint(inout, b, line1, line2, cache.getPager(), printTypeReg)
 	case printNumsAction:
-		return "", doPrint(inout, b, line1, line2, pager, printTypeNum)
+		return "", doPrint(inout, b, line1, line2, cache.getPager(), printTypeNum)
 	case printLiteralAction:
-		return "", doPrint(inout, b, line1, line2, pager, printTypeLit)
+		return "", doPrint(inout, b, line1, line2, cache.getPager(), printTypeLit)
 	case appendAction:
 		return "", doAppend(inout, b, line1)
 	case insertAction:
@@ -155,7 +154,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	case mirrorAction:
 		return "", doMirrorLines(b, line1, line2)
 	case setPagerAction:
-		return setPager(&pager, cmd.destination)
+		return setPager(cmd.destination, cache)
 	case shellAction:
 		return doExternalShell(b, line1, line2, cmd.argument)(false, os.Stdout)
 	case filenameAction:

@@ -77,7 +77,7 @@ func doPrint(inout termio, b buffer, l1, l2, pager int, printType int) error {
 	return nil
 }
 
-func setPager(pager *int, num string) (string, error) {
+func setPager(num string, cache *cache) (string, error) {
 	if len(num) > 0 {
 		var (
 			err error
@@ -89,10 +89,10 @@ func setPager(pager *int, num string) (string, error) {
 			return "", fmt.Errorf("unable to set pager; invalid number: %s; %s", num, err.Error())
 		}
 
-		*pager = n
+		cache.setPager(n)
 	}
 
-	return fmt.Sprintf("pager set to %d", *pager), nil
+	return fmt.Sprintf("pager set to %d", cache.getPager()), nil
 }
 
 // doPrintAddress asks for 'l2' because it should print the end of the requested range knowing that if only one address is given, it is a range of a single number
