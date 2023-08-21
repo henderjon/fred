@@ -23,19 +23,27 @@ func main() {
 	b := newMemoryBuf()
 	cache := &cache{}
 
+	inout, destructor := newClassicTerm(os.Stdin, os.Stdout)
+	if !opts.general.classic { // if we switch these, the terminal gets stuck in raw
+		inout, destructor = newLocalTerm(os.Stdin, os.Stdout)
+	}
+	defer destructor()
+
 	if len(opts.general.filename) > 0 {
-		err := doReadFile(b, b.getCurline(), opts.general.filename)
+		numbts, err := doReadFile(b, b.getCurline(), opts.general.filename)
 		if err != nil {
-			fmt.Fprintln(os.Stdout, err.Error())
-			os.Exit(1)
+			inout.Fprintln(err.Error())
+			return
 		}
+		inout.Fprintln(numbts)
 		b.setDirty(false) // loading the file on init isn't *actually* dirty
 	}
 
 	cmdParser := &parser{}
-	input := getInput(os.Stdin, os.Stdout)
 	for { // main loop
-		line, err := input(opts.general.prompt)
+		var msg string
+		// inout.Fprint(os.Stdout, "\0337")
+		line, err := inout.input(opts.general.prompt)
 		if err != nil {
 			break
 		}
@@ -44,107 +52,112 @@ func main() {
 
 		cmd, err := cmdParser.run(line)
 		if cmd == nil || err != nil {
-			fmt.Fprintf(os.Stdout, "invalid command; %s\n", err.Error())
+			inout.Fprintf("invalid command; %s\n", err.Error())
 			b.setCurline(cursave)
 			continue
 		}
 
 		// regular 'g' or 'v'
 		if contains(string(globsPre), cmd.globalPrefix) {
-			err = doGlob(*cmd, b, input, cache)
+			err = doGlob(*cmd, b, inout, cache)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, err.Error())
+				inout.Fprintln(err.Error())
 			}
 			continue
 		}
 
 		// interactive 'G' or 'V'
 		if contains(string(intrGlobsPre), cmd.globalPrefix) {
-			err = doInteractiveGlob(*cmd, b, input, cache, opts.general.prompt)
+			err = doInteractiveGlob(*cmd, b, inout, cache, opts.general.prompt)
 			if err != nil {
-				fmt.Fprintln(os.Stdout, err.Error())
+				inout.Fprintln(err.Error())
 			}
 			continue
 		}
 
-		err = doCmd(*cmd, b, input, cache)
+		// TODO: doCmd should return a string and an err and all our single line printing could be here which will avoid having to inject a printer
+
+		msg, err = doCmd(*cmd, b, inout, cache)
 		switch true {
 		case cmd.subCommand == quitAction:
 			if b.isDirty() {
-				fmt.Fprintln(os.Stdout, errDirtyBuffer)
+				inout.Fprintln(errDirtyBuffer)
 				continue
 			}
-			fmt.Fprintln(os.Stdout, errQuit)
-			os.Exit(0)
+			inout.Fprintln(errQuit)
+			return
 		case err == errQuit:
-			fmt.Fprintln(os.Stdout, err.Error())
-			os.Exit(0)
+			inout.Fprintln(err.Error())
+			return
 		case err != nil:
-			fmt.Fprintln(os.Stdout, err.Error())
+			inout.Fprintln(err.Error())
+		case msg != "":
+			inout.Fprintln(msg)
 		}
 
+		// fmt.Fprint(os.Stdout, "\0338")
 	}
 }
 
-func doCmd(cmd command, b buffer, input interactor, cache *cache) error {
+func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	var err error
 
 	// some commands do not require addresses
 	switch cmd.action {
 	case reallyQuitAction:
 		b.setDirty(false)
-		return errQuit
+		return "", errQuit
 	case quitAction:
 		if b.isDirty() {
-			return errDirtyBuffer
+			return "", errDirtyBuffer
 		}
-		return errQuit
+		return "", errQuit
 	}
 
 	// some commands require addresses
 	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	switch cmd.action {
 	case helpAction:
 		flag.Usage()
-		return nil
+		return "", nil
 	case 0: // rune default (empty action)
-		return doPrint(b, line1, line2, pager, printTypeNum)
+		return "", doPrint(inout, b, line1, line2, pager, printTypeNum)
 	case eqAction:
 		return doPrintAddress(b, line2)
 	case printAction:
-		return doPrint(b, line1, line2, pager, printTypeReg)
+		return "", doPrint(inout, b, line1, line2, pager, printTypeReg)
 	case printNumsAction:
-		return doPrint(b, line1, line2, pager, printTypeNum)
+		return "", doPrint(inout, b, line1, line2, pager, printTypeNum)
 	case printLiteralAction:
-		return doPrint(b, line1, line2, pager, printTypeLit)
+		return "", doPrint(inout, b, line1, line2, pager, printTypeLit)
 	case appendAction:
-		return doAppend(input, b, line1)
+		return "", doAppend(inout, b, line1)
 	case insertAction:
-		return doInsert(input, b, line1)
+		return "", doInsert(inout, b, line1)
 	case deleteAction:
-		return doDelete(b, line1, line2)
+		return "", doDelete(b, line1, line2)
 	case changeAction:
-		return doChange(input, b, line1, line2)
+		return "", doChange(inout, b, line1, line2)
 	case moveAction:
-		return doMove(b, line1, line2, cmd.destination)
+		return "", doMove(b, line1, line2, cmd.destination)
 	case copyAction:
-		return doCopyNPaste(b, line1, line2, cmd.destination)
+		return "", doCopyNPaste(b, line1, line2, cmd.destination)
 	case simpleReplaceAction:
-		return doSimpleReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
+		return "", doSimpleReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
 	case regexReplaceAction:
-		return doRegexReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
+		return "", doRegexReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
 	case breakAction:
-		return doBreakLines(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
+		return "", doBreakLines(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
 	case joinAction:
-		return doJoinLines(b, line1, line2, cmd.pattern)
+		return "", doJoinLines(b, line1, line2, cmd.pattern)
 	case transliterateAction:
-		return doTransliterate(b, line1, line2, cmd.pattern, cmd.substitution)
+		return "", doTransliterate(b, line1, line2, cmd.pattern, cmd.substitution)
 	case mirrorAction:
-		return doMirrorLines(b, line1, line2)
+		return "", doMirrorLines(b, line1, line2)
 	case setPagerAction:
 		return setPager(&pager, cmd.destination)
 	case shellAction:
@@ -152,20 +165,20 @@ func doCmd(cmd command, b buffer, input interactor, cache *cache) error {
 	case filenameAction:
 		return doSetFilename(b, cmd.argument)
 	case putMarkAction:
-		return doSetMarkLine(b, line1, line2, cmd.argument)
+		return "", doSetMarkLine(b, line1, line2, cmd.argument)
 	case getMarkAction:
-		return doGetMarkedLine(b, cmd.argument)
+		return "", doGetMarkedLine(inout, b, cmd.argument)
 	case searchAction:
-		return doGetNextMatchedLine(b, cmd.addrPattern, true, cache)
+		return "", doGetNextMatchedLine(inout, b, cmd.addrPattern, true, cache)
 	case searchRevAction:
-		return doGetNextMatchedLine(b, cmd.addrPattern, false, cache)
+		return "", doGetNextMatchedLine(inout, b, cmd.addrPattern, false, cache)
 	case reallyEditAction:
 		b.setDirty(false)
 		fallthrough // 'E' is exactly like edit but ignore the unsaved changes warning.
 		// generally speaking "fallthrough" should be avoided, but these two commands are almost identical
 	case editAction: // read into the current buffer either shell output or a file
 		if err = clearBuffer(b); err != nil {
-			return err
+			return "", err
 		}
 
 		if cmd.subCommand == shellAction {
@@ -190,11 +203,11 @@ func doCmd(cmd command, b buffer, input interactor, cache *cache) error {
 	stderr.Log(line1, line2)
 	stderr.Log(cmd)
 
-	return err
+	return "", err
 }
 
 // doGlob is *big* because we're not using globals and it's called from a scope where it doesn't share information like the original implementation
-func doGlob(cmd command, b buffer, input interactor, cache *cache) error {
+func doGlob(cmd command, b buffer, inout termio, cache *cache) error {
 	var err error
 
 	// some commands require addresses
@@ -237,7 +250,7 @@ func doGlob(cmd command, b buffer, input interactor, cache *cache) error {
 		cmd.addrEnd = ""
 		b.putMark(i, null)
 		b.setCurline(i)
-		doCmd(cmd, b, input, cache)
+		doCmd(cmd, b, inout, cache)
 		b.setCurline(i)
 	}
 
@@ -248,7 +261,7 @@ func doGlob(cmd command, b buffer, input interactor, cache *cache) error {
 	// loop over buffer, execute command on each marked line
 }
 
-func doInteractiveGlob(cmd command, b buffer, input interactor, cache *cache, prompt string) error {
+func doInteractiveGlob(cmd command, b buffer, inout termio, cache *cache, prompt string) error {
 	var err error
 
 	// some commands require addresses
@@ -292,11 +305,11 @@ func doInteractiveGlob(cmd command, b buffer, input interactor, cache *cache, pr
 		b.putMark(i, null)
 		b.setCurline(i)
 
-		fmt.Fprintln(os.Stdout, ".. "+b.getLine(i))
+		inout.Fprintln(".. " + b.getLine(i))
 
 		stop := false
 		for !stop {
-			line, err := input(fmt.Sprintf(".. %s", prompt))
+			line, err := inout.input(fmt.Sprintf(".. %s", prompt))
 			if err != nil {
 				return err
 			}
@@ -316,7 +329,7 @@ func doInteractiveGlob(cmd command, b buffer, input interactor, cache *cache, pr
 				return nil
 			}
 
-			err = doCmd(*cmd, b, input, cache)
+			_, err = doCmd(*cmd, b, inout, cache)
 			switch true {
 			case err != nil:
 				stop = true

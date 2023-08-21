@@ -20,7 +20,7 @@ const (
 	printTypeLit
 )
 
-func doPrint(b buffer, l1, l2, pager int, printType int) error {
+func doPrint(inout termio, b buffer, l1, l2, pager int, printType int) error {
 	var err error
 	if l1 <= 0 || l1 > b.getNumLines() { // NOTE: l2 is not bound by last line; may be a problem
 		return fmt.Errorf("unable to print; invalid address; %d; %d", l1, l2)
@@ -64,11 +64,11 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 		line := b.getLine(n)
 		switch printType {
 		default:
-			fmt.Printf("%-2s%s\n", mk, line)
+			inout.Fprintf("%-2s%s", mk, line)
 		case printTypeNum:
-			fmt.Printf("%-2s%d\t%s\n", mk, n, line)
+			inout.Fprintf("%-2s%d\t%s", mk, n, line)
 		case printTypeLit:
-			fmt.Printf("%-2s%d\t%+q\n", mk, n, line)
+			inout.Fprintf("%-2s%d\t%+q", mk, n, line)
 		}
 	}
 
@@ -77,7 +77,7 @@ func doPrint(b buffer, l1, l2, pager int, printType int) error {
 	return nil
 }
 
-func setPager(pager *int, num string) error {
+func setPager(pager *int, num string) (string, error) {
 	if len(num) > 0 {
 		var (
 			err error
@@ -86,32 +86,30 @@ func setPager(pager *int, num string) error {
 
 		n, err = strconv.Atoi(num)
 		if err != nil {
-			return fmt.Errorf("unable to set pager; invalid number: %s; %s", num, err.Error())
+			return "", fmt.Errorf("unable to set pager; invalid number: %s; %s", num, err.Error())
 		}
 
 		*pager = n
 	}
 
-	fmt.Printf("pager set to %d\n", *pager)
-	return nil
+	return fmt.Sprintf("pager set to %d", *pager), nil
 }
 
 // doPrintAddress asks for 'l2' because it should print the end of the requested range knowing that if only one address is given, it is a range of a single number
-func doPrintAddress(b buffer, l2 int) error {
+func doPrintAddress(b buffer, l2 int) (string, error) {
 	b.setCurline(l2)
-	fmt.Printf("%d\n", b.getCurline())
-	return nil
+	return fmt.Sprintf("%d", b.getCurline()), nil
 }
 
-func doAppend(input interactor, b buffer, l1 int) error {
-	return b.insertAfter(input, l1)
+func doAppend(inout termio, b buffer, l1 int) error {
+	return b.insertAfter(inout, l1)
 }
 
-func doInsert(input interactor, b buffer, l1 int) error {
+func doInsert(inout termio, b buffer, l1 int) error {
 	if l1 <= 1 {
-		return b.insertAfter(input, 0)
+		return b.insertAfter(inout, 0)
 	}
-	return b.insertAfter(input, l1)
+	return b.insertAfter(inout, l1)
 }
 
 // doDelete moves a range of lines to the end of the buffer then decreases the last line to "forget" about the lines at the end
@@ -128,12 +126,12 @@ func doDelete(b buffer, l1, l2 int) error {
 	return nil
 }
 
-func doChange(input interactor, b buffer, l1, l2 int) error {
+func doChange(inout termio, b buffer, l1, l2 int) error {
 	err := doDelete(b, l1, l2)
 	if err != nil {
 		return err
 	}
-	return b.insertAfter(input, b.prevLine(l1))
+	return b.insertAfter(inout, b.prevLine(l1))
 }
 
 func doMove(b buffer, l1, l2 int, dest string) error {
@@ -446,7 +444,7 @@ func doMirrorLines(b buffer, l1, l2 int) error {
 }
 
 // doReadFile adds the contents of filename and adds them to the buffer after l1
-func doReadFile(b buffer, l1 int, filename string) error {
+func doReadFile(b buffer, l1 int, filename string) (string, error) {
 	var err error
 	b.setCurline(l1)
 
@@ -456,12 +454,12 @@ func doReadFile(b buffer, l1 int, filename string) error {
 
 	absPath, err := filepath.Abs(b.getFilename())
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	f, err := os.Open(absPath)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	numbyt := 0
@@ -477,12 +475,11 @@ func doReadFile(b buffer, l1 int, filename string) error {
 		b.putLine(fs.Text())
 	}
 
-	fmt.Fprintln(os.Stdout, numbyt)
-	return err
+	return fmt.Sprint(numbyt), err
 }
 
 // doReadFile adds the contents of filename and adds them to the buffer after l1
-func doWriteFile(input interactor, b buffer, l1, l2 int, filename string) error {
+func doWriteFile(b buffer, l1, l2 int, filename string) (string, error) {
 	var err error
 	b.setCurline(l1)
 
@@ -503,7 +500,7 @@ func doWriteFile(input interactor, b buffer, l1, l2 int, filename string) error 
 	// f, err := os.Create(filename)
 	f, err := os.OpenFile(b.getFilename(), os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	defer f.Close()
@@ -522,12 +519,11 @@ func doWriteFile(input interactor, b buffer, l1, l2 int, filename string) error 
 	}
 
 	b.setDirty(false)
-	fmt.Fprintln(os.Stdout, numbyt)
-	return err
+	return fmt.Sprint(numbyt), err
 }
 
-func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer bool, stdout io.Writer) error {
-	return func(readFromBuffer bool, stdout io.Writer) error {
+func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer bool, stdout io.Writer) (string, error) {
+	return func(readFromBuffer bool, stdout io.Writer) (string, error) {
 		var (
 			err   error
 			stdin io.ReadWriter = nil
@@ -565,19 +561,16 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer b
 		cmd.Stdout = stdout
 		cmd.Stderr = os.Stderr
 		err = cmd.Run()
-		fmt.Fprintln(os.Stdout, "!")
-		return err
+		return "!", err
 	}
 }
 
-func doSetFilename(b buffer, filename string) error {
+func doSetFilename(b buffer, filename string) (string, error) {
 	if len(filename) > 0 {
 		b.setFilename(filename)
 	}
 
-	fmt.Fprintln(os.Stdout, b.getFilename())
-
-	return nil
+	return b.getFilename(), nil
 }
 
 func doSetMarkLine(b buffer, l1, l2 int, mark string) error {
@@ -592,7 +585,7 @@ func doSetMarkLine(b buffer, l1, l2 int, mark string) error {
 	return nil
 }
 
-func doGetMarkedLine(b buffer, mark string) error {
+func doGetMarkedLine(inout termio, b buffer, mark string) error {
 	mk := null
 	if len(mark) > 0 {
 		mk = rune(mark[0])
@@ -606,7 +599,7 @@ func doGetMarkedLine(b buffer, mark string) error {
 		}
 
 		if b.hasMark(i, mk) {
-			fmt.Printf("%2d) %s\n", i, b.getLine(i))
+			inout.Fprintf("%2d) %s", i, b.getLine(i))
 			b.setCurline(i)
 		}
 	}
@@ -614,7 +607,7 @@ func doGetMarkedLine(b buffer, mark string) error {
 	return nil
 }
 
-func doGetNextMatchedLine(b buffer, pattern string, forward bool, cache *cache) error {
+func doGetNextMatchedLine(inout termio, b buffer, pattern string, forward bool, cache *cache) error {
 	prevSearch := cache.getPreviousSearch()
 	if len(pattern) == 0 { // no pattern means to repeat the last search
 		pattern = prevSearch.pattern
@@ -642,7 +635,7 @@ func doGetNextMatchedLine(b buffer, pattern string, forward bool, cache *cache) 
 		}
 
 		if re.MatchString(b.getLine(i)) {
-			fmt.Printf("%2d) %s\n", i, b.getLine(i))
+			inout.Fprintf("%2d) %s", i, b.getLine(i))
 			b.setCurline(i)
 			return nil
 		}

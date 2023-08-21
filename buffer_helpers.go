@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -64,13 +63,26 @@ type interactor func(prompt string) (string, error)
 
 // getInput creates a func that prints a message and takes
 func getInput(in io.Reader, out io.Writer) interactor {
-	stdin := bufio.NewScanner(os.Stdin)
+	stdin := bufio.NewScanner(in)
 	return interactor(func(prompt string) (string, error) {
 		fmt.Fprint(out, prompt)
 		stdin.Scan()
 		return stdin.Text(), stdin.Err()
 	})
 }
+
+// // getInput creates a func that prints a message and takes
+// func getRawInput(in io.ReadWriter, out io.Writer) interactor {
+// 	stdin := term.NewTerminal(in, "")
+// 	return interactor(func(prompt string) (string, error) {
+// 		fmt.Fprintf(stdin, "\r")
+// 		stdin.SetPrompt(prompt)
+// 		ln, err := stdin.ReadLine()
+// 		fmt.Fprintf(stdin, "\r")
+// 		// fmt.Fprintf(out, eol)
+// 		return string(ln), err
+// 	})
+// }
 
 func simpleNReplace(subject, pattern, replace string, n int) string {
 	idx := strings.Index(subject, pattern)

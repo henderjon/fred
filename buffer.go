@@ -38,7 +38,7 @@ type buffer interface {
 	isDirty() bool
 	setDirty(bool)
 
-	insertAfter(input interactor, idx int) error
+	insertAfter(inout termio, idx int) error
 
 	putLine(string) error
 	getLine(int) string

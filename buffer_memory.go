@@ -126,10 +126,10 @@ func (b *memoryBuf) getLastline() int {
 }
 
 // insertAfter gets input from the user and puts it at the given position
-func (b *memoryBuf) insertAfter(input interactor, idx int) error {
+func (b *memoryBuf) insertAfter(inout termio, idx int) error {
 	b.curline = idx
 	for {
-		line, err := input("")
+		line, err := inout.input("")
 		if err != nil {
 			return err
 		}
