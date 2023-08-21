@@ -64,11 +64,11 @@ func doPrint(inout termio, b buffer, l1, l2, pager int, printType int) error {
 		line := b.getLine(n)
 		switch printType {
 		default:
-			inout.Fprintf("%-2s%s", mk, line)
+			inout.printf("%-2s%s", mk, line)
 		case printTypeNum:
-			inout.Fprintf("%-2s%d\t%s", mk, n, line)
+			inout.printf("%-2s%d\t%s", mk, n, line)
 		case printTypeLit:
-			inout.Fprintf("%-2s%d\t%+q", mk, n, line)
+			inout.printf("%-2s%d\t%+q", mk, n, line)
 		}
 	}
 
@@ -599,7 +599,7 @@ func doGetMarkedLine(inout termio, b buffer, mark string) error {
 		}
 
 		if b.hasMark(i, mk) {
-			inout.Fprintf("%2d) %s", i, b.getLine(i))
+			inout.printf("%2d) %s", i, b.getLine(i))
 			b.setCurline(i)
 		}
 	}
@@ -635,7 +635,7 @@ func doGetNextMatchedLine(inout termio, b buffer, pattern string, forward bool, 
 		}
 
 		if re.MatchString(b.getLine(i)) {
-			inout.Fprintf("%2d) %s", i, b.getLine(i))
+			inout.printf("%2d) %s", i, b.getLine(i))
 			b.setCurline(i)
 			return nil
 		}

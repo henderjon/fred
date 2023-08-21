@@ -20,12 +20,12 @@ func newClassicTerm(in io.Reader, out io.Writer) (termio, func()) {
 	}, func() {}
 }
 
-func (t *classicTerm) Fprintf(format string, a ...any) (n int, err error) {
+func (t *classicTerm) printf(format string, a ...any) (n int, err error) {
 	s := fmt.Sprintf(format, a...)
-	return t.Fprintln(s)
+	return t.println(s)
 }
 
-func (t *classicTerm) Fprintln(a ...any) (n int, err error) {
+func (t *classicTerm) println(a ...any) (n int, err error) {
 	return fmt.Fprintln(t.out, a...)
 }
 

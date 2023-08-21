@@ -38,12 +38,12 @@ func makeTerminal(in *os.File) *term.State {
 	return oldState
 }
 
-func (t *localTerm) Fprintf(format string, a ...any) (n int, err error) {
+func (t *localTerm) printf(format string, a ...any) (n int, err error) {
 	s := fmt.Sprintf(format, a...)
-	return t.Fprintln(s)
+	return t.println(s)
 }
 
-func (t *localTerm) Fprintln(a ...any) (n int, err error) {
+func (t *localTerm) println(a ...any) (n int, err error) {
 	s := fmt.Sprint(a...)
 	s = strings.TrimRight(s, "\r\n")
 	return fmt.Fprint(t.term, s, t.eol)

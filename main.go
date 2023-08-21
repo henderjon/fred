@@ -32,10 +32,10 @@ func main() {
 	if len(opts.general.filename) > 0 {
 		numbts, err := doReadFile(b, b.getCurline(), opts.general.filename)
 		if err != nil {
-			inout.Fprintln(err.Error())
+			inout.println(err.Error())
 			return
 		}
-		inout.Fprintln(numbts)
+		inout.println(numbts)
 		b.setDirty(false) // loading the file on init isn't *actually* dirty
 	}
 
@@ -52,7 +52,7 @@ func main() {
 
 		cmd, err := cmdParser.run(line)
 		if cmd == nil || err != nil {
-			inout.Fprintf("invalid command; %s\n", err.Error())
+			inout.printf("invalid command; %s\n", err.Error())
 			b.setCurline(cursave)
 			continue
 		}
@@ -61,7 +61,7 @@ func main() {
 		if contains(string(globsPre), cmd.globalPrefix) {
 			err = doGlob(*cmd, b, inout, cache)
 			if err != nil {
-				inout.Fprintln(err.Error())
+				inout.println(err.Error())
 			}
 			continue
 		}
@@ -70,7 +70,7 @@ func main() {
 		if contains(string(intrGlobsPre), cmd.globalPrefix) {
 			err = doInteractiveGlob(*cmd, b, inout, cache, opts.general.prompt)
 			if err != nil {
-				inout.Fprintln(err.Error())
+				inout.println(err.Error())
 			}
 			continue
 		}
@@ -81,18 +81,18 @@ func main() {
 		switch true {
 		case cmd.subCommand == quitAction:
 			if b.isDirty() {
-				inout.Fprintln(errDirtyBuffer)
+				inout.println(errDirtyBuffer)
 				continue
 			}
-			inout.Fprintln(errQuit)
+			inout.println(errQuit)
 			return
 		case err == errQuit:
-			inout.Fprintln(err.Error())
+			inout.println(err.Error())
 			return
 		case err != nil:
-			inout.Fprintln(err.Error())
+			inout.println(err.Error())
 		case msg != "":
-			inout.Fprintln(msg)
+			inout.println(msg)
 		}
 
 		// fmt.Fprint(os.Stdout, "\0338")
@@ -305,7 +305,7 @@ func doInteractiveGlob(cmd command, b buffer, inout termio, cache *cache, prompt
 		b.putMark(i, null)
 		b.setCurline(i)
 
-		inout.Fprintln(".. " + b.getLine(i))
+		inout.println(".. " + b.getLine(i))
 
 		stop := false
 		for !stop {
