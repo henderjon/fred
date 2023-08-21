@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -162,3 +163,20 @@ func handleTabs(s string) string {
 // 	s = strings.ReplaceAll(s, `\n`, "\n")
 // 	return strings.ReplaceAll(s, "\x1A", `\n`)
 // }
+
+func normalizeFilePath(b buffer, filename string) (string, error) {
+	if len(filename) == 0 {
+		if len(b.getFilename()) == 0 { // NOTE: there a far bit of paranoia here, this is very unlikely to happen IRL
+			return "", errEmptyFilename
+		}
+		filename = b.getFilename()
+	}
+
+	absPath, err := filepath.Abs(filename)
+	if err != nil {
+		return "", err
+	}
+
+	b.setFilename(absPath)
+	return absPath, nil
+}

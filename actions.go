@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -448,16 +447,12 @@ func doReadFile(b buffer, l1 int, filename string) (string, error) {
 	var err error
 	b.setCurline(l1)
 
-	if len(filename) > 0 {
-		b.setFilename(filename)
-	}
-
-	absPath, err := filepath.Abs(b.getFilename())
+	_, err = normalizeFilePath(b, filename)
 	if err != nil {
 		return "", err
 	}
 
-	f, err := os.Open(absPath)
+	f, err := os.Open(b.getFilename())
 	if err != nil {
 		return "", err
 	}
@@ -493,8 +488,9 @@ func doWriteFile(inout termio, b buffer, l1, l2 int, filename string) (string, e
 		}
 	}
 
-	if len(filename) > 0 {
-		b.setFilename(filename)
+	_, err = normalizeFilePath(b, filename)
+	if err != nil {
+		return "", err
 	}
 
 	// f, err := os.Create(filename)
@@ -566,10 +562,10 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer b
 }
 
 func doSetFilename(b buffer, filename string) (string, error) {
-	if len(filename) > 0 {
-		b.setFilename(filename)
+	_, err := normalizeFilePath(b, filename)
+	if err != nil {
+		return "", err
 	}
-
 	return b.getFilename(), nil
 }
 

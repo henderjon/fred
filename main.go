@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	stderr         = logger.NewDropLogger(os.Stderr)
-	errQuit        = errors.New("goodbye")
-	errDirtyBuffer = errors.New("you have unsaved changes; use Q to quit without saving")
+	stderr           = logger.NewDropLogger(os.Stderr)
+	errQuit          = errors.New("goodbye")
+	errDirtyBuffer   = errors.New("you have unsaved changes; use Q to quit without saving")
+	errEmptyFilename = errors.New("empty filename")
 )
 
 func main() {
