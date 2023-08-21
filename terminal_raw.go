@@ -18,8 +18,7 @@ type localTerm struct {
 func newLocalTerm(in *os.File, out io.Writer) (termio, func()) {
 	oldState := makeTerminal(in)
 
-	var stdin io.ReadWriter
-	stdin = in // this will freak out if `in` isn't an io.ReadWriter
+	var stdin io.ReadWriter = in // this will freak out if `in` isn't an io.ReadWriter
 
 	t := term.NewTerminal(stdin, "")
 	return &localTerm{

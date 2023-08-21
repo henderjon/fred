@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"regexp"
 	"strconv"
 	"strings"
@@ -59,17 +57,17 @@ func contains[T stringable](haystack string, needle T) bool {
 	return strings.Contains(haystack, find)
 }
 
-type interactor func(prompt string) (string, error)
+// type interactor func(prompt string) (string, error)
 
-// getInput creates a func that prints a message and takes
-func getInput(in io.Reader, out io.Writer) interactor {
-	stdin := bufio.NewScanner(in)
-	return interactor(func(prompt string) (string, error) {
-		fmt.Fprint(out, prompt)
-		stdin.Scan()
-		return stdin.Text(), stdin.Err()
-	})
-}
+// // getInput creates a func that prints a message and takes
+// func getInput(in io.Reader, out io.Writer) interactor {
+// 	stdin := bufio.NewScanner(in)
+// 	return interactor(func(prompt string) (string, error) {
+// 		fmt.Fprint(out, prompt)
+// 		stdin.Scan()
+// 		return stdin.Text(), stdin.Err()
+// 	})
+// }
 
 // // getInput creates a func that prints a message and takes
 // func getRawInput(in io.ReadWriter, out io.Writer) interactor {
