@@ -479,17 +479,17 @@ func doReadFile(b buffer, l1 int, filename string) (string, error) {
 }
 
 // doReadFile adds the contents of filename and adds them to the buffer after l1
-func doWriteFile(b buffer, l1, l2 int, filename string) (string, error) {
+func doWriteFile(inout termio, b buffer, l1, l2 int, filename string) (string, error) {
 	var err error
 	b.setCurline(l1)
 
 	if len(b.getFilename()) <= 0 && len(filename) <= 0 {
-		filename, err = input("filename? ")
+		filename, err = inout.input("filename? ")
 		if err != nil {
-			return err
+			return "", err
 		}
 		if len(filename) <= 0 {
-			return fmt.Errorf("cannot write empty file name")
+			return "", fmt.Errorf("cannot write empty file name")
 		}
 	}
 

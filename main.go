@@ -197,7 +197,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line2, cmd.argument)(true, os.Stdout)
 		}
-		return doWriteFile(input, b, line1, line2, cmd.argument)
+		return doWriteFile(inout, b, line1, line2, cmd.argument)
 	}
 
 	stderr.Log(line1, line2)
