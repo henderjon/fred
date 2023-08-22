@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"io"
-	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -60,17 +58,30 @@ func contains[T stringable](haystack string, needle T) bool {
 	return strings.Contains(haystack, find)
 }
 
-type interactor func(prompt string) (string, error)
+// type interactor func(prompt string) (string, error)
 
-// getInput creates a func that prints a message and takes
-func getInput(in io.Reader, out io.Writer) interactor {
-	stdin := bufio.NewScanner(os.Stdin)
-	return interactor(func(prompt string) (string, error) {
-		fmt.Fprint(out, prompt)
-		stdin.Scan()
-		return stdin.Text(), stdin.Err()
-	})
-}
+// // getInput creates a func that prints a message and takes
+// func getInput(in io.Reader, out io.Writer) interactor {
+// 	stdin := bufio.NewScanner(in)
+// 	return interactor(func(prompt string) (string, error) {
+// 		fmt.Fprint(out, prompt)
+// 		stdin.Scan()
+// 		return stdin.Text(), stdin.Err()
+// 	})
+// }
+
+// // getInput creates a func that prints a message and takes
+// func getRawInput(in io.ReadWriter, out io.Writer) interactor {
+// 	stdin := term.NewTerminal(in, "")
+// 	return interactor(func(prompt string) (string, error) {
+// 		fmt.Fprintf(stdin, "\r")
+// 		stdin.SetPrompt(prompt)
+// 		ln, err := stdin.ReadLine()
+// 		fmt.Fprintf(stdin, "\r")
+// 		// fmt.Fprintf(out, eol)
+// 		return string(ln), err
+// 	})
+// }
 
 func simpleNReplace(subject, pattern, replace string, n int) string {
 	idx := strings.Index(subject, pattern)
@@ -139,4 +150,33 @@ func doMarkLines(b buffer, line1, numLines int, pattern string, invert bool) err
 
 	}
 	return nil
+}
+
+func handleTabs(s string) string {
+	s = strings.ReplaceAll(s, `\\t`, "\x1A") // \x1A is just a placeholder
+	s = strings.ReplaceAll(s, `\t`, "\x09")
+	return strings.ReplaceAll(s, "\x1A", `\t`)
+}
+
+// func handleNewlines(s string) string {
+// 	s = strings.ReplaceAll(s, `\\n`, "\x1A")
+// 	s = strings.ReplaceAll(s, `\n`, "\n")
+// 	return strings.ReplaceAll(s, "\x1A", `\n`)
+// }
+
+func normalizeFilePath(b buffer, filename string) (string, error) {
+	if len(filename) == 0 {
+		if len(b.getFilename()) == 0 { // NOTE: there a far bit of paranoia here, this is very unlikely to happen IRL
+			return "", errEmptyFilename
+		}
+		filename = b.getFilename()
+	}
+
+	absPath, err := filepath.Abs(filename)
+	if err != nil {
+		return "", err
+	}
+
+	b.setFilename(absPath)
+	return absPath, nil
 }

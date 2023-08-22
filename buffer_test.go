@@ -140,3 +140,23 @@ func Test_simpleNReplace(t *testing.T) {
 
 	}
 }
+
+func Test_handleTabs(t *testing.T) {
+	tests := []struct {
+		before string
+		after  string
+	}{
+		{`asdf\\t\tasdf\\t\tasdf`, `asdf\t	asdf\t	asdf`},
+		{`\\t	\t	\\t`, `\t			\t`},
+		{`\\t\t\\t`, `\t	\t`},
+	}
+
+	for _, test := range tests {
+		result := handleTabs(test.before)
+
+		if diff := cmp.Diff(result, test.after); diff != "" {
+			t.Errorf("given: %s; -got/+want\n%s", test.before, diff)
+		}
+
+	}
+}
