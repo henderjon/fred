@@ -22,11 +22,12 @@ func main() {
 	cache := &cache{}
 	cache.setPager(opts.general.pager)
 
-	inout, destructor := newClassicTerm(os.Stdin, os.Stdout)
-	if !opts.general.classic { // if we switch these, the terminal gets stuck in raw
-		inout, destructor = newLocalTerm(os.Stdin, os.Stdout)
-	}
-	defer destructor()
+	// classic vs fancy terminal
+	inout, _ := newClassicTerm(os.Stdin, os.Stdout)
+	// if opts.general.experimental { // if we switch these, the terminal gets stuck in raw
+	// 	inout, destructor = newLocalTerm(os.Stdin, os.Stdout)
+	// }
+	// defer destructor()
 
 	if len(opts.general.filename) > 0 {
 		numbts, err := doReadFile(b, b.getCurline(), opts.general.filename)

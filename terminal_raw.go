@@ -1,3 +1,5 @@
+// go:build +ignore
+
 package main
 
 import (
@@ -16,11 +18,13 @@ type localTerm struct {
 
 // func newLocalTerm(raw bool, in io.ReadWriter, out io.Writer) *localTerm {
 func newLocalTerm(in *os.File, out io.Writer) (termio, func()) {
+	// w, h, _ := term.GetSize(int(in.Fd()))
 	oldState := makeTerminal(in)
 
 	var stdin io.ReadWriter = in // this will freak out if `in` isn't an io.ReadWriter
 
 	t := term.NewTerminal(stdin, "")
+	// t.SetSize(w, h)
 	return &localTerm{
 			eol:  "\r\n",
 			term: t,
@@ -34,6 +38,7 @@ func makeTerminal(in *os.File) *term.State {
 	if err != nil {
 		panic(err)
 	}
+
 	return oldState
 }
 
