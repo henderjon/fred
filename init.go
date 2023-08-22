@@ -32,7 +32,7 @@ func getParams() allParams {
 	flag.StringVar(&params.general.prompt, "prompt", ":", "the string to display at the beginning of each line")
 	// flag.IntVar(&params.general.gutter, "gutter", 2, "the space-padded width of the line number gutter")
 	flag.IntVar(&params.general.pager, "pager", 0, "the space-padded width of the line number gutter")
-	flag.BoolVar(&params.general.experimental, "experimental", false, "fancy terminal")
+	flag.BoolVar(&params.general.experimental, "experimental", false, "fancy terminal [not operational]")
 	flag.Parse()
 
 	if params.general.debug {
