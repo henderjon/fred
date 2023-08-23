@@ -51,7 +51,7 @@ func main() {
 
 		cmd, err := cmdParser.run(line)
 		if cmd == nil || err != nil {
-			inout.printf("invalid command; %s\n", err.Error())
+			inout.printf("invalid command; %s", err.Error())
 			b.setCurline(cursave)
 			continue
 		}
