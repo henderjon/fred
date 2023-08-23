@@ -62,8 +62,8 @@ DIFFERENCES WITH THE ORIGINAL ED
   - As of now, {{.Bin}} does not support the interactive elements of 'G' and 'V'
   - In {{.Bin}}, the 'z' (scroll) command is used to set a 'pager' that displays
     n line(s) before and after the current line. This has the added effect of
-	moving the current line forward n lines. This is applied to all un-bound
-	print commands.
+    moving the current line forward n lines. This is applied to all un-bound
+    print commands.
   - In {{.Bin}}, 'H' isn't necessary as all errors are displayed as hiding them
     doesn't seem all the necessary.
   - Some of the default line/ranges have been tweaked to reflect how the author
@@ -78,7 +78,7 @@ DIFFERENCES WITH THE ORIGINAL ED
 NOTES
   - During development, it came to light that using Rob Pike's lexer/parser
     would not only yield non-global readable code, but it would also lend the
-	  code base to being testable.
+    code base to being testable.
   - There are times when verbosity was chosen over brevity for the sake of
     clarity. Certainly, there are places where this code takes the long way
     around ("brute force" so to speak). Perhaps over time this code base will
@@ -119,6 +119,8 @@ COMMANDS
 
   - g/regex/
            [global] Search all lines for regex
+
+  - Hn     [history] Prints the last n non-error commands
 
   - h      [help] Shows this document
 

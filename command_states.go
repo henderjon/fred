@@ -28,6 +28,9 @@ func lexDef(l *lexer) stateFn {
 		case r == shellAction:
 			l.emit(itemAction)
 			return lexArg
+		case r == historyAction:
+			l.emit(itemAction)
+			return lexArg
 		case r == eqAction:
 			l.emit(itemAction)
 		case isGlobalPrefix(r):

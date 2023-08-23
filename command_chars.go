@@ -21,6 +21,7 @@ var (
 	globalIntSearchAction    = rune('G')
 	globalReplaceAction      = rune('g') // s/foo/bar/g is the glob suffix which means we replace ALL the matches within a line not just the first
 	globalSearchAction       = rune('g') // g/re/p is the glob prefix which means we use the pattern to print every line that matches [gPREFIX]
+	historyAction            = rune('H')
 	helpAction               = rune('h')
 	insertAction             = rune('i')
 	joinAction               = rune('j')
@@ -60,6 +61,7 @@ var cmds = []rune{
 	globalIntSearchAction,
 	globalReplaceAction,
 	globalSearchAction,
+	historyAction,
 	helpAction,
 	insertAction,
 	joinAction,

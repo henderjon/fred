@@ -139,6 +139,8 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 		return "", doDelete(b, line1, line2)
 	case changeAction:
 		return "", doChange(inout, b, line1, line2)
+	case historyAction:
+		return "", inout.prtHistory(cmd.argument)
 	case moveAction:
 		return "", doMove(b, line1, line2, cmd.destination)
 	case copyAction:
