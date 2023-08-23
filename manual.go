@@ -174,6 +174,10 @@ COMMANDS
 
            - w file [write] Write the buffer to file
 
+  - w [filename]
+           [write] write the current buffer to the current filename or filename
+           if provided. If provided, sets buffer filename.
+
   - zn     [pager] Set pager to n. Pager is the number of lines before and after
            to show when printing lines.
 
