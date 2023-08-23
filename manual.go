@@ -120,7 +120,7 @@ COMMANDS
   - g/regex/
            [global] Search all lines for regex
 
-  - Hn     [history] Prints the last n non-error commands
+  - Hn     [history] Prints the last n commands
 
   - h      [help] Shows this document
 

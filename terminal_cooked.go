@@ -34,7 +34,7 @@ func (t *classicTerm) println(a ...any) (n int, err error) {
 func (t *classicTerm) input(prompt string) (string, error) {
 	fmt.Fprint(t.out, prompt)
 	t.in.Scan()
-	if t.in.Err() == nil {
+	if t.in.Err() == nil && prompt != "" { // skip saving entered text
 		t.history = append(t.history, t.in.Text())
 	}
 	return t.in.Text(), t.in.Err()
