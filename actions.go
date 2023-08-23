@@ -63,7 +63,7 @@ func doPrint(inout termio, b buffer, l1, l2, pager int, printType int) error {
 		line := b.getLine(n)
 		switch printType {
 		default:
-			inout.printf("%-2s%s", mk, line)
+			inout.printf("%s", line)
 		case printTypeNum:
 			inout.printf("%-2s%d\t%s", mk, n, line)
 		case printTypeLit:
