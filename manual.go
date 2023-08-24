@@ -117,8 +117,8 @@ COMMANDS
            [global] Search all lines that match regex prompt for commands for
            each line
 
-  - g/regex/
-           [global] Search all lines for regex
+  - g/regex/cmd
+           [global] Search all lines for regex and do cmd
 
   - Hn     [history] Prints the last n commands
 
@@ -154,14 +154,14 @@ COMMANDS
            [read] Loads the output of exe at the given address
 
   - (,)s/pat/sub/n
-           [substitute] Replaces nth pat with sub in the given line(s). If n
-           is 'g' or '-1' replace all occurrences. If n is absent only do the
-           first occurrence
+           [substitute] Replaces nth occurrence of pat with sub in the given
+           line(s). If n is 'g' or '-1' replace all occurrences. If n is absent
+           only do the first occurrence
 
-  - (,)S/pat/sub/n
-           [substitute] Replaces nth pat with sub in the given line(s). If n
-           is 'g' or '-1' replace all occurrences. If n is absent only do the
-           first occurrence
+  - (,)S/regex/sub/n
+           [substitute] Replaces nth regex match with sub in the given line(s).
+           If n is 'g' or '-1' replace all occurrences. If n is absent only do
+           the first occurrence
 
   - (,)t/find/repl/
            [transliterate] Replace each character in find with it corresponding
@@ -171,10 +171,8 @@ COMMANDS
            [global] Search all lines that do not match regex prompt for commands
            for each line
 
-  - v/regex/
-           [global] Search all lines that do not match regex
-
-           - w file [write] Write the buffer to file
+  - v/regex/cmd
+           [global] Search all lines that do not match regex and do cmd
 
   - w [filename]
            [write] write the current buffer to the current filename or filename

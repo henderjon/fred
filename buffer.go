@@ -6,7 +6,7 @@ import (
 
 const (
 	null = '\x00'
-	mark = '\x01'
+	mark = '\x01' // we allow single chars to mark lines, this value is used internally when we go global actions (g,G,v,V) so we don't get confused
 )
 
 // buffer is the interface for our content. It is large because of the accessor methods which are not idiomatic, but good practice.
@@ -51,5 +51,3 @@ type buffer interface {
 
 	destructor()
 }
-
-// TODO: track a drity buffer for save dialog on quit
