@@ -373,7 +373,7 @@ func Test_doGlob(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		input, _ := newClassicTerm(os.Stdin, os.Stdout)
+		input, _ := newTerm(os.Stdin, os.Stdout)
 		controlBuffer := getTestActionBuffer()
 		doGlob(test.cmd, controlBuffer, input, &cache{})
 
