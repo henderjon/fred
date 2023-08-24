@@ -182,7 +182,8 @@ func (b *scratchBuf) putLine(line string) error {
 	}
 
 	b.pos += num // track tha last bytes written because we'll start there next time
-	// some operations (e.g. `c`) use the last line as scratch space while other simply add new lines
+
+	// when the current active buffer has fewer lines that the total buffer (ie we've deleted/forgotten lines at the end of the buffer) we can reuse those lines in stead of always appending
 	if b.lastline <= len(b.lines)-1 {
 		b.lines[b.lastline] = newLine
 	} else {
