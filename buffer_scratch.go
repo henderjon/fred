@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -16,7 +15,7 @@ import (
 func tmp() *os.File {
 	f, err := os.CreateTemp("", `fred_tmp_*`)
 	if err != nil {
-		log.Fatal(err)
+		stderr.Fatal(err)
 	}
 
 	return f
@@ -283,11 +282,11 @@ func (b *scratchBuf) prevLine(n int) int {
 // returns the text of the line at the given index
 func (b *scratchBuf) getLine(idx int) string {
 	b.ext.Seek(int64(b.lines[idx].pos), 0)
-
+	// NOTE: a ReadAtWriter interface would let you use ReadAt() here
 	bts := make([]byte, b.lines[idx].len)
 	_, err := b.ext.Read(bts)
 	if err != nil {
-		log.Fatal(err)
+		stderr.Fatal(err)
 	}
 
 	return string(bts)
@@ -408,7 +407,7 @@ func (b *scratchBuf) scanReverse(start, num int) func() (int, bool) {
 
 func (b *scratchBuf) destructor() {
 	if f, ok := b.ext.(*os.File); ok {
-		// log.Println(f.Name())
+		// stderr.Println(f.Name())
 		os.Remove(f.Name())
 	}
 }
