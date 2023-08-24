@@ -1,4 +1,4 @@
-//go:build memory
+//go:build !memory
 
 package main
 
@@ -6,56 +6,72 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
+	"os"
 	"strconv"
 	"strings"
 	"unicode"
 )
 
+func tmp() *os.File {
+	f, err := os.CreateTemp("", `fred_tmp_*`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return f
+}
+
 func (b bufferLine) String() string {
-	return b.txt
+	return fmt.Sprint(b.pos)
 }
 
 type bufferLine struct {
-	txt  string
+	pos  int
+	len  int
 	mark rune
 }
 
-type memoryBuf struct {
+type scratchBuf struct {
 	curline  int
 	lastline int
 	lines    []bufferLine
 	filename string
+	ext      io.ReadWriteSeeker
+	pos      int
 	dirty    bool
 }
 
 func newBuffer() buffer {
-	return &memoryBuf{
+	f := tmp()
+	return &scratchBuf{
 		curline:  0,
 		lastline: 0,
 		lines:    make([]bufferLine, 1),
 		filename: "",
+		ext:      f,
 		dirty:    false,
 	}
 }
 
-func (b *memoryBuf) getFilename() string {
+func (b *scratchBuf) getFilename() string {
 	return b.filename
 }
 
-func (b *memoryBuf) setFilename(fname string) {
+func (b *scratchBuf) setFilename(fname string) {
 	b.filename = fname
 }
 
-func (b *memoryBuf) isDirty() bool {
+func (b *scratchBuf) isDirty() bool {
 	return b.dirty
 }
 
-func (b *memoryBuf) setDirty(d bool) {
+func (b *scratchBuf) setDirty(d bool) {
 	b.dirty = d
 }
 
 // Write fulfills io.Writer
-func (b *memoryBuf) Write(by []byte) (int, error) {
+func (b *scratchBuf) Write(by []byte) (int, error) {
 	var (
 		err     error
 		line    string
@@ -81,7 +97,7 @@ func (b *memoryBuf) Write(by []byte) (int, error) {
 }
 
 // Read fulfills io.Reader
-func (b *memoryBuf) Read(p []byte) (int, error) {
+func (b *scratchBuf) Read(p []byte) (int, error) {
 	var (
 		err     error
 		byCount int
@@ -107,35 +123,28 @@ func (b *memoryBuf) Read(p []byte) (int, error) {
 	return byCount, err
 }
 
-// func (b *memoryBuf) clear() {
-// 	b.curline = 0
-// 	b.lastline = 0
-// 	b.lines = make([]bufferLine, 1)
-// }
-
-func (b *memoryBuf) getNumLines() int {
+func (b *scratchBuf) getNumLines() int {
 	return b.getLastline()
-	// return len(b.lines) - 1 // take one back for the zero index
 }
 
-func (b *memoryBuf) setCurline(i int) {
+func (b *scratchBuf) setCurline(i int) {
 	b.curline = i
 }
 
-func (b *memoryBuf) getCurline() int {
+func (b *scratchBuf) getCurline() int {
 	return b.curline
 }
 
-func (b *memoryBuf) setLastline(i int) {
+func (b *scratchBuf) setLastline(i int) {
 	b.lastline = i
 }
 
-func (b *memoryBuf) getLastline() int {
+func (b *scratchBuf) getLastline() int {
 	return b.lastline
 }
 
 // insertAfter gets input from the user and puts it at the given position
-func (b *memoryBuf) insertAfter(inout termio, idx int) error {
+func (b *scratchBuf) insertAfter(inout termio, idx int) error {
 	b.curline = idx
 	for {
 		line, err := inout.input("")
@@ -155,14 +164,25 @@ func (b *memoryBuf) insertAfter(inout termio, idx int) error {
 }
 
 // putLine adds a new lines to the end of the buffer then moves them into place
-func (b *memoryBuf) putLine(line string) error {
+func (b *scratchBuf) putLine(line string) error {
 	b.lastline++
+
+	bts := strings.TrimRightFunc(line, func(r rune) bool {
+		return unicode.IsSpace(r)
+	})
+
+	num, err := b.ext.Write([]byte(bts))
+	if err != nil {
+		return err
+	}
+
 	newLine := bufferLine{
-		txt: strings.TrimRightFunc(line, func(r rune) bool {
-			return unicode.IsSpace(r)
-		}),
+		pos:  b.pos,
+		len:  num,
 		mark: null,
 	}
+
+	b.pos += num // track tha last bytes written because we'll start there next time
 	// some operations (e.g. `c`) use the last line as scratch space while other simply add new lines
 	if b.lastline <= len(b.lines)-1 {
 		b.lines[b.lastline] = newLine
@@ -176,18 +196,33 @@ func (b *memoryBuf) putLine(line string) error {
 }
 
 // replaceLine changes the line to the new text at the given index
-func (b *memoryBuf) replaceLine(line string, idx int) error {
+func (b *scratchBuf) replaceLine(line string, idx int) error {
 	if idx < 1 || idx > b.getLastline() {
 		return fmt.Errorf("cannot replace text; invalid address; %d", idx)
 	}
 
-	b.lines[idx].txt = line
+	bts := strings.TrimRightFunc(line, func(r rune) bool {
+		return unicode.IsSpace(r)
+	})
+
+	num, err := b.ext.Write([]byte(bts))
+	if err != nil {
+		return err
+	}
+
+	newLine := bufferLine{
+		pos:  b.pos,
+		len:  num,
+		mark: null,
+	}
+
+	b.lines[idx] = newLine
 	b.setDirty(true)
 	return nil
 }
 
 // bulkMove takes the given lines and puts them at dest
-func (b *memoryBuf) bulkMove(from, to, dest int) {
+func (b *scratchBuf) bulkMove(from, to, dest int) {
 	if dest < from-1 {
 		b.reverse(dest+1, from-1)
 		b.reverse(from, to)
@@ -201,23 +236,23 @@ func (b *memoryBuf) bulkMove(from, to, dest int) {
 }
 
 // putMark sets the mark of the line at the given index
-func (b *memoryBuf) putMark(idx int, r rune) {
+func (b *scratchBuf) putMark(idx int, r rune) {
 	if idx != 0 { // do not allow the zero line to be marked
 		b.lines[idx].mark = r
 	}
 }
 
 // getMark gets the mark of the line at the given index
-func (b *memoryBuf) getMark(idx int) rune {
+func (b *scratchBuf) getMark(idx int) rune {
 	return b.lines[idx].mark
 }
 
-func (b *memoryBuf) hasMark(idx int, r rune) bool {
+func (b *scratchBuf) hasMark(idx int, r rune) bool {
 	return b.getMark(idx) == r
 }
 
 // reverse rearranges the given lines in reverse
-func (b *memoryBuf) reverse(from, to int) {
+func (b *scratchBuf) reverse(from, to int) {
 	var tmp bufferLine
 	for from < to {
 		tmp = b.lines[from]
@@ -230,7 +265,7 @@ func (b *memoryBuf) reverse(from, to int) {
 }
 
 // nextLine returns the next index in the buffer, looping to 0 after lastline
-func (b *memoryBuf) nextLine(n int) int {
+func (b *scratchBuf) nextLine(n int) int {
 	if n >= b.lastline {
 		return 0
 	}
@@ -238,7 +273,7 @@ func (b *memoryBuf) nextLine(n int) int {
 }
 
 // prevLine returns the previous index in the buffer, looping to lastline after 0
-func (b *memoryBuf) prevLine(n int) int {
+func (b *scratchBuf) prevLine(n int) int {
 	if n <= 0 {
 		return b.lastline
 	}
@@ -246,12 +281,20 @@ func (b *memoryBuf) prevLine(n int) int {
 }
 
 // returns the text of the line at the given index
-func (b *memoryBuf) getLine(idx int) string {
-	return b.lines[idx].txt
+func (b *scratchBuf) getLine(idx int) string {
+	b.ext.Seek(int64(b.lines[idx].pos), 0)
+
+	bts := make([]byte, b.lines[idx].len)
+	_, err := b.ext.Read(bts)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(bts)
 }
 
 // defLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
-func (b *memoryBuf) defLines(start, end, incr string, l1, l2 int) (int, int, error) {
+func (b *scratchBuf) defLines(start, end, incr string, l1, l2 int) (int, int, error) {
 	var (
 		err    error
 		i1, i2 int
@@ -298,7 +341,7 @@ func (b *memoryBuf) defLines(start, end, incr string, l1, l2 int) (int, int, err
 	return i1, i2, nil
 }
 
-func (b *memoryBuf) defIncr(incr string, start, rel int) (int, int) {
+func (b *scratchBuf) defIncr(incr string, start, rel int) (int, int) {
 	end := rel
 	if incr == ">" {
 		end = start + rel
@@ -322,7 +365,7 @@ func (b *memoryBuf) defIncr(incr string, start, rel int) (int, int) {
 }
 
 // scanForward returns a func that walks the buffer's indices in a forward loop. As an implementation detail, the number of lines is the number of non-zero lines.
-func (b *memoryBuf) scanForward(start, num int) func() (int, bool) {
+func (b *scratchBuf) scanForward(start, num int) func() (int, bool) {
 	stop := false
 	i := b.prevLine(start) // remove 1 because nextLine advances one
 
@@ -343,7 +386,7 @@ func (b *memoryBuf) scanForward(start, num int) func() (int, bool) {
 }
 
 // scanReverse returns a func that walks the buffer's indices in a reverse loop
-func (b *memoryBuf) scanReverse(start, num int) func() (int, bool) {
+func (b *scratchBuf) scanReverse(start, num int) func() (int, bool) {
 	stop := false
 	i := b.nextLine(start) // remove 1 because nextLine advances one
 
@@ -363,4 +406,9 @@ func (b *memoryBuf) scanReverse(start, num int) func() (int, bool) {
 	}
 }
 
-func (b *memoryBuf) destructor() {}
+func (b *scratchBuf) destructor() {
+	if f, ok := b.ext.(*os.File); ok {
+		// log.Println(f.Name())
+		os.Remove(f.Name())
+	}
+}

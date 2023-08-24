@@ -3,15 +3,15 @@ package main
 import (
 	"flag"
 	"os"
+
+	"github.com/henderjon/shutdown"
 )
 
 type generalParams struct {
-	debug    bool
+	// debug    bool
 	filename string
 	prompt   string
-	// gutter   int
-	pager        int
-	experimental bool
+	pager    int
 }
 
 type allParams struct {
@@ -28,26 +28,41 @@ func getParams() allParams {
 
 	params := allParams{}
 	// flag.BoolVar(&params.general.debug, "debug", false, "output the currently set path")
-	flag.StringVar(&params.general.filename, "file", "", "edit `filename`; the last unnamed arg will be used if not provided")
+	flag.StringVar(&params.general.filename, "file", "", "load `filename`; but also assumes the last non-flag arg is `filename`")
 	flag.StringVar(&params.general.prompt, "prompt", ":", "the string to display at the beginning of each line")
-	// flag.IntVar(&params.general.gutter, "gutter", 2, "the space-padded width of the line number gutter")
 	flag.IntVar(&params.general.pager, "pager", 0, "the space-padded width of the line number gutter")
-	flag.BoolVar(&params.general.experimental, "experimental", false, "fancy terminal [not operational]")
 	flag.Parse()
 
-	if params.general.debug {
-		os.Exit(0)
+	// if params.general.debug {
+	// 	os.Exit(0)
+	// }
+
+	args := flag.Args()
+	if len(args) > 0 {
+		params.general.filename = args[len(args)-1]
 	}
 
-	// args := flag.Args()
-	// if len(args) > 0 {
-	// 	params.general.infile = args[len(args)-1]
-	// }
-
-	// if len(params.general.infile) > 0 {
-	// 	filename := params.general.infile
-	// 	doRead(0, filename)
-	// }
-
 	return params
+}
+
+func bootstrap(b buffer, opts allParams) (*shutdown.Shutdown, termio) {
+	shd := shutdown.New(func() {
+		b.destructor() // clean up our tmp file
+	})
+
+	// defer shd.Destructor()
+
+	inout, _ := newTerm(os.Stdin, os.Stdout)
+
+	if len(opts.general.filename) > 0 {
+		numbts, err := doReadFile(b, b.getCurline(), opts.general.filename)
+		if err != nil {
+			inout.println(err.Error())
+		} else {
+			inout.println(numbts)
+			b.setDirty(false) // loading the file on init isn't *actually* dirty
+		}
+	}
+
+	return shd, inout
 }

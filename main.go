@@ -18,33 +18,21 @@ var (
 
 func main() {
 	opts := getParams()
-	b := newMemoryBuf()
+	b := newBuffer()
 	cache := &cache{}
 	cache.setPager(opts.general.pager)
 
-	// classic vs fancy terminal
-	inout, _ := newClassicTerm(os.Stdin, os.Stdout)
-	// if opts.general.experimental { // if we switch these, the terminal gets stuck in raw
-	// 	inout, destructor = newLocalTerm(os.Stdin, os.Stdout)
-	// }
-	// defer destructor()
-
-	if len(opts.general.filename) > 0 {
-		numbts, err := doReadFile(b, b.getCurline(), opts.general.filename)
-		if err != nil {
-			inout.println(err.Error())
-			return
-		}
-		inout.println(numbts)
-		b.setDirty(false) // loading the file on init isn't *actually* dirty
-	}
+	// create out shutdown listener and our terminal and load the file given via -file
+	shd, inout := bootstrap(b, opts)
+	defer shd.Destructor()
 
 	cmdParser := &parser{}
 	for { // main loop
 		var msg string
 		line, err := inout.input(opts.general.prompt)
 		if err != nil {
-			break
+			inout.printf("tilt; %s", err.Error())
+			return
 		}
 
 		cursave := b.getCurline()
@@ -74,9 +62,7 @@ func main() {
 			continue
 		}
 
-		// TODO: doCmd should return a string and an err and all our single line printing could be here which will avoid having to inject a printer
-
-		msg, err = doCmd(*cmd, b, inout, cache)
+		msg, err = doCmd(*cmd, b, inout, cache) // NOTE: should doCmd return (string, error) or only (error)
 		switch true {
 		case cmd.subCommand == quitAction:
 			if b.isDirty() {
@@ -111,7 +97,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 		return "", errQuit
 	}
 
-	// some commands require addresses
+	// some commands require addresses; this takes the input and gives us sane lines
 	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
 		return "", err
@@ -259,9 +245,6 @@ func doGlob(cmd command, b buffer, inout termio, cache *cache) error {
 
 	b.setCurline(b.nextLine(cursave))
 	return nil
-
-	// loop over buffer, mark lines the match in order to keep track of what's been done because doCmd/do* can alter the buffer
-	// loop over buffer, execute command on each marked line
 }
 
 func doInteractiveGlob(cmd command, b buffer, inout termio, cache *cache, prompt string) error {

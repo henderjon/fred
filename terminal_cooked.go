@@ -14,7 +14,7 @@ type classicTerm struct {
 }
 
 // func newLocalTerm(raw bool, in io.ReadWriter, out io.Writer) *localTerm {
-func newClassicTerm(in io.Reader, out io.Writer) (termio, func()) {
+func newTerm(in io.Reader, out io.Writer) (termio, func()) {
 	stdin := bufio.NewScanner(in)
 	return &classicTerm{
 		in:  stdin,

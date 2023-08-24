@@ -69,12 +69,12 @@ demo: local
 
 .PHONY: test
 test: dep check
-	GOEXPERIMENT=loopvar go test -covermode=count ./...
+	GOEXPERIMENT=loopvar go test -tags memory -covermode=count ./...
 
 .PHONY: test-cover
 test-cover:
 	go mod tidy
-	go test -covermode=count -coverprofile $(TEST_COVER_FILE) ./...
+	go test -tags memory -covermode=count -coverprofile $(TEST_COVER_FILE) ./...
 	go tool cover -html=$(TEST_COVER_FILE)
 
 ################################################################################

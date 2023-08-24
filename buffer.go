@@ -9,15 +9,6 @@ const (
 	mark = '\x01'
 )
 
-func (b bufferLine) String() string {
-	return b.txt
-}
-
-type bufferLine struct {
-	txt  string
-	mark rune
-}
-
 // buffer is the interface for our content. It is large because of the accessor methods which are not idiomatic, but good practice.
 type buffer interface {
 	io.ReadWriter
@@ -57,6 +48,8 @@ type buffer interface {
 	// these two funcs could be combined but clear is better than clever
 	scanForward(int, int) func() (int, bool)
 	scanReverse(int, int) func() (int, bool)
+
+	destructor()
 }
 
 // TODO: track a drity buffer for save dialog on quit
