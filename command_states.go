@@ -100,7 +100,7 @@ func lexAddress(t itemType) stateFn {
 func lexAction(l *lexer) stateFn {
 	switch true {
 	// these commands need a destination
-	case l.acceptOne(string([]rune{moveAction, copyAction, setPagerAction})):
+	case l.acceptOne(string([]rune{moveAction, copyAction, setPagerAction, setColumnAction})):
 		l.emit(itemAction)
 		return lexAddress(itemDestination)(l)
 	case l.acceptOne(string([]rune{searchAction})):

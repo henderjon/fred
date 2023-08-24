@@ -180,6 +180,9 @@ COMMANDS
            [write] write the current buffer to the current filename or filename
            if provided. If provided, sets buffer filename.
 
+  - (,)w !exe
+           [write] write the given lines to the stdin of exe
+
   - zn     [pager] Set pager to n. Pager is the number of lines before and after
            to show when printing lines.
 
@@ -196,6 +199,10 @@ COMMANDS
            [search] Find the previous line matching regex. Use '\\' to repeat
 
   - =      [print] Show only the line number of the current line
+
+  - ^n     [column] Set the column at the nth character
+
+  - (,)|   [column] Print the given lines displaying the column
 
 
 EXAMPLES

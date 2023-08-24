@@ -180,3 +180,21 @@ func normalizeFilePath(b buffer, filename string) (string, error) {
 	b.setFilename(absPath)
 	return absPath, nil
 }
+
+func revCol(col int, s string) string {
+	if col <= 0 {
+		return s
+	}
+
+	var rtn strings.Builder
+	for i, r := range s {
+		if i > 0 && ((i+1)%col) == 0 {
+			rtn.WriteString("\033[7m")
+			rtn.WriteRune(r)
+			rtn.WriteString("\033[0m")
+			continue
+		}
+		rtn.WriteRune(r)
+	}
+	return rtn.String()
+}

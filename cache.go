@@ -2,6 +2,7 @@ package main
 
 type cache struct {
 	pager       int
+	column      int
 	prevSearch  search
 	prevReplace replace
 }
@@ -12,6 +13,14 @@ func (c *cache) setPager(n int) {
 
 func (c *cache) getPager() int {
 	return c.pager
+}
+
+func (c *cache) setColumn(n int) {
+	c.column = n
+}
+
+func (c *cache) getColumn() int {
+	return c.column
 }
 
 func (c *cache) setPreviousSearch(s search) {

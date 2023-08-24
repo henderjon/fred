@@ -42,6 +42,8 @@ var (
 	superWriteAction         = rune('W') // write [file] command
 	writeAction              = rune('w') // write [file] command
 	setPagerAction           = rune('z')
+	setColumnAction          = rune('^')
+	printColumnAction        = rune('|')
 )
 
 var cmds = []rune{
@@ -82,6 +84,8 @@ var cmds = []rune{
 	superWriteAction,
 	writeAction,
 	setPagerAction,
+	setColumnAction,
+	printColumnAction,
 }
 
 var globsPre = []rune{

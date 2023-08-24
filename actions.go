@@ -17,9 +17,10 @@ const (
 	printTypeReg = iota
 	printTypeNum
 	printTypeLit
+	printTypeCol
 )
 
-func doPrint(inout termio, b buffer, l1, l2, pager int, printType int) error {
+func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) error {
 	var err error
 	if l1 <= 0 || l1 > b.getNumLines() { // NOTE: l2 is not bound by last line; may be a problem
 		return fmt.Errorf("unable to print; invalid address; %d; %d", l1, l2)
@@ -27,7 +28,7 @@ func doPrint(inout termio, b buffer, l1, l2, pager int, printType int) error {
 
 	// b.setCurline(l1)
 
-	l1, l2, err = makeContext(b, l1, l2, pager)
+	l1, l2, err = makeContext(b, l1, l2, cache.getPager())
 	if err != nil {
 		return err
 	}
@@ -42,23 +43,9 @@ func doPrint(inout termio, b buffer, l1, l2, pager int, printType int) error {
 			mk += string(m)
 		}
 
-		// if n == b.getCurline() {
-		// mk += "\u2192" // →
-		// mk += "\u2022" // •
-		// mk += "\u2588" // █
-		// }
-
 		if n > b.getNumLines() {
 			break
 		}
-
-		// gutter := 0
-		// for total := b.getNumLines(); total > 0; total /= 10 {
-		// 	gutter++
-		// }
-
-		// gutterStr := fmt.Sprintf("%%-2s%%%dd \u2502", gutter)
-		// gutterStr = fmt.Sprintf(gutterStr, mark, n)
 
 		line := b.getLine(n)
 		switch printType {
@@ -68,6 +55,8 @@ func doPrint(inout termio, b buffer, l1, l2, pager int, printType int) error {
 			inout.printf("%-2s%d\t%s", mk, n, line)
 		case printTypeLit:
 			inout.printf("%-2s%d\t%+q", mk, n, line)
+		case printTypeCol:
+			inout.printf("%-2s%d\t%s", mk, n, revCol(cache.getColumn(), line))
 		}
 	}
 
@@ -637,4 +626,22 @@ func doGetNextMatchedLine(inout termio, b buffer, pattern string, forward bool, 
 		}
 	}
 	return nil
+}
+
+func doSetColumn(num string, cache *cache) (string, error) {
+	if len(num) > 0 {
+		var (
+			err error
+			n   int
+		)
+
+		n, err = strconv.Atoi(num)
+		if err != nil {
+			return "", fmt.Errorf("unable to set column; invalid number: %s; %s", num, err.Error())
+		}
+
+		cache.setColumn(n)
+	}
+
+	return fmt.Sprintf("column set to %d", cache.getColumn()), nil
 }

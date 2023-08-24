@@ -122,15 +122,17 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 		flag.Usage()
 		return "", nil
 	case 0: // rune default (empty action)
-		return "", doPrint(inout, b, line1, line2, cache.getPager(), printTypeNum)
+		return "", doPrint(inout, b, line1, line2, cache, printTypeNum)
 	case eqAction:
 		return doPrintAddress(b, line2)
 	case printAction:
-		return "", doPrint(inout, b, line1, line2, cache.getPager(), printTypeReg)
+		return "", doPrint(inout, b, line1, line2, cache, printTypeReg)
 	case printNumsAction:
-		return "", doPrint(inout, b, line1, line2, cache.getPager(), printTypeNum)
+		return "", doPrint(inout, b, line1, line2, cache, printTypeNum)
 	case printLiteralAction:
-		return "", doPrint(inout, b, line1, line2, cache.getPager(), printTypeLit)
+		return "", doPrint(inout, b, line1, line2, cache, printTypeLit)
+	case printColumnAction:
+		return "", doPrint(inout, b, line1, line2, cache, printTypeCol)
 	case appendAction:
 		return "", doAppend(inout, b, line1)
 	case insertAction:
@@ -159,6 +161,8 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 		return "", doMirrorLines(b, line1, line2)
 	case setPagerAction:
 		return setPager(cmd.destination, cache)
+	case setColumnAction:
+		return doSetColumn(cmd.destination, cache)
 	case shellAction:
 		return doExternalShell(b, line1, line2, cmd.argument)(false, os.Stdout)
 	case filenameAction:
