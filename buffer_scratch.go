@@ -166,24 +166,14 @@ func (b *scratchBuf) insertAfter(inout termio, idx int) error {
 func (b *scratchBuf) putLine(line string) error {
 	b.lastline++
 
-	bts := strings.TrimRightFunc(line, func(r rune) bool {
-		return unicode.IsSpace(r)
-	})
-
-	num, err := b.ext.Write([]byte(bts))
+	newLine, err := b.writeLine(line)
 	if err != nil {
 		return err
 	}
 
-	newLine := bufferLine{
-		pos:  b.pos,
-		len:  num,
-		mark: null,
-	}
+	b.pos += newLine.len // track tha last bytes written because we'll start there next time
 
-	b.pos += num // track tha last bytes written because we'll start there next time
-
-	// when the current active buffer has fewer lines that the total buffer (ie we've deleted/forgotten lines at the end of the buffer) we can reuse those lines in stead of always appending
+	// when the current active buffer has fewer lines that the total buffer (ie we've deleted/forgotten lines at the end of the buffer) we can reuse those lines in stead of always appending. This reduces memory usage but the scratch file will continue to grow.
 	if b.lastline <= len(b.lines)-1 {
 		b.lines[b.lastline] = newLine
 	} else {
@@ -201,19 +191,9 @@ func (b *scratchBuf) replaceLine(line string, idx int) error {
 		return fmt.Errorf("cannot replace text; invalid address; %d", idx)
 	}
 
-	bts := strings.TrimRightFunc(line, func(r rune) bool {
-		return unicode.IsSpace(r)
-	})
-
-	num, err := b.ext.Write([]byte(bts))
+	newLine, err := b.writeLine(line)
 	if err != nil {
 		return err
-	}
-
-	newLine := bufferLine{
-		pos:  b.pos,
-		len:  num,
-		mark: null,
 	}
 
 	b.lines[idx] = newLine
@@ -283,7 +263,6 @@ func (b *scratchBuf) prevLine(n int) int {
 // returns the text of the line at the given index
 func (b *scratchBuf) getLine(idx int) string {
 	b.ext.Seek(int64(b.lines[idx].pos), 0)
-	// NOTE: a ReadAtWriter interface would let you use ReadAt() here
 	bts := make([]byte, b.lines[idx].len)
 	_, err := b.ext.Read(bts)
 	if err != nil {
@@ -404,6 +383,23 @@ func (b *scratchBuf) scanReverse(start, num int) func() (int, bool) {
 
 		return i, stop
 	}
+}
+
+func (b *scratchBuf) writeLine(line string) (bufferLine, error) {
+	bts := strings.TrimRightFunc(line, func(r rune) bool {
+		return unicode.IsSpace(r)
+	})
+
+	num, err := b.ext.Write([]byte(bts))
+	if err != nil {
+		return bufferLine{}, err
+	}
+
+	return bufferLine{
+		pos:  b.pos,
+		len:  num,
+		mark: null,
+	}, nil
 }
 
 func (b *scratchBuf) destructor() {
