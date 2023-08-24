@@ -408,3 +408,18 @@ func (b *scratchBuf) destructor() {
 		os.Remove(f.Name())
 	}
 }
+
+func (b *scratchBuf) clone() buffer {
+	cll := make([]bufferLine, len(b.lines))
+	copy(cll, b.lines)
+	t := &scratchBuf{
+		curline:  b.curline,
+		lastline: b.lastline,
+		lines:    cll,
+		filename: b.filename,
+		ext:      b.ext,
+		pos:      b.pos,
+		dirty:    b.dirty,
+	}
+	return t
+}

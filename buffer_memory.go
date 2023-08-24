@@ -26,15 +26,17 @@ type memoryBuf struct {
 	lines    []bufferLine
 	filename string
 	dirty    bool
+	stager   stager
 }
 
-func newBuffer() buffer {
+func newBuffer(stage stager) buffer {
 	return &memoryBuf{
 		curline:  0,
 		lastline: 0,
 		lines:    make([]bufferLine, 1),
 		filename: "",
 		dirty:    false,
+		stager:   stage,
 	}
 }
 
@@ -364,3 +366,17 @@ func (b *memoryBuf) scanReverse(start, num int) func() (int, bool) {
 }
 
 func (b *memoryBuf) destructor() {}
+
+func (b *memoryBuf) clone() buffer {
+	cll := make([]bufferLine, len(b.lines))
+	copy(cll, b.lines)
+	t := &memoryBuf{
+		curline:  b.curline,
+		lastline: b.lastline,
+		lines:    cll,
+		filename: b.filename,
+		dirty:    b.dirty,
+		stager:   b.stager,
+	}
+	return t
+}

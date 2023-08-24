@@ -49,5 +49,6 @@ type buffer interface {
 	scanForward(int, int) func() (int, bool)
 	scanReverse(int, int) func() (int, bool)
 
-	destructor()
+	destructor()   // clean up tmp files
+	clone() buffer // used for undo
 }
