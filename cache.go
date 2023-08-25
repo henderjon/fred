@@ -62,3 +62,17 @@ func (c *cache) unstageUndo() (buffer, error) {
 type stager interface {
 	stageUndo(b buffer)
 }
+
+// infinite undo but needs redo
+// func (c *cache) stageUndo(b buffer) {
+// 	c.undoPos++
+// 	c.undos = append(c.undos, b)
+// }
+
+// func (c *cache) unstageUndo() (buffer, error) {
+// 	if len(c.undos) > 0 {
+// 		c.undoPos--
+// 		return c.undos[c.undoPos], nil
+// 	}
+// 	return *(new(buffer)), errors.New("nothing to undo") // dereference the pointer before returning it
+// }
