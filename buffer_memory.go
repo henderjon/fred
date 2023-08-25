@@ -53,6 +53,9 @@ func (b *memoryBuf) isDirty() bool {
 }
 
 func (b *memoryBuf) setDirty(d bool) {
+	if d {
+		b.stager.stageUndo(b.clone())
+	}
 	b.dirty = d
 }
 
@@ -391,7 +394,7 @@ func (b *memoryBuf) String() string {
 		if k == 0 {
 			continue
 		}
-		rtn.WriteString(fmt.Sprintf("line[%d]: len: %d; mark: %c; %s", k, len(v.txt), v.mark, v.txt))
+		rtn.WriteString(fmt.Sprintf("line[%d]: len: %d; mark: %c; %s\r\n", k, len(v.txt), v.mark, v.txt))
 	}
 	return rtn.String()
 }
