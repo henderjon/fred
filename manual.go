@@ -171,6 +171,7 @@ COMMANDS
 
   - u      [undo] Restores the previous buffer. Like ed undo is it's own
            inverse
+
   - V/regex/
            [global] Search all lines that do not match regex prompt for commands
            for each line

@@ -21,7 +21,7 @@ func tmp() *os.File {
 	return f
 }
 
-// NamedReaderWriteAt
+// NamedReaderWriteAt wraps ReaderAt and WriterAt interfaces as well as the Name() method
 type NamedReaderWriteAt interface {
 	io.ReaderAt
 	io.WriterAt
