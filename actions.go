@@ -160,8 +160,8 @@ func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	// add old lines to the end of the buffer; we'll move them later
 	b.setCurline(mark)
 
-	for i := l1; i <= l2; i++ {
-		err = b.putLine(b.getLine(i))
+	for i := l1; i <= l2; i++ { // do this in reverse because we're putting them in order behind l3
+		err = b.duplicateLine(i)
 		if err != nil {
 			return err
 		}

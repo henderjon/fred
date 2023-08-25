@@ -191,6 +191,21 @@ func (b *memoryBuf) replaceLine(line string, idx int) error {
 	return nil
 }
 
+// duplicateLine changes the line to the new text at the given index
+func (b *memoryBuf) duplicateLine(idx int) error {
+	if idx < 1 || idx > b.getLastline() {
+		return fmt.Errorf("cannot duplicate text; invalid address; %d", idx)
+	}
+
+	b.lines = append(b.lines, b.lines[idx])
+	b.lastline++
+
+	// NOTE: an argument can be made to do the bulk move here, one at a time and empty doCopyNPaste ...
+
+	b.setDirty(true)
+	return nil
+}
+
 // bulkMove takes the given lines and puts them at dest
 func (b *memoryBuf) bulkMove(from, to, dest int) {
 	if dest < from-1 {

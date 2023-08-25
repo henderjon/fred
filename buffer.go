@@ -36,6 +36,7 @@ type buffer interface {
 	putLine(string) error
 	getLine(int) string
 	replaceLine(string, int) error
+	duplicateLine(int) error
 
 	bulkMove(from, to, dest int)
 	reverse(from, to int)
