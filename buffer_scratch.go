@@ -21,7 +21,8 @@ func tmp() *os.File {
 	return f
 }
 
-type NamedReaderWritefAt interface {
+// NamedReaderWriteAt
+type NamedReaderWriteAt interface {
 	io.ReaderAt
 	io.WriterAt
 	Name() string
@@ -42,7 +43,7 @@ type scratchBuf struct {
 	lastline int
 	lines    []bufferLine
 	filename string
-	ext      NamedReaderWritefAt
+	ext      NamedReaderWriteAt
 	pos      int
 	dirty    bool
 	stager   stager
@@ -208,6 +209,21 @@ func (b *scratchBuf) replaceLine(line string, idx int) error {
 	}
 
 	b.lines[idx] = newLine
+	b.setDirty(true)
+	return nil
+}
+
+// duplicateLine changes the line to the new text at the given index
+func (b *scratchBuf) duplicateLine(idx int) error {
+	if idx < 1 || idx > b.getLastline() {
+		return fmt.Errorf("cannot duplicate text; invalid address; %d", idx)
+	}
+
+	b.lines = append(b.lines, b.lines[idx])
+	b.lastline++
+
+	// NOTE: an argument can be made to do the bulk move here, one at a time and empty doCopyNPaste ...
+
 	b.setDirty(true)
 	return nil
 }
