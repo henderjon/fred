@@ -15,6 +15,7 @@ var (
 	errQuit          = errors.New("goodbye")
 	errDirtyBuffer   = errors.New("you have unsaved changes; use Q to quit without saving")
 	errEmptyFilename = errors.New("empty filename")
+	// errEd            = errors.New("the experienced user will know what is wrong")
 )
 
 func main() {

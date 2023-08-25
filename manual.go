@@ -23,36 +23,38 @@ var (
 const Tmpl = `
 {{define "manual"}}
 NAME
-  {{.Bin}} - FRiendlier ED; another attempt to recreate ed(1)
+  {{.Bin}} - FRiendlier ED; another attempt to recreate ed (ed is the standard
+  Unix text editor)
 
 SYNOPSIS
   $ {{.Bin}}
   $ {{.Bin}} [-h|help]
 
 DESCRIPTION
-  {{.Bin}} is a terminal line-based text editor akin to ed(1). {{.Bin}} shares
-  as much feature parity as possible with the ed(1) implementation found on
-  macOS which, as is understood by the author, is closer to BSD's ed(1) than the
+  {{.Bin}} is a terminal line-based text editor akin to ed. {{.Bin}} shares
+  as much feature parity as possible with the ed implementation found on
+  macOS which, as is understood by the author, is closer to BSD's ed than the
   GNU version.
 
   Because 'Clear is better than clever' and the author can't read genius level
   C, brute force was employed in an attempt at clarity.
 
   The differences found follow the author's usage patterns. In other words, the
-  differences between {{.Bin}} and the original ed(1) are based on how the
-  author uses ed(1).
+  differences between {{.Bin}} and the original ed are based on how the
+  author uses ed.
 
-  For detailed documentation on how to use {{.Bin}}/ed(1), use 'man ed' to read
-  the ed(1) documentation. This document will attempt at only capturing the
+  For detailed documentation on how to use {{.Bin}}/ed, use 'man ed' to read
+  the ed documentation. While there are differences between ed and fred,
+  the usage is consistent. This document will attempt at only capturing the
   differences.
 
 WHY
   {{.Bin}}'s goals were:
 
-  - Understand ed(1)
+  - Understand ed
   - Create a re-readable code base not written by a proper genius
   - Use as few external libs as possible
-  - Preserve the spirit of ed(1) as fewer and fewer common devs work in
+  - Preserve the spirit of ed as fewer and fewer common devs work in
     advanced, genius-level C
   - Avoid global state even at cost
 
@@ -67,7 +69,7 @@ DIFFERENCES WITH THE ORIGINAL ED
   - In {{.Bin}}, 'H' isn't necessary as all errors are displayed as hiding them
     doesn't seem all the necessary.
   - Some of the default line/ranges have been tweaked to reflect how the author
-    uses ed(1).
+    uses ed.
   - Showing line numbers is default.
   - Marking a line ('k') is omitted for now. Users can mark lines with ' and
     retrieve them with ". Marking lines takes a single character as a label.
@@ -83,7 +85,7 @@ NOTES
     clarity. Certainly, there are places where this code takes the long way
     around ("brute force" so to speak). Perhaps over time this code base will
     evolve.
-  - ed(1)'s original author was a proper genius and use recursion as their first
+  - ed's original author was a proper genius and use recursion as their first
     language. {{.Bin}} is the opposite. The long way around was taken as a way
     of making the code base readable even at the expense of duplication and
     verbosity.
@@ -167,7 +169,7 @@ COMMANDS
            [transliterate] Replace each character in find with it corresponding
            char from repl in the given line(s)
 
-  - u      [undo] Restores the previous buffer. Like ed(1) undo is it's own
+  - u      [undo] Restores the previous buffer. Like ed undo is it's own
            inverse
   - V/regex/
            [global] Search all lines that do not match regex prompt for commands
