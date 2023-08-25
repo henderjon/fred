@@ -83,7 +83,7 @@ test-cover:
 
 .PHONY: local
 local: dep check
-	GOEXPERIMENT=loopvar go build -ldflags $(LDFLAGS) -o $(BINDIR)/$(BIN)
+	GOEXPERIMENT=loopvar go build -ldflags $(LDFLAGS) -tags "$(FREDMODE)" -o $(BINDIR)/$(BIN)
 
 .PHONY: prod
 prod: dep check
