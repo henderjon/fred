@@ -51,12 +51,16 @@ func (c *cache) stageUndo(b buffer) {
 }
 
 func (c *cache) unstageUndo() (buffer, error) {
-	if c.undo1 != nil {
+	switch true {
+	case c.undo1 != nil:
 		tmp := c.undo1
 		c.stageUndo(c.undo1)
 		return tmp, nil
+	case c.undo2 != nil:
+		return c.undo2, nil
+	default:
+		return *(new(buffer)), errors.New("nothing to undo") // dereference the pointer before returning it
 	}
-	return *(new(buffer)), errors.New("nothing to undo") // dereference the pointer before returning it
 }
 
 type stager interface {
