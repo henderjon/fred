@@ -68,7 +68,9 @@ func (b *scratchBuf) isDirty() bool {
 }
 
 func (b *scratchBuf) setDirty(d bool) {
-	b.stager.stageUndo(b.clone())
+	if d {
+		b.stager.stageUndo(b.clone())
+	}
 	b.dirty = d
 }
 

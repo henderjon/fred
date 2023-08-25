@@ -1,14 +1,16 @@
 package main
 
-import "errors"
+import (
+	"errors"
+)
 
 type cache struct {
 	pager       int
 	column      int
 	prevSearch  search
 	prevReplace replace
-	undos       []buffer
-	undoPos     int
+	undo1       buffer
+	undo2       buffer
 }
 
 func (c *cache) setPager(n int) {
@@ -44,14 +46,15 @@ func (c *cache) getPreviousReplace() replace {
 }
 
 func (c *cache) stageUndo(b buffer) {
-	c.undoPos++
-	c.undos = append(c.undos, b)
+	c.undo1 = c.undo2
+	c.undo2 = b
 }
 
 func (c *cache) unstageUndo() (buffer, error) {
-	if len(c.undos) > 0 {
-		c.undoPos--
-		return c.undos[c.undoPos], nil
+	if c.undo1 != nil {
+		tmp := c.undo1
+		c.stageUndo(c.undo1)
+		return tmp, nil
 	}
 	return *(new(buffer)), errors.New("nothing to undo") // dereference the pointer before returning it
 }
