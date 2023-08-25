@@ -49,8 +49,12 @@ func bootstrap(b buffer, opts allParams) (*shutdown.Shutdown, termio) {
 	shd := shutdown.New(func() {
 		b.destructor() // clean up our tmp file
 	})
-
 	// defer shd.Destructor()
+
+	// HUP signals
+	// signal.Notify(sysSigChan, syscall.SIGINT)
+	// signal.Notify(sysSigChan, syscall.SIGTERM)
+	// signal.Notify(sysSigChan, syscall.SIGHUP)
 
 	inout, _ := newTerm(os.Stdin, os.Stdout)
 
