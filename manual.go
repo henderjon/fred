@@ -167,6 +167,8 @@ COMMANDS
            [transliterate] Replace each character in find with it corresponding
            char from repl in the given line(s)
 
+  - u      [undo] Restores the previous buffer. Like ed(1) undo is it's own
+           inverse
   - V/regex/
            [global] Search all lines that do not match regex prompt for commands
            for each line
