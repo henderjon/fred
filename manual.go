@@ -204,6 +204,9 @@ COMMANDS
 
   - (,)|   [column] Print the given lines displaying the column
 
+  - *      [debug] If {{.Bin}} is given -debug, print diagnostic info about the
+           current buffer
+
 
 EXAMPLES
   $ {{.Bin}} -h
