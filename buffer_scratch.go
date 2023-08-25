@@ -21,6 +21,12 @@ func tmp() *os.File {
 	return f
 }
 
+type NamedReaderWritefAt interface {
+	io.ReaderAt
+	io.WriterAt
+	Name() string
+}
+
 func (b bufferLine) String() string {
 	return fmt.Sprint(b.pos)
 }
@@ -36,7 +42,7 @@ type scratchBuf struct {
 	lastline int
 	lines    []bufferLine
 	filename string
-	ext      io.ReadWriteSeeker
+	ext      NamedReaderWritefAt
 	pos      int
 	dirty    bool
 	stager   stager
@@ -267,9 +273,8 @@ func (b *scratchBuf) prevLine(n int) int {
 
 // returns the text of the line at the given index
 func (b *scratchBuf) getLine(idx int) string {
-	b.ext.Seek(int64(b.lines[idx].pos), 0)
 	bts := make([]byte, b.lines[idx].len)
-	_, err := b.ext.Read(bts)
+	_, err := b.ext.ReadAt(bts, int64(b.lines[idx].pos))
 	if err != nil {
 		stderr.Fatal(err)
 	}
@@ -395,7 +400,7 @@ func (b *scratchBuf) writeLine(line string) (bufferLine, error) {
 		return unicode.IsSpace(r)
 	})
 
-	num, err := b.ext.Write([]byte(bts))
+	num, err := b.ext.WriteAt([]byte(bts), int64(b.pos))
 	if err != nil {
 		return bufferLine{}, err
 	}
@@ -408,10 +413,10 @@ func (b *scratchBuf) writeLine(line string) (bufferLine, error) {
 }
 
 func (b *scratchBuf) destructor() {
-	if f, ok := b.ext.(*os.File); ok {
-		// stderr.Println(f.Name())
-		os.Remove(f.Name())
-	}
+	// if f, ok := b.ext.(*os.File); ok {
+	// stderr.Println(f.Name())
+	os.Remove(b.ext.Name())
+	// }
 }
 
 func (b *scratchBuf) clone() buffer {
@@ -428,4 +433,21 @@ func (b *scratchBuf) clone() buffer {
 		stager:   b.stager,
 	}
 	return t
+}
+
+func (b *scratchBuf) String() string {
+	var rtn strings.Builder
+	rtn.WriteString(fmt.Sprintf("filename: %s\r\n", b.filename))
+	rtn.WriteString(fmt.Sprintf("curline: %d\r\n", b.curline))
+	rtn.WriteString(fmt.Sprintf("lastline: %d\r\n", b.lastline))
+	rtn.WriteString(fmt.Sprintf("dirty: %t\r\n", b.dirty))
+	rtn.WriteString(fmt.Sprintf("pos: %d\r\n", b.pos))
+	rtn.WriteString(fmt.Sprintf("scratch: %s\r\n", b.ext.Name()))
+	for k, v := range b.lines {
+		if k == 0 {
+			continue
+		}
+		rtn.WriteString(fmt.Sprintf("line[%d]: pos: %d; len: %d; mark: %c\r\n", k, v.pos, v.len, v.mark))
+	}
+	return rtn.String()
 }

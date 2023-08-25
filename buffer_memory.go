@@ -380,3 +380,18 @@ func (b *memoryBuf) clone() buffer {
 	}
 	return t
 }
+
+func (b *memoryBuf) String() string {
+	var rtn strings.Builder
+	rtn.WriteString(fmt.Sprintf("curline: %d\r\n", b.curline))
+	rtn.WriteString(fmt.Sprintf("lastline: %d\r\n", b.lastline))
+	rtn.WriteString(fmt.Sprintf("filename: %s\r\n", b.filename))
+	rtn.WriteString(fmt.Sprintf("dirty: %t\r\n", b.dirty))
+	for k, v := range b.lines {
+		if k == 0 {
+			continue
+		}
+		rtn.WriteString(fmt.Sprintf("line[%d]: len: %d; mark: %c; %s", k, len(v.txt), v.mark, v.txt))
+	}
+	return rtn.String()
+}

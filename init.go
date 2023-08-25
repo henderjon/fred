@@ -8,7 +8,7 @@ import (
 )
 
 type generalParams struct {
-	// debug    bool
+	debug    bool
 	filename string
 	prompt   string
 	pager    int
@@ -27,7 +27,7 @@ func getParams() allParams {
 	})
 
 	params := allParams{}
-	// flag.BoolVar(&params.general.debug, "debug", false, "output the currently set path")
+	flag.BoolVar(&params.general.debug, "debug", false, "output diagnostic information")
 	flag.StringVar(&params.general.filename, "file", "", "load `filename`; but also assumes the last non-flag arg is `filename`")
 	flag.StringVar(&params.general.prompt, "prompt", ":", "the string to display at the beginning of each line")
 	flag.IntVar(&params.general.pager, "pager", 0, "the space-padded width of the line number gutter")

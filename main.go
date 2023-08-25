@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	debug            = false
 	stderr           = logger.NewDropLogger(os.Stderr)
 	errQuit          = errors.New("goodbye")
 	errDirtyBuffer   = errors.New("you have unsaved changes; use Q to quit without saving")
@@ -18,6 +19,7 @@ var (
 
 func main() {
 	opts := getParams()
+	debug = opts.general.debug // this global is kinda lame
 	cache := &cache{}
 	cache.setPager(opts.general.pager)
 	b := newBuffer(cache)
@@ -196,6 +198,8 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 			return doExternalShell(b, line1, line2, cmd.argument)(true, os.Stdout)
 		}
 		return doWriteFile(inout, b, line1, line2, cmd.argument)
+	case debugAction:
+		return doDebug(b)
 	}
 
 	stderr.Log(line1, line2)

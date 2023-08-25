@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 )
 
@@ -12,6 +13,7 @@ const (
 // buffer is the interface for our content. It is large because of the accessor methods (and the fact that it provides the interface for bufferLines as well) which are not idiomatic, but good practice.
 type buffer interface {
 	io.ReadWriter
+	fmt.Stringer
 
 	defLines(start, end, incr string, l1, l2 int) (int, int, error)
 	defIncr(incr string, start, rel int) (int, int)

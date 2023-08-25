@@ -45,6 +45,7 @@ var (
 	setPagerAction           = rune('z')
 	setColumnAction          = rune('^')
 	printColumnAction        = rune('|')
+	debugAction              = rune('*')
 )
 
 var cmds = []rune{
@@ -88,6 +89,7 @@ var cmds = []rune{
 	setPagerAction,
 	setColumnAction,
 	printColumnAction,
+	debugAction,
 }
 
 var globsPre = []rune{

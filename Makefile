@@ -65,7 +65,7 @@ uninstall:
 
 .PHONY: demo
 demo: local
-	./$(BINDIR)/$(BIN) -file "example/short"
+	./$(BINDIR)/$(BIN) -file "example/short" -debug
 
 .PHONY: test
 test: dep check
