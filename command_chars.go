@@ -37,6 +37,7 @@ var (
 	simpleReplaceAction      = rune('s')
 	regexReplaceAction       = rune('S')
 	transliterateAction      = rune('t')
+	undoAction               = rune('u')
 	globalNegIntSearchAction = rune('V')
 	globalNegSearchAction    = rune('v') // v/re/p is the glob prefix which means we use the pattern to print every line that doesn't match [gPREFIX]
 	superWriteAction         = rune('W') // write [file] command
@@ -79,6 +80,7 @@ var cmds = []rune{
 	simpleReplaceAction,
 	regexReplaceAction,
 	transliterateAction,
+	undoAction,
 	globalNegIntSearchAction,
 	globalNegSearchAction,
 	superWriteAction,

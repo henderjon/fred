@@ -1,10 +1,16 @@
 package main
 
+import (
+	"errors"
+)
+
 type cache struct {
 	pager       int
 	column      int
 	prevSearch  search
 	prevReplace replace
+	undo1       buffer
+	undo2       buffer
 }
 
 func (c *cache) setPager(n int) {
@@ -37,4 +43,22 @@ func (c *cache) setPreviousReplace(s replace) {
 
 func (c *cache) getPreviousReplace() replace {
 	return c.prevReplace
+}
+
+func (c *cache) stageUndo(b buffer) {
+	c.undo1 = c.undo2
+	c.undo2 = b
+}
+
+func (c *cache) unstageUndo() (buffer, error) {
+	if c.undo1 != nil {
+		tmp := c.undo1
+		c.stageUndo(c.undo1)
+		return tmp, nil
+	}
+	return *(new(buffer)), errors.New("nothing to undo") // dereference the pointer before returning it
+}
+
+type stager interface {
+	stageUndo(b buffer)
 }

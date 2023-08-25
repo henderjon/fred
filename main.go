@@ -18,9 +18,9 @@ var (
 
 func main() {
 	opts := getParams()
-	b := newBuffer()
 	cache := &cache{}
 	cache.setPager(opts.general.pager)
+	b := newBuffer(cache)
 
 	// create out shutdown listener and our terminal and load the file given via -file
 	shd, inout := bootstrap(b, opts)
@@ -58,6 +58,15 @@ func main() {
 			err = doInteractiveGlob(*cmd, b, inout, cache, opts.general.prompt)
 			if err != nil {
 				inout.println(err.Error())
+			}
+			continue
+		}
+
+		if cmd.action == undoAction {
+			if t, err := cache.unstageUndo(); err != nil {
+				inout.println(err.Error())
+			} else {
+				b = t.clone()
 			}
 			continue
 		}

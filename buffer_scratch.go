@@ -39,9 +39,10 @@ type scratchBuf struct {
 	ext      io.ReadWriteSeeker
 	pos      int
 	dirty    bool
+	stager   stager
 }
 
-func newBuffer() buffer {
+func newBuffer(stage stager) buffer {
 	f := tmp()
 	return &scratchBuf{
 		curline:  0,
@@ -50,6 +51,7 @@ func newBuffer() buffer {
 		filename: "",
 		ext:      f,
 		dirty:    false,
+		stager:   stage,
 	}
 }
 
@@ -66,6 +68,9 @@ func (b *scratchBuf) isDirty() bool {
 }
 
 func (b *scratchBuf) setDirty(d bool) {
+	if d {
+		b.stager.stageUndo(b.clone())
+	}
 	b.dirty = d
 }
 
@@ -420,6 +425,7 @@ func (b *scratchBuf) clone() buffer {
 		ext:      b.ext,
 		pos:      b.pos,
 		dirty:    b.dirty,
+		stager:   b.stager,
 	}
 	return t
 }
