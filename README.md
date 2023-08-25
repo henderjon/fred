@@ -15,7 +15,7 @@ By default `fred` uses a tmp file as scratch space. This reduces the memory foot
 `$ FREDMODE=memory make install`
 
 --
-[^1] [Software Tools](https://a.co/d/57j2eG0)
-[^2] [Software Tools for Pascal](https://a.co/d/jllgMxg)
-[^3] [Lexical Scanning in Go - Rob Pike](https://www.youtube.com/watch?v=HxaD_trXwRE)
-[^4] "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it."
+[^1]: [Software Tools](https://a.co/d/57j2eG0)
+[^2]: [Software Tools for Pascal](https://a.co/d/jllgMxg)
+[^3]: [Lexical Scanning in Go - Rob Pike](https://www.youtube.com/watch?v=HxaD_trXwRE)
+[^4]: "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it."

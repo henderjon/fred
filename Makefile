@@ -88,5 +88,3 @@ local: dep check
 .PHONY: prod
 prod: dep check
 	GOEXPERIMENT=loopvar GOWORK=off go build -ldflags $(LDFLAGS) -o $(BINDIR)/$(BIN)
-
-

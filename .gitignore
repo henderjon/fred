@@ -1,5 +1,8 @@
 bin/*
 !bin/.gitkeep
+
 resources/*
 TODO
+
 example/*
+!example/short
