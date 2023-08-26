@@ -28,14 +28,14 @@ type NamedReaderWriteAt interface {
 	Name() string
 }
 
-func (b bufferLine) String() string {
-	return fmt.Sprint(b.pos)
-}
-
 type bufferLine struct {
 	pos  int
 	len  int
 	mark rune
+}
+
+func (b bufferLine) String() string {
+	return fmt.Sprintf("pos: %d; len: %d; mark: %c;", b.pos, b.len, b.mark)
 }
 
 type scratchBuf struct {
@@ -465,7 +465,7 @@ func (b *scratchBuf) String() string {
 		if k == 0 {
 			continue
 		}
-		rtn.WriteString(fmt.Sprintf("line[%d]: pos: %d; len: %d; mark: %c\r\n", k, v.pos, v.len, v.mark))
+		rtn.WriteString(fmt.Sprintf("line[%d]: %s\r\n", k, v.String()))
 	}
 	return rtn.String()
 }

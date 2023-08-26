@@ -11,13 +11,13 @@ import (
 	"unicode"
 )
 
-func (b bufferLine) String() string {
-	return b.txt
-}
-
 type bufferLine struct {
 	txt  string
 	mark rune
+}
+
+func (b bufferLine) String() string {
+	return fmt.Sprintf("len: %d; mark: %c; %s", len(b.txt), b.mark, b.txt)
 }
 
 type memoryBuf struct {
@@ -409,7 +409,7 @@ func (b *memoryBuf) String() string {
 		if k == 0 {
 			continue
 		}
-		rtn.WriteString(fmt.Sprintf("line[%d]: len: %d; mark: %c; %s\r\n", k, len(v.txt), v.mark, v.txt))
+		rtn.WriteString(fmt.Sprintf("line[%d]: %s\r\n", k, v.String()))
 	}
 	return rtn.String()
 }

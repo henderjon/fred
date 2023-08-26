@@ -96,7 +96,6 @@ func clearBuffer(b buffer) error {
 		return err
 	}
 
-	stderr.Log(line1, line2)
 	return doDelete(b, line1, line2)
 }
 
