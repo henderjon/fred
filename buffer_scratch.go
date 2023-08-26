@@ -455,17 +455,17 @@ func (b *scratchBuf) clone() buffer {
 
 func (b *scratchBuf) String() string {
 	var rtn strings.Builder
-	rtn.WriteString(fmt.Sprintf("filename: %s\r\n", b.filename))
-	rtn.WriteString(fmt.Sprintf("curline: %d\r\n", b.curline))
-	rtn.WriteString(fmt.Sprintf("lastline: %d\r\n", b.lastline))
-	rtn.WriteString(fmt.Sprintf("dirty: %t\r\n", b.dirty))
-	rtn.WriteString(fmt.Sprintf("pos: %d\r\n", b.pos))
-	rtn.WriteString(fmt.Sprintf("scratch: %s\r\n", b.ext.Name()))
+	fmt.Fprintf(&rtn, "filename: %s\r\n", b.filename)
+	fmt.Fprintf(&rtn, "curline: %d\r\n", b.curline)
+	fmt.Fprintf(&rtn, "lastline: %d\r\n", b.lastline)
+	fmt.Fprintf(&rtn, "dirty: %t\r\n", b.dirty)
+	fmt.Fprintf(&rtn, "pos: %d\r\n", b.pos)
+	fmt.Fprintf(&rtn, "scratch: %s\r\n", b.ext.Name())
 	for k, v := range b.lines {
 		if k == 0 {
 			continue
 		}
-		rtn.WriteString(fmt.Sprintf("line[%d]: %s\r\n", k, v.String()))
+		fmt.Fprintf(&rtn, "line[%d]: %s\r\n", k, v.String())
 	}
 	return rtn.String()
 }
