@@ -183,8 +183,6 @@ func (b *scratchBuf) putLine(line string) error {
 		return err
 	}
 
-	b.pos += newLine.len // track tha last bytes written because we'll start there next time
-
 	// when the current active buffer has fewer lines that the total buffer (ie we've deleted/forgotten lines at the end of the buffer) we can reuse those lines in stead of always appending. This reduces memory usage but the scratch file will continue to grow.
 	if b.lastline <= len(b.lines)-1 {
 		b.lines[b.lastline] = newLine
@@ -421,11 +419,15 @@ func (b *scratchBuf) writeLine(line string) (bufferLine, error) {
 		return bufferLine{}, err
 	}
 
-	return bufferLine{
+	newline := bufferLine{
 		pos:  b.pos,
 		len:  num,
 		mark: null,
-	}, nil
+	}
+
+	b.pos += num // track tha last bytes written because we'll start there next time
+
+	return newline, nil
 }
 
 func (b *scratchBuf) destructor() {
