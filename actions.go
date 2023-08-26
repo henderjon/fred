@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -648,8 +647,8 @@ func doSetColumn(num string, cache *cache) (string, error) {
 }
 
 func doDebug(b buffer) (string, error) {
-	if !debug {
-		return "", errors.New("debugging is not enabled; did you mean to use `-debug`?")
-	}
+	// if !debug {
+	// return "", errors.New("debugging is not enabled; did you mean to use `-debug`?")
+	// }
 	return b.String(), nil
 }

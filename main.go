@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	debug            = false
+	// debug            = false
 	stderr           = logger.NewDropLogger(os.Stderr)
 	errQuit          = errors.New("goodbye")
 	errDirtyBuffer   = errors.New("you have unsaved changes; use Q to quit without saving")
@@ -20,7 +20,7 @@ var (
 
 func main() {
 	opts := getParams()
-	debug = opts.general.debug // this global is kinda lame
+	// debug = opts.general.debug // this global is kinda lame
 	cache := &cache{}
 	cache.setPager(opts.general.pager)
 	b := newBuffer(cache)
