@@ -91,11 +91,12 @@ func clearBuffer(b buffer) error {
 	}
 
 	// some commands require addresses
-	line1, line2, err := b.defLines("", "", "", b.getCurline(), b.getCurline())
+	line1, line2, err := b.defLines("", "", "", 1, b.getLastline())
 	if err != nil {
 		return err
 	}
 
+	stderr.Log(line1, line2)
 	return doDelete(b, line1, line2)
 }
 

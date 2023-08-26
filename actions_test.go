@@ -23,6 +23,7 @@ func getTestActionBuffer() buffer {
 		},
 		filename: "filename",
 		dirty:    false,
+		stager:   &cache{},
 	}
 }
 
@@ -39,6 +40,7 @@ func getTestMarkedActionBuffer() buffer {
 			{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: mark},
 		},
 		filename: "filename",
+		stager:   &cache{},
 	}
 }
 
@@ -81,7 +83,7 @@ func Test_doDelete(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doDelete(controlBuffer, test.l1, test.l2)
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
 		}
 
@@ -127,7 +129,7 @@ func Test_doMove(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doMove(controlBuffer, test.l1, test.l2, test.dest)
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
 		}
 
@@ -182,7 +184,7 @@ func Test_doCopyNPaste(t *testing.T) {
 			t.Error(err)
 		}
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
 		}
 
@@ -244,7 +246,7 @@ func Test_doSimpleReplace(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doSimpleReplace(controlBuffer, test.l1, test.l2, test.pattern, test.replace, test.num, &cache{})
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
 		}
 
@@ -307,7 +309,7 @@ func Test_doRegexReplace(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doRegexReplace(controlBuffer, test.l1, test.l2, test.pattern, test.replace, test.num, &cache{})
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
 		}
 
@@ -377,7 +379,7 @@ func Test_doGlob(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doGlob(test.cmd, controlBuffer, input, &cache{})
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
 		}
 
@@ -409,7 +411,7 @@ func Test_doSetMarkLine_1(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		doSetMarkLine(controlBuffer, test.l1, test.l2, test.argument)
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
 		}
 
@@ -441,7 +443,7 @@ func Test_doSetMarkLine_2(t *testing.T) {
 		controlBuffer := getTestMarkedActionBuffer()
 		doSetMarkLine(controlBuffer, test.l1, test.l2, test.argument)
 
-		if diff := cmp.Diff(controlBuffer, test.expected, cmp.AllowUnexported(memoryBuf{}, bufferLine{}, search{})); diff != "" {
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
 		}
 

@@ -21,6 +21,7 @@ func getTestBuffer() buffer {
 			{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 		},
 		filename: "filename",
+		stager:   &cache{},
 	}
 }
 

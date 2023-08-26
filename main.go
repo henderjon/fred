@@ -186,7 +186,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line1, cmd.argument)(false, b)
 		}
-		return doReadFile(b, line1, cmd.argument)
+		return doReadFile(b, 1, cmd.argument)
 	case readAction: // read into the current buffer either shell output or a file
 		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
