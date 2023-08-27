@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strconv"
 	"strings"
 	"unicode"
 )
@@ -315,9 +314,9 @@ func (b *scratchBuf) defLines(start, end, incr string, l1, l2 int) (int, int, er
 	case start == "$": // if no address was given, use the current line
 		i1 = b.getLastline()
 	default:
-		i1, err = strconv.Atoi(start)
+		i1, err = intval(start)
 		if err != nil {
-			return 0, 0, fmt.Errorf("invalid buffer start address: %s; %s", start, err.Error())
+			return 0, 0, fmt.Errorf("invalid buffer start address: %s", err.Error())
 		}
 	}
 
@@ -329,9 +328,9 @@ func (b *scratchBuf) defLines(start, end, incr string, l1, l2 int) (int, int, er
 	case end == "":
 		i2 = i1
 	default:
-		i2, err = strconv.Atoi(end)
+		i2, err = intval(end)
 		if err != nil {
-			return 0, 0, fmt.Errorf("invalid buffer end address: %s; %s", end, err.Error())
+			return 0, 0, fmt.Errorf("invalid buffer end address: %s", err.Error())
 		}
 	}
 

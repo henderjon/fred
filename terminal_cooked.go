@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"strconv"
 )
 
 type classicTerm struct {
@@ -45,7 +44,7 @@ func (t *classicTerm) prtHistory(s string) error {
 
 	num := 5
 	if len(s) > 0 {
-		num, err = strconv.Atoi(s)
+		num, err = intval(s)
 		if err != nil {
 			return err
 		}

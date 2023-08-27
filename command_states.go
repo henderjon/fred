@@ -80,7 +80,7 @@ func isGlobalPrefix(r rune) bool {
 // lexAddress parses a value that represents an address in the command
 func lexAddress(t itemType) stateFn {
 	return stateFn(func(l *lexer) stateFn {
-		l.acceptRun("+-") // TODO: will accept more than one ... :thinking_face:
+		l.acceptRun("+ -") // TODO: will accept more than one ... :thinking_face:
 
 		switch true {
 		default:

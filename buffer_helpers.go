@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"regexp"
@@ -32,9 +33,9 @@ func guardAddress(b buffer, addr string) (int, error) {
 		return b.getLastline(), nil
 	}
 
-	i, err := strconv.Atoi(addr)
+	i, err := intval(addr)
 	if err != nil {
-		return 0, fmt.Errorf("invalid address: %s; %s", addr, err.Error())
+		return 0, fmt.Errorf("invalid address; %s", err.Error())
 	}
 
 	if i < 0 || i > b.getLastline() {
@@ -156,7 +157,7 @@ func normalizeFilePath(b buffer, filename string) (string, error) {
 	return absPath, nil
 }
 
-func revCol(col int, s string) string {
+func revealColumn(col int, s string) string {
 	if col <= 0 {
 		return s
 	}
@@ -172,4 +173,16 @@ func revCol(col int, s string) string {
 		rtn.WriteRune(r)
 	}
 	return rtn.String()
+}
+
+func intval(num string) (int, error) {
+	if len(num) == 0 {
+		return 0, errors.New("empty number")
+	}
+
+	i, err := strconv.Atoi(strings.TrimSpace(num))
+	if err != nil {
+		return 0, fmt.Errorf("unable to parse number: %s; %s", num, err.Error())
+	}
+	return i, nil
 }

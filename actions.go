@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
-	"strconv"
 	"strings"
 	"unicode/utf8"
 )
@@ -56,7 +55,7 @@ func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) er
 		case printTypeLit:
 			inout.printf("%-2s%d\t%+q", mk, n, line)
 		case printTypeCol:
-			inout.printf("%-2s%d\t%s", mk, n, revCol(cache.getColumn(), line))
+			inout.printf("%-2s%d\t%s", mk, n, revealColumn(cache.getColumn(), line))
 		}
 	}
 
@@ -72,9 +71,9 @@ func setPager(num string, cache *cache) (string, error) {
 			n   int
 		)
 
-		n, err = strconv.Atoi(num)
+		n, err = intval(num)
 		if err != nil {
-			return "", fmt.Errorf("unable to set pager; invalid number: %s; %s", num, err.Error())
+			return "", fmt.Errorf("unable to set pager; %s", err.Error())
 		}
 
 		cache.setPager(n)
@@ -191,9 +190,9 @@ func doSimpleReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cach
 
 	n := 1 // default to 1; not -1 ("global")
 	if len(num) > 0 {
-		n, err = strconv.Atoi(num)
+		n, err = intval(num)
 		if err != nil {
-			return fmt.Errorf("unable to do a simple replace; invalid number: %s; %s", num, err.Error())
+			return fmt.Errorf("unable to do a simple replace; %s", err.Error())
 		}
 	}
 
@@ -245,9 +244,9 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cache
 
 	n := 1 // default to 1; not -1 ("global")
 	if len(num) > 0 {
-		n, err = strconv.Atoi(num)
+		n, err = intval(num)
 		if err != nil {
-			return fmt.Errorf("unable to do a regex replace; invalid number: %s; %s", num, err.Error())
+			return fmt.Errorf("unable to do a regex replace; %s", err.Error())
 		}
 	}
 
@@ -353,9 +352,9 @@ func doBreakLines(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) 
 
 	n := 1 // default to 1; not -1 ("global")
 	if len(num) > 0 {
-		n, err = strconv.Atoi(num)
+		n, err = intval(num)
 		if err != nil {
-			return fmt.Errorf("unable to do a regex replace; invalid number: %s; %s", num, err.Error())
+			return fmt.Errorf("unable to break lines; %s", err.Error())
 		}
 	}
 
@@ -635,9 +634,9 @@ func doSetColumn(num string, cache *cache) (string, error) {
 			n   int
 		)
 
-		n, err = strconv.Atoi(num)
+		n, err = intval(num)
 		if err != nil {
-			return "", fmt.Errorf("unable to set column; invalid number: %s; %s", num, err.Error())
+			return "", fmt.Errorf("unable to set column; %s", err.Error())
 		}
 
 		cache.setColumn(n)
