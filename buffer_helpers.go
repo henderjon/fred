@@ -180,6 +180,7 @@ func intval(num string) (int, error) {
 		return 0, errors.New("empty number")
 	}
 
+	// if users are allowed to use a space between the action and the number, strip them first
 	i, err := strconv.Atoi(strings.TrimSpace(num))
 	if err != nil {
 		return 0, fmt.Errorf("unable to parse number: %s; %s", num, err.Error())
