@@ -64,7 +64,7 @@ func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) er
 	return nil
 }
 
-func setPager(num string, cache *cache) (string, error) {
+func doSetPager(num string, cache *cache) (string, error) {
 	if len(num) > 0 {
 		var (
 			err error

@@ -158,7 +158,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	case mirrorAction:
 		return "", doMirrorLines(b, line1, line2)
 	case setPagerAction:
-		return setPager(cmd.destination, cache)
+		return doSetPager(cmd.destination, cache)
 	case setColumnAction:
 		return doSetColumn(cmd.destination, cache)
 	case shellAction:
