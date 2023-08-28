@@ -581,3 +581,24 @@ func Test_doBreakLines_g(t *testing.T) {
 		}
 	}
 }
+
+func Test_doPrintAddress(t *testing.T) {
+	tests := []struct {
+		l2       int
+		expected string
+	}{
+		{5, "5"},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		s, err := doPrintAddress(controlBuffer, test.l2)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if diff := cmp.Diff(s, test.expected); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
