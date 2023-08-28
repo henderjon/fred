@@ -446,6 +446,7 @@ func doTransliterate(b buffer, l1, l2 int, pattern, replace string) error {
 
 func doMirrorLines(b buffer, l1, l2 int) error {
 	b.reverse(l1, l2)
+	b.setCurline(l2)
 	return nil
 }
 

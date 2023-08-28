@@ -4,6 +4,7 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -598,6 +599,101 @@ func Test_doPrintAddress(t *testing.T) {
 		}
 
 		if diff := cmp.Diff(s, test.expected); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
+
+func Test_setFilename(t *testing.T) {
+	tests := []struct {
+		given    string
+		expected buffer
+	}{
+		{"new file name", &memoryBuf{
+			curline:  1,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+			},
+			filename: "new file name",
+			dirty:    false,
+		}},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		doSetFilename(controlBuffer, `new file name`)
+
+		if diff := cmp.Diff(test.given, filepath.Base(test.expected.getFilename())); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
+
+func Test_doMirrorLines(t *testing.T) {
+	tests := []struct {
+		l1, l2   int
+		expected buffer
+	}{
+		{2, 4, &memoryBuf{
+			curline:  4, // NOTE: curious
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+			},
+			filename: "filename",
+			dirty:    true,
+			rev:      1,
+		}},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		doMirrorLines(controlBuffer, test.l1, test.l2)
+
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
+
+func Test_doTransliterate(t *testing.T) {
+	tests := []struct {
+		l1, l2   int
+		expected buffer
+	}{
+		{2, 4, &memoryBuf{
+			curline:  1,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut port1 mi, 2u orn1r2 orci. Eti1m s2d v2hicul1 orci. ...`},
+				{txt: `3 Nunc sc2l2risqu2 urn1 1 2r1t gr1vid1 porttitor. Don2c pulvin1r l2o urn1, id ...`},
+				{txt: `4 Null1m l1cus m1gn1, congu2 1liqu1m luctus 1c, f1ucibus v2l purus. Int2g2r ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+			},
+			filename: "filename",
+			dirty:    true,
+			rev:      3,
+		}},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		doTransliterate(controlBuffer, test.l1, test.l2, `ae`, `12`)
+
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
 		}
 	}
