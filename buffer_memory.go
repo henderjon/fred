@@ -77,7 +77,7 @@ func (b *memoryBuf) Write(by []byte) (int, error) {
 			break
 		}
 
-		b.putLine(strings.TrimRight(line, "\n\r"))
+		b.putLine(strings.TrimRight(line, "\n\r"), b.curline)
 		byCount += len(line)
 	}
 
@@ -142,35 +142,18 @@ func (b *memoryBuf) getLastline() int {
 	return b.lastline
 }
 
-// insertAfter gets input from the user and puts it at the given position
-func (b *memoryBuf) insertAfter(inout termio, idx int) error {
-	b.curline = idx
-	for {
-		line, err := inout.input("")
-		if err != nil {
-			return err
-		}
-
-		if len(line) == 1 && line[0] == '.' {
-			return nil
-		}
-
-		err = b.putLine(line)
-		if err != nil {
-			return err
-		}
-	}
-}
-
 // putLine adds a new lines to the end of the buffer then moves them into place
-func (b *memoryBuf) putLine(line string) error {
+func (b *memoryBuf) putLine(line string, idx int) error {
+	b.curline = idx
 	b.lastline++
+
 	newLine := bufferLine{
 		txt: strings.TrimRightFunc(line, func(r rune) bool {
 			return unicode.IsSpace(r)
 		}),
 		mark: null,
 	}
+
 	// some operations (e.g. `c`) use the last line as scratch space while other simply add new lines
 	if b.lastline <= len(b.lines)-1 {
 		b.lines[b.lastline] = newLine

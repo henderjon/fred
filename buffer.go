@@ -31,10 +31,9 @@ type buffer interface {
 	setDirty(bool)
 	getRev() int
 
-	insertAfter(inout termio, idx int) error
-
-	putLine(string) error
+	putLine(line string, idx int) error
 	getLine(int) string
+
 	replaceLine(string, int) error
 	duplicateLine(int) error
 

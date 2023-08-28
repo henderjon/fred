@@ -89,14 +89,32 @@ func doPrintAddress(b buffer, l2 int) (string, error) {
 }
 
 func doAppend(inout termio, b buffer, l1 int) error {
-	return b.insertAfter(inout, l1)
+	var line string
+	var err error
+
+	for {
+		line, err = inout.input("")
+		if err != nil {
+			return err
+		}
+
+		if len(line) == 1 && line[0] == '.' {
+			return nil
+		}
+
+		err = b.putLine(line, l1)
+		if err != nil {
+			return err
+		}
+		l1++ // append to the next line; don't lock append to always adding lines to the one given, move the destination with the what is entered
+	}
 }
 
 func doInsert(inout termio, b buffer, l1 int) error {
 	if l1 <= 1 {
-		return b.insertAfter(inout, 0)
+		l1 = 0
 	}
-	return b.insertAfter(inout, l1)
+	return doAppend(inout, b, l1)
 }
 
 // doDelete moves a range of lines to the end of the buffer then decreases the last line to "forget" about the lines at the end
@@ -118,7 +136,7 @@ func doChange(inout termio, b buffer, l1, l2 int) error {
 	if err != nil {
 		return err
 	}
-	return b.insertAfter(inout, b.prevLine(l1))
+	return doAppend(inout, b, b.prevLine(l1))
 }
 
 func doMove(b buffer, l1, l2 int, dest string) error {
@@ -315,7 +333,7 @@ func doJoinLines(b buffer, l1, l2 int, sep string) error {
 	}
 
 	// add them to the end of the bufferLines
-	err = b.putLine(strings.TrimSuffix(new.String(), sep))
+	err = b.putLine(strings.TrimSuffix(new.String(), sep), b.getCurline())
 	if err != nil {
 		return err
 	}
@@ -383,10 +401,10 @@ func doBreakLines(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) 
 				continue
 			}
 			// for documentation see doRegexReplace
-			b.putLine(old[p:submatches[i][1]])
+			b.putLine(old[p:submatches[i][1]], b.getCurline())
 			p = submatches[i][1]
 		}
-		b.putLine(old[p:])
+		b.putLine(old[p:], b.getCurline())
 		doDelete(b, idx, idx)
 	}
 
@@ -455,7 +473,7 @@ func doReadFile(b buffer, l1 int, filename string) (string, error) {
 		}
 
 		numbyt += len(fs.Text()) + 1 // \n is always 1
-		b.putLine(fs.Text())
+		b.putLine(fs.Text(), b.getCurline())
 	}
 
 	return fmt.Sprint(numbyt), err

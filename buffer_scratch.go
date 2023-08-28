@@ -99,7 +99,7 @@ func (b *scratchBuf) Write(by []byte) (int, error) {
 			break
 		}
 
-		b.putLine(strings.TrimRight(line, "\n\r"))
+		b.putLine(strings.TrimRight(line, "\n\r"), b.curline)
 		byCount += len(line)
 	}
 
