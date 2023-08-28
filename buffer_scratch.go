@@ -34,7 +34,7 @@ type bufferLine struct {
 }
 
 func (b bufferLine) String() string {
-	return fmt.Sprintf("pos: %d; len: %d; mark: %c;", b.pos, b.len, b.mark)
+	return fmt.Sprintf("pos: %d; len: %d; mark: %c %d;", b.pos, b.len, b.mark, b.mark)
 }
 
 type scratchBuf struct {

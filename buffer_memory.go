@@ -16,7 +16,7 @@ type bufferLine struct {
 }
 
 func (b bufferLine) String() string {
-	return fmt.Sprintf("len: %d; mark: %c; %s", len(b.txt), b.mark, b.txt)
+	return fmt.Sprintf("len: %d; mark: %c %d; %s", len(b.txt), b.mark, b.mark, b.txt)
 }
 
 type memoryBuf struct {
