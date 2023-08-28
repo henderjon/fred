@@ -461,3 +461,123 @@ func Test_doSetMarkLine_2(t *testing.T) {
 
 	}
 }
+
+func Test_doJoinLines(t *testing.T) {
+	tests := []struct {
+		l1, l2   int
+		expected buffer
+	}{
+		{2, 4, &memoryBuf{
+			curline:  2,
+			lastline: 3,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...++3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...++4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+			},
+			filename: "filename",
+			dirty:    true,
+			rev:      9,
+		}},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		doJoinLines(controlBuffer, test.l1, test.l2, `++`)
+
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+
+	}
+}
+
+func Test_doBreakLines_n1(t *testing.T) {
+	tests := []struct {
+		l1, l2   int
+		expected buffer
+	}{
+		{2, 4, &memoryBuf{
+			curline:  4,
+			lastline: 8,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi,`},
+				{txt: ` eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor.`},
+				{txt: ` Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna,`},
+				{txt: ` congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: mark}, // this is flotsam
+			},
+			filename: "filename",
+			dirty:    true,
+			rev:      36,
+		}},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		doBreakLines(controlBuffer, test.l1, test.l2, `[,.]`, "", `1`, &cache{})
+
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
+
+func Test_doBreakLines_g(t *testing.T) {
+	tests := []struct {
+		l1, l2   int
+		expected buffer
+	}{
+		{2, 4, &memoryBuf{
+			curline:  4,
+			lastline: 22,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi,`},
+				{txt: ` eu ornare orci.`},
+				{txt: ` Etiam sed vehicula orci.`},
+				{txt: ` .`},
+				{txt: `.`},
+				{txt: `.`},
+				{txt: ``},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor.`},
+				{txt: ` Donec pulvinar leo urna,`},
+				{txt: ` id .`},
+				{txt: `.`},
+				{txt: `.`},
+				{txt: ``},
+				{txt: `4 Nullam lacus magna,`},
+				{txt: ` congue aliquam luctus ac,`},
+				{txt: ` faucibus vel purus.`},
+				{txt: ` Integer .`},
+				{txt: `.`},
+				{txt: `.`},
+				{txt: ``},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: mark}, // this is flotsam
+			},
+			filename: "filename",
+			dirty:    true,
+			rev:      92,
+		}},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		doBreakLines(controlBuffer, test.l1, test.l2, `[,.]`, "", `-1`, &cache{})
+
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}

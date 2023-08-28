@@ -347,6 +347,7 @@ func doJoinLines(b buffer, l1, l2 int, sep string) error {
 
 func doBreakLines(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) error {
 	if len(sub) > 0 {
+		// NOTE: The reason for and result or this code is unknown; needs test
 		return doRegexReplace(b, l1, l2, pattern, sub, num, cache)
 	}
 
