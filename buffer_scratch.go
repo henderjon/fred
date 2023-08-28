@@ -244,10 +244,6 @@ func (b *scratchBuf) getMark(idx int) rune {
 	return b.lines[idx].mark
 }
 
-func (b *scratchBuf) hasMark(idx int, r rune) bool {
-	return b.getMark(idx) == r
-}
-
 // reverse rearranges the given lines in reverse
 func (b *scratchBuf) reverse(from, to int) {
 	var tmp bufferLine

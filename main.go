@@ -245,7 +245,7 @@ func doGlob(cmd command, b buffer, inout termio, cache *cache) error {
 			break
 		}
 
-		if !b.hasMark(i, mark) ||
+		if b.getMark(i) != mark ||
 			contains(string(globsPre), cmd.action) ||
 			contains(string(intrGlobsPre), cmd.action) {
 			continue
@@ -296,7 +296,7 @@ func doInteractiveGlob(cmd command, b buffer, inout termio, cache *cache, prompt
 			break
 		}
 
-		if !b.hasMark(i, mark) ||
+		if b.getMark(i) != mark ||
 			contains(string(globsPre), cmd.action) ||
 			contains(string(intrGlobsPre), cmd.action) {
 			continue

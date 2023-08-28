@@ -42,7 +42,6 @@ type buffer interface {
 
 	putMark(int, rune)
 	getMark(int) rune
-	hasMark(int, rune) bool
 
 	nextLine(int) int
 	prevLine(int) int

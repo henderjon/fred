@@ -600,7 +600,7 @@ func doGetMarkedLine(inout termio, b buffer, mark string) error {
 			break
 		}
 
-		if b.hasMark(i, mk) {
+		if b.getMark(i) == mk {
 			inout.printf("%2d) %s", i, b.getLine(i))
 			b.setCurline(i)
 		}
