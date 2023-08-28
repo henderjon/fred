@@ -200,8 +200,14 @@ func (b *memoryBuf) duplicateLine(idx int) error {
 		return fmt.Errorf("cannot duplicate text; invalid address; %d", idx)
 	}
 
-	b.lines = append(b.lines, b.lines[idx])
 	b.lastline++
+
+	// if there are rando [forgotten] lines at the end of the buffer, reuse them
+	if b.lastline <= len(b.lines)-1 {
+		b.lines[b.lastline] = b.lines[idx]
+	} else {
+		b.lines = append(b.lines, b.lines[idx])
+	}
 
 	// NOTE: an argument can be made to do the bulk move here, one at a time and empty doCopyNPaste ...
 
