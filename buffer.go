@@ -17,7 +17,6 @@ type buffer interface {
 
 	defLines(start, end, incr string, l1, l2 int) (int, int, error)
 	defIncr(incr string, start, rel int) (int, int)
-	getNumLines() int
 
 	setCurline(int)
 	getCurline() int

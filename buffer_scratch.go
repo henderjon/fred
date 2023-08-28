@@ -117,7 +117,7 @@ func (b *scratchBuf) Read(p []byte) (int, error) {
 		byCount int
 	)
 
-	for i := 1; i < b.getNumLines(); i++ {
+	for i := 1; i < b.getLastline(); i++ {
 		if byCount >= len(p) {
 			return byCount, err
 		}
@@ -137,10 +137,6 @@ func (b *scratchBuf) Read(p []byte) (int, error) {
 	return byCount, err
 }
 
-func (b *scratchBuf) getNumLines() int {
-	return b.getLastline()
-}
-
 func (b *scratchBuf) setCurline(i int) {
 	b.curline = i
 }
@@ -153,32 +149,16 @@ func (b *scratchBuf) setLastline(i int) {
 	b.lastline = i
 }
 
+// getLastline reports how many lines are in the *active* buffer which is what got when we called getNumLines()
 func (b *scratchBuf) getLastline() int {
 	return b.lastline
 }
 
-// insertAfter gets input from the user and puts it at the given position
-func (b *scratchBuf) insertAfter(inout termio, idx int) error {
-	b.curline = idx
-	for {
-		line, err := inout.input("")
-		if err != nil {
-			return err
-		}
-
-		if len(line) == 1 && line[0] == '.' {
-			return nil
-		}
-
-		err = b.putLine(line)
-		if err != nil {
-			return err
-		}
-	}
-}
-
 // putLine adds a new lines to the end of the buffer then moves them into place
-func (b *scratchBuf) putLine(line string) error {
+func (b *scratchBuf) putLine(line string, idx int) error {
+	// NOTE: we are not guarding this index here
+	b.curline = idx
+
 	b.lastline++
 
 	newLine, err := b.writeLine(line)
@@ -385,7 +365,7 @@ func (b *scratchBuf) scanForward(start, num int) func() (int, bool) {
 	i := b.prevLine(start) // remove 1 because nextLine advances one
 
 	if num < 0 {
-		num = b.getNumLines()
+		num = b.getLastline()
 	}
 
 	n := 0 // this is essentially a do{}while() loop so '0' will execute once
@@ -406,7 +386,7 @@ func (b *scratchBuf) scanReverse(start, num int) func() (int, bool) {
 	i := b.nextLine(start) // remove 1 because nextLine advances one
 
 	if num < 0 {
-		num = b.getNumLines()
+		num = b.getLastline()
 	}
 
 	n := 0

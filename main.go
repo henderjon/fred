@@ -225,7 +225,7 @@ func doGlob(cmd command, b buffer, inout termio, cache *cache) error {
 	invertSearch := contains(string([]rune{globalNegSearchAction, globalNegIntSearchAction}), cmd.globalPrefix)
 	numLines := line2 - line1
 	if numLines <= 0 { // I like big loops
-		numLines = b.getNumLines()
+		numLines = b.getLastline()
 	}
 
 	err = doMarkLines(b, line1, numLines, cmd.addrPattern, invertSearch)
@@ -276,7 +276,7 @@ func doInteractiveGlob(cmd command, b buffer, inout termio, cache *cache, prompt
 	invertSearch := contains(string([]rune{globalNegSearchAction, globalNegIntSearchAction}), cmd.globalPrefix)
 	numLines := line2 - line1
 	if numLines <= 0 { // I like big loops
-		numLines = b.getNumLines()
+		numLines = b.getLastline()
 	}
 
 	err = doMarkLines(b, line1, numLines, cmd.addrPattern, invertSearch)

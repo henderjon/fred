@@ -21,7 +21,7 @@ const (
 
 func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) error {
 	var err error
-	if l1 <= 0 || l1 > b.getNumLines() { // NOTE: l2 is not bound by last line; may be a problem
+	if l1 <= 0 || l1 > b.getLastline() { // NOTE: l2 is not bound by last line; may be a problem
 		return fmt.Errorf("unable to print; invalid address; %d; %d", l1, l2)
 	}
 
@@ -42,7 +42,7 @@ func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) er
 			mk += string(m)
 		}
 
-		if n > b.getNumLines() {
+		if n > b.getLastline() {
 			break
 		}
 
@@ -575,7 +575,7 @@ func doGetMarkedLine(inout termio, b buffer, mark string) error {
 		mk = rune(mark[0])
 	}
 
-	scan := b.scanForward(b.nextLine(b.getCurline()), b.getNumLines())
+	scan := b.scanForward(b.nextLine(b.getCurline()), b.getLastline())
 	for {
 		i, ok := scan()
 		if !ok {
@@ -607,9 +607,9 @@ func doGetNextMatchedLine(inout termio, b buffer, pattern string, forward bool, 
 		pattern: pattern,
 	})
 
-	scan := b.scanForward(b.nextLine(b.getCurline()), b.getNumLines())
+	scan := b.scanForward(b.nextLine(b.getCurline()), b.getLastline())
 	if !forward {
-		scan = b.scanReverse(b.prevLine(b.getCurline()), b.getNumLines())
+		scan = b.scanReverse(b.prevLine(b.getCurline()), b.getLastline())
 	}
 
 	for {

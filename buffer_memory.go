@@ -95,7 +95,7 @@ func (b *memoryBuf) Read(p []byte) (int, error) {
 		byCount int
 	)
 
-	for i := 1; i < b.getNumLines(); i++ {
+	for i := 1; i < b.getLastline(); i++ {
 		if byCount >= len(p) {
 			return byCount, err
 		}
@@ -356,7 +356,7 @@ func (b *memoryBuf) scanForward(start, num int) func() (int, bool) {
 	i := b.prevLine(start) // remove 1 because nextLine advances one
 
 	if num < 0 {
-		num = b.getNumLines()
+		num = b.getLastline()
 	}
 
 	n := 0 // this is essentially a do{}while() loop so '0' will execute once
@@ -377,7 +377,7 @@ func (b *memoryBuf) scanReverse(start, num int) func() (int, bool) {
 	i := b.nextLine(start) // remove 1 because nextLine advances one
 
 	if num < 0 {
-		num = b.getNumLines()
+		num = b.getLastline()
 	}
 
 	n := 0
