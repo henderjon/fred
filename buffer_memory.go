@@ -25,17 +25,17 @@ type memoryBuf struct {
 	lines    []bufferLine
 	filename string
 	dirty    bool
-	stager   stager
+	rev      int
 }
 
-func newBuffer(stage stager) buffer {
+func newBuffer() buffer {
 	return &memoryBuf{
 		curline:  0,
 		lastline: 0,
 		lines:    make([]bufferLine, 1),
 		filename: "",
 		dirty:    false,
-		stager:   stage,
+		rev:      0,
 	}
 }
 
@@ -53,9 +53,13 @@ func (b *memoryBuf) isDirty() bool {
 
 func (b *memoryBuf) setDirty(d bool) {
 	if d {
-		b.stager.stageUndo(b.clone())
+		b.rev++
 	}
 	b.dirty = d
+}
+
+func (b *memoryBuf) getRev() int {
+	return b.rev
 }
 
 // Write fulfills io.Writer
@@ -393,22 +397,24 @@ func (b *memoryBuf) clone() buffer {
 		lines:    cll,
 		filename: b.filename,
 		dirty:    b.dirty,
-		stager:   b.stager,
+		rev:      b.rev,
 	}
 	return t
 }
 
 func (b *memoryBuf) String() string {
 	var rtn strings.Builder
-	fmt.Fprintf(&rtn, "curline: %d\r\n", b.curline)
-	fmt.Fprintf(&rtn, "lastline: %d\r\n", b.lastline)
-	fmt.Fprintf(&rtn, "filename: %s\r\n", b.filename)
-	fmt.Fprintf(&rtn, "dirty: %t\r\n", b.dirty)
+	fmt.Fprint(&rtn, "buffer (memory):\r\n")
+	fmt.Fprintf(&rtn, "  curline: %d\r\n", b.curline)
+	fmt.Fprintf(&rtn, "  lastline: %d\r\n", b.lastline)
+	fmt.Fprintf(&rtn, "  filename: %s\r\n", b.filename)
+	fmt.Fprintf(&rtn, "  dirty: %t\r\n", b.dirty)
+	fmt.Fprintf(&rtn, "  rev: %d\r\n", b.rev)
 	for k, v := range b.lines {
 		if k == 0 {
 			continue
 		}
-		fmt.Fprintf(&rtn, "line[%d]: %s\r\n", k, v.String())
+		fmt.Fprintf(&rtn, "  line[%d]: %s\r\n", k, v.String())
 	}
 	return rtn.String()
 }

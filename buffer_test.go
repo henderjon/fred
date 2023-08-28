@@ -21,7 +21,16 @@ func getTestBuffer() buffer {
 			{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
 		},
 		filename: "filename",
-		stager:   &cache{},
+	}
+}
+
+func Test_sameBuffer(t *testing.T) {
+	one := getTestBuffer()
+	two := getTestBuffer()
+
+	// is it possible to compare two buffers?
+	if one == two {
+		t.Error("buffers the same", one, two)
 	}
 }
 

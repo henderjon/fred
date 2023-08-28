@@ -23,7 +23,6 @@ func getTestActionBuffer() buffer {
 		},
 		filename: "filename",
 		dirty:    false,
-		stager:   &cache{},
 	}
 }
 
@@ -40,7 +39,6 @@ func getTestMarkedActionBuffer() buffer {
 			{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`, mark: mark},
 		},
 		filename: "filename",
-		stager:   &cache{},
 	}
 }
 
@@ -62,6 +60,7 @@ func Test_doDelete(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      4,
 		}},
 		{1, 5, &memoryBuf{
 			curline:  0,
@@ -76,6 +75,7 @@ func Test_doDelete(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      1,
 		}},
 	}
 
@@ -108,6 +108,7 @@ func Test_doMove(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      4,
 		}},
 		{4, 5, "0", &memoryBuf{
 			curline:  2,
@@ -122,6 +123,7 @@ func Test_doMove(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      4,
 		}},
 	}
 
@@ -158,6 +160,7 @@ func Test_doCopyNPaste(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      4,
 		}},
 		{4, 5, "0", &memoryBuf{
 			curline:  0,
@@ -174,6 +177,7 @@ func Test_doCopyNPaste(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      6,
 		}},
 	}
 
@@ -211,6 +215,7 @@ func Test_doSimpleReplace(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      3,
 		}},
 		{1, 5, "or", "-", "3", &memoryBuf{
 			curline:  5,
@@ -225,6 +230,7 @@ func Test_doSimpleReplace(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      5,
 		}},
 		{2, 4, "or", "-", "-1", &memoryBuf{
 			curline:  4,
@@ -239,6 +245,7 @@ func Test_doSimpleReplace(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      3,
 		}},
 	}
 
@@ -274,6 +281,7 @@ func Test_doRegexReplace(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      3,
 		}},
 		{1, 5, "or", "-", "3", &memoryBuf{
 			curline:  5,
@@ -288,6 +296,7 @@ func Test_doRegexReplace(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      5,
 		}},
 		{2, 4, "or", "-", "-1", &memoryBuf{
 			curline:  4,
@@ -302,6 +311,7 @@ func Test_doRegexReplace(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      3,
 		}},
 	}
 
@@ -345,6 +355,7 @@ func Test_doGlob(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      5,
 		}},
 		{command{
 			addrStart:    "1",
@@ -371,6 +382,7 @@ func Test_doGlob(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
+			rev:      2,
 		}},
 	}
 

@@ -30,6 +30,7 @@ type buffer interface {
 
 	isDirty() bool
 	setDirty(bool)
+	getRev() int
 
 	insertAfter(inout termio, idx int) error
 

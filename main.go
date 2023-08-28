@@ -23,7 +23,7 @@ func main() {
 	// debug = opts.general.debug // this global is kinda lame
 	cache := &cache{}
 	cache.setPager(opts.general.pager)
-	b := newBuffer(cache)
+	b := newBuffer()
 
 	// create out shutdown listener and our terminal and load the file given via -file
 	shd, inout := bootstrap(b, opts)
@@ -75,6 +75,8 @@ func main() {
 		}
 
 		msg, err = doCmd(*cmd, b, inout, cache) // NOTE: should doCmd return (string, error) or only (error)
+		cache.stageUndo(b.clone())              // cache confirms the incoming is different
+
 		switch true {
 		case cmd.subCommand == quitAction:
 			if b.isDirty() {
@@ -200,7 +202,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 		}
 		return doWriteFile(inout, b, line1, line2, cmd.argument)
 	case debugAction:
-		return doDebug(b)
+		return doDebug(b, cache)
 	}
 
 	stderr.Log(line1, line2)

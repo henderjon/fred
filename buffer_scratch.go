@@ -45,10 +45,10 @@ type scratchBuf struct {
 	ext      NamedReaderWriteAt
 	pos      int
 	dirty    bool
-	stager   stager
+	rev      int // revision, each time we alter a buffer we incr
 }
 
-func newBuffer(stage stager) buffer {
+func newBuffer() buffer {
 	f := tmp()
 	return &scratchBuf{
 		curline:  0,
@@ -57,7 +57,7 @@ func newBuffer(stage stager) buffer {
 		filename: "",
 		ext:      f,
 		dirty:    false,
-		stager:   stage,
+		rev:      0,
 	}
 }
 
@@ -75,9 +75,13 @@ func (b *scratchBuf) isDirty() bool {
 
 func (b *scratchBuf) setDirty(d bool) {
 	if d {
-		b.stager.stageUndo(b.clone())
+		b.rev++
 	}
 	b.dirty = d
+}
+
+func (b *scratchBuf) getRev() int {
+	return b.rev
 }
 
 // Write fulfills io.Writer
@@ -447,24 +451,26 @@ func (b *scratchBuf) clone() buffer {
 		ext:      b.ext,
 		pos:      b.pos,
 		dirty:    b.dirty,
-		stager:   b.stager,
+		rev:      b.rev,
 	}
 	return t
 }
 
 func (b *scratchBuf) String() string {
 	var rtn strings.Builder
-	fmt.Fprintf(&rtn, "filename: %s\r\n", b.filename)
-	fmt.Fprintf(&rtn, "curline: %d\r\n", b.curline)
-	fmt.Fprintf(&rtn, "lastline: %d\r\n", b.lastline)
-	fmt.Fprintf(&rtn, "dirty: %t\r\n", b.dirty)
-	fmt.Fprintf(&rtn, "pos: %d\r\n", b.pos)
-	fmt.Fprintf(&rtn, "scratch: %s\r\n", b.ext.Name())
+	fmt.Fprint(&rtn, "buffer (file):\r\n")
+	fmt.Fprintf(&rtn, "  filename: %s\r\n", b.filename)
+	fmt.Fprintf(&rtn, "  curline: %d\r\n", b.curline)
+	fmt.Fprintf(&rtn, "  lastline: %d\r\n", b.lastline)
+	fmt.Fprintf(&rtn, "  dirty: %t\r\n", b.dirty)
+	fmt.Fprintf(&rtn, "  rev: %d\r\n", b.rev)
+	fmt.Fprintf(&rtn, "  pos: %d\r\n", b.pos)
+	fmt.Fprintf(&rtn, "  scratch: %s\r\n", b.ext.Name())
 	for k, v := range b.lines {
 		if k == 0 {
 			continue
 		}
-		fmt.Fprintf(&rtn, "line[%d]: %s\r\n", k, v.String())
+		fmt.Fprintf(&rtn, "  line[%d]: %s\r\n", k, v.String())
 	}
 	return rtn.String()
 }

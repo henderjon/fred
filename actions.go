@@ -645,9 +645,13 @@ func doSetColumn(num string, cache *cache) (string, error) {
 	return fmt.Sprintf("column set to %d", cache.getColumn()), nil
 }
 
-func doDebug(b buffer) (string, error) {
+func doDebug(b buffer, cache *cache) (string, error) {
 	// if !debug {
 	// return "", errors.New("debugging is not enabled; did you mean to use `-debug`?")
 	// }
-	return b.String(), nil
+
+	var rtn strings.Builder
+	rtn.WriteString(b.String())
+	rtn.WriteString(cache.String())
+	return rtn.String(), nil
 }
