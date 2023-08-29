@@ -20,7 +20,7 @@ func Test_parser(t *testing.T) {
 		{"\"b", &command{action: getMarkAction, argument: "b"}, false},
 		// searchAction
 		{"/re/p", &command{action: searchAction, subCommand: 'p', addrPattern: `re`}, false},
-		{"/re/>p5", &command{action: searchAction, subCommand: 'p', addrIncr: ">", addrEnd: "5", addrPattern: `re`}, false},
+		{"/re/>5p", &command{action: searchAction, subCommand: 'p', addrIncr: ">", addrEnd: "5", addrPattern: `re`}, false},
 		{"/re/m35", &command{action: searchAction, subCommand: 'm', addrPattern: `re`, destination: "35"}, false},
 		{"//", &command{action: searchAction, addrPattern: ""}, false},
 		// putMarkAction
