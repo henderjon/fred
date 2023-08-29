@@ -1,6 +1,9 @@
 bin/*
 !bin/.gitkeep
 
+release/*
+!release/.gitkeep
+
 resources/*
 TODO
 

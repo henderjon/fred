@@ -8,7 +8,9 @@ PREFIX=$(HOME)
 ################################################################################
 BIN=fred
 BINDIR=bin
+RELEASEDIR=release
 HEAD=$(shell git describe --dirty --long --tags 2> /dev/null  || git rev-parse --short HEAD)
+COHASH=$(shell git rev-parse --short HEAD)
 TIMESTAMP=$(shell TZ=UTC date '+%FT%T %Z')
 TEST_COVER_FILE=$(BIN)-test-coverage.out
 # TIMESTAMP=$(shell date '+%Y-%m-%dT%H:%M:%S %z %Z')
@@ -84,6 +86,11 @@ test-cover:
 .PHONY: local
 local: dep check
 	GOEXPERIMENT=loopvar go build -ldflags $(LDFLAGS) -tags "$(FREDMODE)" -o $(BINDIR)/$(BIN)
+
+.PHONY: release
+release: dep check
+	GOEXPERIMENT=loopvar go build -ldflags $(LDFLAGS) -tags "$(FREDMODE)" -o $(BINDIR)/$(BIN)
+	tar -czf $(RELEASEDIR)/$(BIN)-$(COHASH)-$(GOOS)-$(GOARCH).tgz -C $(BINDIR) $(BIN)
 
 .PHONY: prod
 prod: dep check
