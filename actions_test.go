@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"testing"
@@ -692,6 +693,120 @@ func Test_doTransliterate(t *testing.T) {
 	for i, test := range tests {
 		controlBuffer := getTestActionBuffer()
 		doTransliterate(controlBuffer, test.l1, test.l2, `ae`, `12`)
+
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
+
+func Test_doPrint(t *testing.T) {
+	tests := []struct {
+		l1, l2   int
+		tp       int
+		expected string
+	}{
+		{1, 2, printTypeReg, "1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...\n2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...\n"},
+		{1, 2, printTypeNum, "  1	1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...\n  2	2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...\n"},
+		{1, 2, printTypeLit, "  1	\"1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...\"\n  2	\"2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...\"\n"},
+		{1, 2, printTypeCol, "  1	1 Lorem ipsum dolor sit amet, consectetur adipisc\x1b[7mi\x1b[0mng elit. Morbi sed ante eu ...\n  2	2 Duis ut porta mi, eu ornare orci. Etiam sed veh\x1b[7mi\x1b[0mcula orci. ...\n"},
+	}
+
+	// line, err := term.input(":")
+	cache := &cache{
+		pager:  0,
+		column: 50,
+	}
+
+	// t.Error(out.String(), line, err)
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		out := bytes.NewBufferString(``)
+		in := bytes.NewBufferString(``)
+		term, _ := newTerm(in, out) // _ is an unused destructor
+
+		doPrint(term, controlBuffer, test.l1, test.l2, cache, test.tp)
+
+		// t.Error(out.String(), test.expected)
+
+		if diff := cmp.Diff(out.String(), test.expected); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
+
+func Test_doAppend(t *testing.T) {
+	tests := []struct {
+		l1       int
+		expected buffer
+	}{
+		{1, &memoryBuf{
+			curline:  2,
+			lastline: 6,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `foobar snafu`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+			},
+			filename: "filename",
+			dirty:    true,
+			rev:      4,
+		}},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		out := bytes.NewBufferString(``)
+		in := bytes.NewBufferString("foobar snafu\n.\n")
+		term, _ := newTerm(in, out) // _ is an unused destructor
+
+		doAppend(term, controlBuffer, test.l1)
+
+		// t.Error(controlBuffer.String(), test.expected.String())
+
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
+
+func Test_doInsert(t *testing.T) {
+	tests := []struct {
+		l1       int
+		expected buffer
+	}{
+		{1, &memoryBuf{
+			curline:  1,
+			lastline: 6,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `foobar snafu`},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+			},
+			filename: "filename",
+			dirty:    true,
+			rev:      4,
+		}},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		out := bytes.NewBufferString(``)
+		in := bytes.NewBufferString("foobar snafu\n.\n")
+		term, _ := newTerm(in, out) // _ is an unused destructor
+
+		doInsert(term, controlBuffer, test.l1)
+
+		// t.Error(controlBuffer.String(), test.expected.String())
 
 		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
