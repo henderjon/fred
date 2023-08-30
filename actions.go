@@ -42,10 +42,6 @@ func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) er
 			mk += string(m)
 		}
 
-		// if !b.hasAddress(i) { // we already check for 0 above so there is no danger including it in this check
-		// break // we might not ever get here as we validate the range in defaultLines; potentially: this break is necessary as scanForward will loop back to 0
-		// }
-
 		line := b.getLine(i)
 		switch printType {
 		default:
