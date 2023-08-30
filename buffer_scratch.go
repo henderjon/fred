@@ -284,29 +284,6 @@ func (b *scratchBuf) getLine(idx int) string {
 	return string(bts)
 }
 
-func (b *scratchBuf) defIncr(incr string, start, rel int) (int, int) {
-	end := rel
-	if incr == ">" {
-		end = start + rel
-	}
-
-	if incr == "<" {
-		end = start
-		start -= rel
-	}
-
-	if start < 1 {
-		start = 1
-	}
-
-	if end > b.getLastline() {
-		end = b.getLastline()
-	}
-
-	return start, end
-
-}
-
 // scanForward returns a func that walks the buffer's indices in a forward loop. As an implementation detail, the number of lines is the number of non-zero lines.
 func (b *scratchBuf) scanForward(start, num int) func() (int, bool) {
 	stop := false
@@ -440,4 +417,27 @@ func (b *scratchBuf) defaultLines(num1, num2, incr string, l1, l2 int) (int, int
 	}
 
 	return i1, i2, nil
+}
+
+func (b *scratchBuf) applyIncrement(incr string, start, rel int) (int, int) {
+	end := rel
+	if incr == ">" {
+		end = start + rel
+	}
+
+	if incr == "<" {
+		end = start
+		start -= rel
+	}
+
+	if start < 1 {
+		start = 1
+	}
+
+	if end > b.getLastline() {
+		end = b.getLastline()
+	}
+
+	return start, end
+
 }

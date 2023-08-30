@@ -15,8 +15,8 @@ type buffer interface {
 	io.ReadWriter
 	fmt.Stringer
 
-	defIncr(incr string, start, rel int) (int, int)
 	defaultLines(start, end, incr string, l1, l2 int) (int, int, error)
+	applyIncrement(incr string, start, rel int) (int, int)
 
 	setCurline(int)
 	getCurline() int

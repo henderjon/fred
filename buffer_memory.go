@@ -262,29 +262,6 @@ func (b *memoryBuf) getLine(idx int) string {
 	return b.lines[idx].txt
 }
 
-func (b *memoryBuf) defIncr(incr string, start, rel int) (int, int) {
-	end := rel
-	if incr == ">" {
-		end = start + rel
-	}
-
-	if incr == "<" {
-		end = start
-		start -= rel
-	}
-
-	if start < 1 {
-		start = 1
-	}
-
-	if end > b.getLastline() {
-		end = b.getLastline()
-	}
-
-	return start, end
-
-}
-
 // scanForward returns a func that walks the buffer's indices in a forward loop. As an implementation detail, the number of lines is the number of non-zero lines.
 func (b *memoryBuf) scanForward(start, num int) func() (int, bool) {
 	stop := false
@@ -390,3 +367,25 @@ func (b *memoryBuf) defaultLines(num1, num2, incr string, l1, l2 int) (int, int,
 	return i1, i2, nil
 }
 
+func (b *memoryBuf) applyIncrement(incr string, num1, rel int) (int, int) {
+	num2 := rel
+	if incr == ">" {
+		num2 = num1 + rel
+	}
+
+	if incr == "<" {
+		num2 = num1
+		num1 -= rel
+	}
+
+	if num1 < 1 {
+		num1 = 1
+	}
+
+	if num2 > b.getLastline() {
+		num2 = b.getLastline()
+	}
+
+	return num1, num2
+
+}
