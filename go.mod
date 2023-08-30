@@ -1,4 +1,4 @@
-module local/henderjon/fred
+module github.com/henderjon/fred
 
 go 1.21
 
