@@ -34,7 +34,7 @@ func Test_sameBuffer(t *testing.T) {
 	}
 }
 
-func Test_defLines(t *testing.T) {
+func Test_defaultLines(t *testing.T) {
 	tests := []struct {
 		start, end string
 		l1, l2     int
@@ -50,7 +50,7 @@ func Test_defLines(t *testing.T) {
 
 	for _, test := range tests {
 		controlBuffer := getTestBuffer()
-		l1, l2, err := controlBuffer.defLines(test.start, test.end, "", test.l1, test.l2)
+		l1, l2, err := controlBuffer.defaultLines(test.start, test.end, "", test.l1, test.l2)
 		if err != nil && test.e == false {
 			t.Errorf("unexpected error: %s", err.Error())
 			continue

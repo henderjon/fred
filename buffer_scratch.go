@@ -284,54 +284,6 @@ func (b *scratchBuf) getLine(idx int) string {
 	return string(bts)
 }
 
-// defLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
-func (b *scratchBuf) defLines(start, end, incr string, l1, l2 int) (int, int, error) {
-	var (
-		err    error
-		i1, i2 int
-	)
-
-	if len(start) == 0 && len(end) == 0 {
-		return l1, l2, nil
-	}
-
-	switch true {
-	case start == "": // if no address was given, use the current line
-		i1 = b.getCurline()
-	case start == ".": // if no address was given, use the current line
-		i1 = b.getCurline()
-	case start == "$": // if no address was given, use the current line
-		i1 = b.getLastline()
-	default:
-		i1, err = intval(start)
-		if err != nil {
-			return 0, 0, fmt.Errorf("invalid buffer start address: %s", err.Error())
-		}
-	}
-
-	switch true {
-	case end == "$":
-		i2 = b.getLastline()
-	case end == ".":
-		i2 = b.getCurline()
-	case end == "":
-		i2 = i1
-	default:
-		i2, err = intval(end)
-		if err != nil {
-			return 0, 0, fmt.Errorf("invalid buffer end address: %s", err.Error())
-		}
-	}
-
-	i1, i2 = b.defIncr(incr, i1, i2)
-
-	if i1 > i2 || i1 <= 0 {
-		return 0, 0, fmt.Errorf("invalid buffer range; %d, %d", i1, i2)
-	}
-
-	return i1, i2, nil
-}
-
 func (b *scratchBuf) defIncr(incr string, start, rel int) (int, int) {
 	end := rel
 	if incr == ">" {
@@ -458,4 +410,34 @@ func (b *scratchBuf) String() string {
 		fmt.Fprintf(&rtn, "  line[%d]: %s\r\n", k, v.String())
 	}
 	return rtn.String()
+}
+
+// defaultLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
+func (b *scratchBuf) defaultLines(num1, num2, incr string, l1, l2 int) (int, int, error) {
+	var (
+		err    error
+		i1, i2 int
+	)
+
+	if len(num1) == 0 && len(num2) == 0 {
+		return l1, l2, nil
+	}
+
+	i1, err = b.makeAddress(num1, b.getCurline())
+	if err != nil {
+		return 0, 0, fmt.Errorf("invalid buffer start address: %s", err.Error())
+	}
+
+	i2, err = b.makeAddress(num2, l1)
+	if err != nil {
+		return 0, 0, fmt.Errorf("invalid buffer start address: %s", err.Error())
+	}
+
+	i1, i2 = b.applyIncrement(incr, i1, i2)
+
+	if i1 > i2 || i1 <= 0 || l1 > b.getLastline() {
+		return 0, 0, fmt.Errorf("invalid buffer range; %d, %d", i1, i2)
+	}
+
+	return i1, i2, nil
 }

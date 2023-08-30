@@ -112,7 +112,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	}
 
 	// some commands require addresses; this takes the input and gives us sane lines
-	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
+	line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
 		return "", err
 	}
@@ -216,7 +216,7 @@ func doGlob(cmd command, b buffer, inout termio, cache *cache) error {
 	var err error
 
 	// some commands require addresses
-	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
+	line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
 	}
@@ -267,7 +267,7 @@ func doInteractiveGlob(cmd command, b buffer, inout termio, cache *cache, prompt
 	var err error
 
 	// some commands require addresses
-	line1, line2, err := b.defLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
+	line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
 		return err
 	}
