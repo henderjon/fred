@@ -16,7 +16,7 @@ type buffer interface {
 	fmt.Stringer
 
 	defaultLines(start, end, incr string, l1, l2 int) (int, int, error)
-	applyIncrement(incr string, start, rel int) (int, int)
+
 	// makeAddress does no validation
 	makeAddress(addr string, def int) (int, error)
 

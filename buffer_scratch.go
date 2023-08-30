@@ -137,6 +137,12 @@ func (b *scratchBuf) Read(p []byte) (int, error) {
 	return byCount, err
 }
 
+// func (b *memoryBuf) clear() {
+// 	b.curline = 0
+// 	b.lastline = 0
+// 	b.lines = make([]bufferLine, 1)
+// }
+
 func (b *scratchBuf) setCurline(i int) {
 	b.curline = i
 }
@@ -200,17 +206,14 @@ func (b *scratchBuf) duplicateLine(idx int) error {
 		return fmt.Errorf("cannot duplicate text; invalid address; %d", idx)
 	}
 
-	b.lastline++
+	b.lastline++ // regardless of where we put the duped line, the buffer is now one line greater
 
 	// if there are rando [forgotten] lines at the end of the buffer, reuse them
 	if b.lastline <= len(b.lines)-1 {
 		b.lines[b.lastline] = b.lines[idx]
 	} else {
 		b.lines = append(b.lines, b.lines[idx])
-		// b.lastline++
 	}
-
-	// b.lines = append(b.lines, b.lines[idx])
 
 	// NOTE: an argument can be made to do the bulk move here, one at a time and empty doCopyNPaste ...
 
@@ -407,9 +410,10 @@ func (b *scratchBuf) defaultLines(num1, num2, incr string, l1, l2 int) (int, int
 
 	i2, err = b.makeAddress(num2, l1)
 	if err != nil {
-		return 0, 0, fmt.Errorf("invalid buffer start address: %s", err.Error())
+		return 0, 0, fmt.Errorf("invalid buffer end address: %s", err.Error())
 	}
 
+	// this will coerce values that are out of range into range
 	i1, i2 = b.applyIncrement(incr, i1, i2)
 
 	if i1 > i2 || i1 <= 0 || l1 > b.getLastline() {
@@ -419,26 +423,26 @@ func (b *scratchBuf) defaultLines(num1, num2, incr string, l1, l2 int) (int, int
 	return i1, i2, nil
 }
 
-func (b *scratchBuf) applyIncrement(incr string, start, rel int) (int, int) {
-	end := rel
+func (b *scratchBuf) applyIncrement(incr string, num1, relative int) (int, int) {
+	num2 := relative
 	if incr == ">" {
-		end = start + rel
+		num2 = num1 + relative
 	}
 
 	if incr == "<" {
-		end = start
-		start -= rel
+		num2 = num1
+		num1 -= relative
 	}
 
-	if start < 1 {
-		start = 1
+	if num1 < 1 {
+		num1 = 1
 	}
 
-	if end > b.getLastline() {
-		end = b.getLastline()
+	if num2 > b.getLastline() {
+		num2 = b.getLastline()
 	}
 
-	return start, end
+	return num1, num2
 
 }
 

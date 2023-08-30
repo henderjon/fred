@@ -25,7 +25,7 @@ type memoryBuf struct {
 	lines    []bufferLine
 	filename string
 	dirty    bool
-	rev      int
+	rev      int // revision, each time we alter a buffer we incr
 }
 
 func newBuffer() buffer {
@@ -121,11 +121,6 @@ func (b *memoryBuf) Read(p []byte) (int, error) {
 // 	b.lines = make([]bufferLine, 1)
 // }
 
-func (b *memoryBuf) getNumLines() int {
-	return b.getLastline()
-	// return len(b.lines) - 1 // take one back for the zero index
-}
-
 func (b *memoryBuf) setCurline(i int) {
 	b.curline = i
 }
@@ -138,12 +133,14 @@ func (b *memoryBuf) setLastline(i int) {
 	b.lastline = i
 }
 
+// getLastline reports how many lines are in the *active* buffer which is what got when we called getNumLines()
 func (b *memoryBuf) getLastline() int {
 	return b.lastline
 }
 
 // putLine adds a new lines to the end of the buffer then moves them into place
 func (b *memoryBuf) putLine(line string, idx int) error {
+	// NOTE: we are not guarding this index here
 	b.curline = idx
 	b.lastline++
 
@@ -154,7 +151,7 @@ func (b *memoryBuf) putLine(line string, idx int) error {
 		mark: null,
 	}
 
-	// some operations (e.g. `c`) use the last line as scratch space while other simply add new lines
+	// when the current active buffer has fewer lines that the total buffer (ie we've deleted/forgotten lines at the end of the buffer) we can reuse those lines in stead of always appending. This reduces memory usage but the scratch file will continue to grow.
 	if b.lastline <= len(b.lines)-1 {
 		b.lines[b.lastline] = newLine
 	} else {
@@ -183,7 +180,7 @@ func (b *memoryBuf) duplicateLine(idx int) error {
 		return fmt.Errorf("cannot duplicate text; invalid address; %d", idx)
 	}
 
-	b.lastline++
+	b.lastline++ // regardless of where we put the duped line, the buffer is now one line greater
 
 	// if there are rando [forgotten] lines at the end of the buffer, reuse them
 	if b.lastline <= len(b.lines)-1 {
@@ -222,10 +219,6 @@ func (b *memoryBuf) putMark(idx int, r rune) {
 // getMark gets the mark of the line at the given index
 func (b *memoryBuf) getMark(idx int) rune {
 	return b.lines[idx].mark
-}
-
-func (b *memoryBuf) hasMark(idx int, r rune) bool {
-	return b.getMark(idx) == r
 }
 
 // reverse rearranges the given lines in reverse
@@ -358,6 +351,7 @@ func (b *memoryBuf) defaultLines(num1, num2, incr string, l1, l2 int) (int, int,
 		return 0, 0, fmt.Errorf("invalid buffer end address: %s", err.Error())
 	}
 
+	// this will coerce values that are out of range into range
 	i1, i2 = b.applyIncrement(incr, i1, i2)
 
 	if i1 > i2 || i1 <= 0 || l1 > b.getLastline() {
@@ -367,15 +361,15 @@ func (b *memoryBuf) defaultLines(num1, num2, incr string, l1, l2 int) (int, int,
 	return i1, i2, nil
 }
 
-func (b *memoryBuf) applyIncrement(incr string, num1, rel int) (int, int) {
-	num2 := rel
+func (b *memoryBuf) applyIncrement(incr string, num1, relative int) (int, int) {
+	num2 := relative
 	if incr == ">" {
-		num2 = num1 + rel
+		num2 = num1 + relative
 	}
 
 	if incr == "<" {
 		num2 = num1
-		num1 -= rel
+		num1 -= relative
 	}
 
 	if num1 < 1 {
