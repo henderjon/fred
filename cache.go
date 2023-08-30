@@ -31,19 +31,29 @@ func (c *cache) getColumn() int {
 	return c.column
 }
 
-func (c *cache) setPreviousSearch(s search) {
-	c.prevSearch = s
-}
+func (c *cache) search(pattern string, reverse bool) search {
+	if len(pattern) == 0 { // no pattern means to repeat the last search
+		return c.prevSearch
+	}
 
-func (c *cache) getPreviousSearch() search {
+	c.prevSearch = search{
+		pattern: pattern,
+		reverse: reverse,
+	}
+
 	return c.prevSearch
 }
 
-func (c *cache) setPreviousReplace(s replace) {
-	c.prevReplace = s
-}
+func (c *cache) replace(pattern, sub, num string) replace {
+	if len(pattern) == 0 { // no pattern means to repeat the last search
+		return c.prevReplace
+	}
 
-func (c *cache) getPreviousReplace() replace {
+	c.prevReplace = replace{
+		pattern:    pattern,
+		substitute: sub,
+		replaceNum: num,
+	}
 	return c.prevReplace
 }
 
@@ -83,7 +93,7 @@ func (c *cache) String() string {
 
 	if len(c.prevReplace.pattern) > 0 {
 		fmt.Fprintf(&rtn, "  replace.pattern: %s\r\n", c.prevReplace.pattern)
-		fmt.Fprintf(&rtn, "  replace.replace: %s\r\n", c.prevReplace.replace)
+		fmt.Fprintf(&rtn, "  replace.replace: %s\r\n", c.prevReplace.substitute)
 		fmt.Fprintf(&rtn, "  replace.replaceNum: %s\r\n", c.prevReplace.replaceNum)
 	}
 

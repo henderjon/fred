@@ -253,7 +253,8 @@ func Test_doSimpleReplace(t *testing.T) {
 
 	for _, test := range tests {
 		controlBuffer := getTestActionBuffer()
-		doSimpleReplace(controlBuffer, test.l1, test.l2, test.pattern, test.replace, test.num, &cache{})
+		c := &cache{}
+		doSimpleReplace(controlBuffer, test.l1, test.l2, c.replace(test.pattern, test.replace, test.num))
 
 		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
@@ -319,7 +320,8 @@ func Test_doRegexReplace(t *testing.T) {
 
 	for _, test := range tests {
 		controlBuffer := getTestActionBuffer()
-		doRegexReplace(controlBuffer, test.l1, test.l2, test.pattern, test.replace, test.num, &cache{})
+		c := &cache{}
+		doRegexReplace(controlBuffer, test.l1, test.l2, c.replace(test.pattern, test.replace, test.num))
 
 		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("-got/+want\n%s", diff)
@@ -526,7 +528,7 @@ func Test_doBreakLines_n1(t *testing.T) {
 
 	for i, test := range tests {
 		controlBuffer := getTestActionBuffer()
-		doBreakLines(controlBuffer, test.l1, test.l2, `[,.]`, "", `1`, &cache{})
+		doBreakLines(controlBuffer, test.l1, test.l2, replace{`[,.]`, "", `1`})
 
 		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
@@ -576,7 +578,7 @@ func Test_doBreakLines_g(t *testing.T) {
 
 	for i, test := range tests {
 		controlBuffer := getTestActionBuffer()
-		doBreakLines(controlBuffer, test.l1, test.l2, `[,.]`, "", `-1`, &cache{})
+		doBreakLines(controlBuffer, test.l1, test.l2, replace{`[,.]`, "", `-1`})
 
 		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)

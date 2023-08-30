@@ -148,11 +148,11 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	case copyAction:
 		return "", doCopyNPaste(b, line1, line2, cmd.destination)
 	case simpleReplaceAction:
-		return "", doSimpleReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
+		return "", doSimpleReplace(b, line1, line2, cache.replace(cmd.pattern, cmd.substitution, cmd.replaceNum))
 	case regexReplaceAction:
-		return "", doRegexReplace(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
+		return "", doRegexReplace(b, line1, line2, cache.replace(cmd.pattern, cmd.substitution, cmd.replaceNum))
 	case breakAction:
-		return "", doBreakLines(b, line1, line2, cmd.pattern, cmd.substitution, cmd.replaceNum, cache)
+		return "", doBreakLines(b, line1, line2, replace{cmd.pattern, cmd.substitution, cmd.replaceNum})
 	case joinAction:
 		return "", doJoinLines(b, line1, line2, cmd.pattern)
 	case transliterateAction:
@@ -172,9 +172,9 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	case getMarkAction:
 		return "", doGetMarkedLine(inout, b, cmd.argument)
 	case searchAction:
-		return "", doGetNextMatchedLine(inout, b, cmd.addrPattern, true, cache)
+		return "", doGetNextMatchedLine(inout, b, cache.search(cmd.addrPattern, true))
 	case searchRevAction:
-		return "", doGetNextMatchedLine(inout, b, cmd.addrPattern, false, cache)
+		return "", doGetNextMatchedLine(inout, b, cache.search(cmd.addrPattern, false))
 	case reallyEditAction:
 		b.setDirty(false)
 		fallthrough // 'E' is exactly like edit but ignore the unsaved changes warning.

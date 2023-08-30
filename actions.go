@@ -196,25 +196,16 @@ func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	return nil
 }
 
-func doSimpleReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) error {
+func doSimpleReplace(b buffer, l1, l2 int, rep replace) error {
 	var err error
 
-	prevReplace := cache.getPreviousReplace()
-	if len(pattern) == 0 { // no pattern means to repeat the last search
-		pattern = prevReplace.pattern
-		sub = prevReplace.replace
-		num = prevReplace.replaceNum
+	if rep.pattern == "" {
+		return fmt.Errorf("empty pattern")
 	}
 
-	cache.setPreviousReplace(replace{
-		pattern:    pattern,
-		replace:    sub,
-		replaceNum: num,
-	})
-
 	n := 1 // default to 1; not -1 ("global")
-	if len(num) > 0 {
-		n, err = intval(num)
+	if len(rep.replaceNum) > 0 {
+		n, err = intval(rep.replaceNum)
 		if err != nil {
 			return fmt.Errorf("unable to do a simple replace; %s", err.Error())
 		}
@@ -225,10 +216,10 @@ func doSimpleReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cach
 		old := b.getLine(idx)
 		if n < 0 {
 			// replace first n matches; always -1 (all)
-			new = strings.Replace(old, pattern, sub, n)
+			new = strings.Replace(old, rep.pattern, rep.substitute, n)
 		} else {
 			// replace nth match
-			new = simpleNReplace(old, pattern, sub, n)
+			new = simpleNReplace(old, rep.pattern, rep.substitute, n)
 		}
 		b.replaceLine(new, idx)
 	}
@@ -237,26 +228,17 @@ func doSimpleReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cach
 	return err
 }
 
-func doRegexReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) error {
+func doRegexReplace(b buffer, l1, l2 int, rep replace) error {
 	var (
 		err error
 		re  *regexp.Regexp
 	)
 
-	prevReplace := cache.getPreviousReplace()
-	if len(pattern) == 0 { // no pattern means to repeat the last search
-		pattern = prevReplace.pattern
-		sub = prevReplace.replace
-		num = prevReplace.replaceNum
+	if rep.pattern == "" {
+		return fmt.Errorf("empty pattern")
 	}
 
-	cache.setPreviousReplace(replace{
-		pattern:    pattern,
-		replace:    sub,
-		replaceNum: num,
-	})
-
-	pattern = handleTabs(pattern)
+	pattern := handleTabs(rep.pattern)
 	// sub = handleTabs(prevReplace.replace)
 
 	re, err = regexp.Compile(pattern)
@@ -267,8 +249,8 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cache
 	result := []byte{}
 
 	n := 1 // default to 1; not -1 ("global")
-	if len(num) > 0 {
-		n, err = intval(num)
+	if len(rep.replaceNum) > 0 {
+		n, err = intval(rep.replaceNum)
 		if err != nil {
 			return fmt.Errorf("unable to do a regex replace; %s", err.Error())
 		}
@@ -296,7 +278,7 @@ func doRegexReplace(b buffer, l1, l2 int, pattern, sub, num string, cache *cache
 			// using the indexes from 'submatches[n]' replaces it with the
 			// expanded replacement in 'replace' and appends it to 'result' in
 			// other words, result is what should go into the new string
-			result := re.ExpandString(result, sub, old, submatches[i]) // submatches is [][]int .. the inner []int is the index of the beginning and the index of the end of the submatch
+			result := re.ExpandString(result, rep.substitute, old, submatches[i]) // submatches is [][]int .. the inner []int is the index of the beginning and the index of the end of the submatch
 			// create a new string add the characters of the old string from the
 			// beginning of the last match (or zero) to the beginning of the
 			// current match (we're currently iterating)
@@ -350,10 +332,10 @@ func doJoinLines(b buffer, l1, l2 int, sep string) error {
 	return err
 }
 
-func doBreakLines(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) error {
-	if len(sub) > 0 {
-		// NOTE: The reason for and result or this code is unknown; needs test
-		return doRegexReplace(b, l1, l2, pattern, sub, num, cache)
+func doBreakLines(b buffer, l1, l2 int, rep replace) error {
+	if len(rep.substitute) > 0 {
+		// if we're "breaking" by injecting, just proxy to regex replace
+		return doRegexReplace(b, l1, l2, rep)
 	}
 
 	var (
@@ -364,19 +346,19 @@ func doBreakLines(b buffer, l1, l2 int, pattern, sub, num string, cache *cache) 
 	// our scan takes an upper bound number of iterations
 	numLines := l2 - l1 // scan will handle <0
 
-	err = doMarkLines(b, l1, numLines, pattern, false)
+	err = doMarkLines(b, l1, numLines, rep.pattern, false)
 	if err != nil {
 		return err
 	}
 
-	re, err = regexp.Compile(pattern)
+	re, err = regexp.Compile(rep.pattern)
 	if err != nil {
 		return err
 	}
 
 	n := 1 // default to 1; not -1 ("global")
-	if len(num) > 0 {
-		n, err = intval(num)
+	if len(rep.replaceNum) > 0 {
+		n, err = intval(rep.replaceNum)
 		if err != nil {
 			return fmt.Errorf("unable to break lines; %s", err.Error())
 		}
@@ -616,24 +598,18 @@ func doGetMarkedLine(inout termio, b buffer, mark string) error {
 	return nil
 }
 
-func doGetNextMatchedLine(inout termio, b buffer, pattern string, forward bool, cache *cache) error {
-	prevSearch := cache.getPreviousSearch()
-	if len(pattern) == 0 { // no pattern means to repeat the last search
-		pattern = prevSearch.pattern
+func doGetNextMatchedLine(inout termio, b buffer, ser search) error {
+	if len(ser.pattern) == 0 { // no pattern means to repeat the last search
+		return fmt.Errorf("")
 	}
 
-	re, err := regexp.Compile(pattern)
+	re, err := regexp.Compile(ser.pattern)
 	if err != nil {
 		return err
 	}
 
-	cache.setPreviousSearch(search{
-		reverse: !forward,
-		pattern: pattern,
-	})
-
 	scan := b.scanForward(b.nextLine(b.getCurline()), b.getLastline())
-	if !forward {
+	if ser.reverse {
 		scan = b.scanReverse(b.prevLine(b.getCurline()), b.getLastline())
 	}
 

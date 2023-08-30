@@ -2,7 +2,7 @@ package main
 
 type replace struct {
 	pattern    string
-	replace    string
+	substitute string
 	replaceNum string
 }
 
