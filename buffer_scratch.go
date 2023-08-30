@@ -457,17 +457,15 @@ func (b *scratchBuf) makeAddress(addr string, def int) (int, error) {
 	case addr == "":
 		i = def
 	default:
-		stderr.Log(addr, def)
-		os.Exit(1)
 		i, err = intval(addr)
 		if err != nil {
 			return 0, fmt.Errorf("invalid address; %s", err.Error())
 		}
 	}
 
-	if i < 0 || i > b.getLastline() {
-		return 0, fmt.Errorf("unknown address: %s", addr)
-	}
+	// if i < 0 || i > b.getLastline() {
+	// 	return 0, fmt.Errorf("unknown address: %s", addr)
+	// }
 
 	return i, nil
 }

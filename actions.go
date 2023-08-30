@@ -21,10 +21,6 @@ const (
 
 func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) error {
 	var err error
-	// NOTE: this check is potentially unnecessary
-	if l1 <= 0 || l1 > b.getLastline() { // NOTE: l2 is not bound by last line; may be a problem
-		return fmt.Errorf("unable to print; invalid address; %d; %d", l1, l2)
-	}
 
 	// b.setCurline(l1)
 
@@ -43,7 +39,7 @@ func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) er
 			mk += string(m)
 		}
 
-		if n > b.getLastline() {
+		if !b.hasAddress(n) { // we already check for 0 above so there is no danger including it in this check
 			break
 		}
 
@@ -147,7 +143,7 @@ func doMove(b buffer, l1, l2 int, dest string) error {
 	}
 
 	// guard against bad addressing
-	if l3 < 0 || l3 > b.getLastline() {
+	if !b.hasAddress(l3) {
 		return fmt.Errorf("unable to move; destination our of range: %d", l3)
 	}
 
@@ -177,7 +173,7 @@ func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	}
 
 	// guard against bad addressing
-	if l3 < 0 || l3 > b.getLastline() {
+	if !b.hasAddress(l3) {
 		return fmt.Errorf("unable to paste; destination our of range: %d", l3)
 	}
 

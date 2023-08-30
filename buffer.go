@@ -17,7 +17,10 @@ type buffer interface {
 
 	defaultLines(start, end, incr string, l1, l2 int) (int, int, error)
 	applyIncrement(incr string, start, rel int) (int, int)
+	// makeAddress does no validation
 	makeAddress(addr string, def int) (int, error)
+
+	//hasAddress check for a valid address inclusively between 0 and lastLine, care should be used to check addresses if that is not the correct range. Specifically, there are times when 0 should not be included in the check.
 	hasAddress(int) bool
 
 	setCurline(int)
