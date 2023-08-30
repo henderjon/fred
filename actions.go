@@ -328,8 +328,7 @@ func doJoinLines(b buffer, l1, l2 int, sep string) error {
 		sep = " "
 	}
 
-	// this should prevent putLine() from moving the lines since we'll be doing
-	// it ourselves
+	// this should prevent putLine() from moving the lines since we'll be doing it ourselves
 	b.setCurline(b.getLastline())
 	for idx := l1; idx <= l2; idx++ {
 		// copy all lines and combine them
