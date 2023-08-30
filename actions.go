@@ -29,30 +29,33 @@ func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) er
 		return err
 	}
 
-	for n := l1; n <= l2; n++ {
-		if n == 0 {
-			continue // hide the '0' line
-		}
-
-		mk := ""
-		if m := b.getMark(n); m != null && m != mark {
-			mk += string(m)
-		}
-
-		if !b.hasAddress(n) { // we already check for 0 above so there is no danger including it in this check
+	// because these values were vetted by defaultLines there is no danger in skipping validation within the scan
+	scan := b.scanForward(l1, l2-l1)
+	for {
+		i, ok := scan() // scan hides the '0' line
+		if !ok {
 			break
 		}
 
-		line := b.getLine(n)
+		mk := ""
+		if m := b.getMark(i); m != null && m != mark {
+			mk += string(m)
+		}
+
+		// if !b.hasAddress(i) { // we already check for 0 above so there is no danger including it in this check
+		// break // we might not ever get here as we validate the range in defaultLines; potentially: this break is necessary as scanForward will loop back to 0
+		// }
+
+		line := b.getLine(i)
 		switch printType {
 		default:
 			inout.printf("%s", line)
 		case printTypeNum:
-			inout.printf("%-2s%d\t%s", mk, n, line)
+			inout.printf("%-2s%d\t%s", mk, i, line)
 		case printTypeLit:
-			inout.printf("%-2s%d\t%+q", mk, n, line)
+			inout.printf("%-2s%d\t%+q", mk, i, line)
 		case printTypeCol:
-			inout.printf("%-2s%d\t%s", mk, n, revealColumn(cache.getColumn(), line))
+			inout.printf("%-2s%d\t%s", mk, i, revealColumn(cache.getColumn(), line))
 		}
 	}
 
