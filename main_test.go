@@ -38,3 +38,29 @@ func Test_print_command(t *testing.T) {
 		}
 	}
 }
+func Test_quit_command(t *testing.T) {
+	tests := []struct {
+		cmd      *command
+		expected error
+	}{
+		{
+			&command{addrStart: "1", addrEnd: "2", action: 'q'},
+			errQuit,
+		},
+	}
+
+	cache := &cache{}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		out := bytes.NewBufferString(``)
+		in := bytes.NewBufferString(``)
+		term, _ := newTerm(in, out) // _ is an unused destructor
+
+		_, err := doCmd(*test.cmd, controlBuffer, term, cache)
+
+		if diff := cmp.Diff(err.Error(), test.expected.Error()); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
