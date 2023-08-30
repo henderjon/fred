@@ -70,7 +70,7 @@ func Test_defaultLines(t *testing.T) {
 		}
 	}
 }
-func Test_guardAddresss(t *testing.T) {
+func Test_makeAddresss(t *testing.T) {
 	tests := []struct {
 		addr     string
 		expected int
@@ -82,7 +82,7 @@ func Test_guardAddresss(t *testing.T) {
 
 	for _, test := range tests {
 		controlBuffer := getTestBuffer()
-		i, err := guardAddress(controlBuffer, test.addr)
+		i, err := controlBuffer.makeAddress(test.addr, test.expected)
 		if err != nil {
 			t.Error(err)
 		}

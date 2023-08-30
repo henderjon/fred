@@ -441,3 +441,40 @@ func (b *scratchBuf) applyIncrement(incr string, start, rel int) (int, int) {
 	return start, end
 
 }
+
+// converts a string address into a number with special cases for '.', '$', and ”. Start/end addresses are guarded against '0' elsewhere (in defaultLines) but allowed in destinations
+func (b *scratchBuf) makeAddress(addr string, def int) (int, error) {
+	var (
+		i   int
+		err error
+	)
+
+	switch true {
+	case addr == "$":
+		i = b.getLastline()
+	case addr == ".":
+		i = b.getCurline()
+	case addr == "":
+		i = def
+	default:
+		stderr.Log(addr, def)
+		os.Exit(1)
+		i, err = intval(addr)
+		if err != nil {
+			return 0, fmt.Errorf("invalid address; %s", err.Error())
+		}
+	}
+
+	if i < 0 || i > b.getLastline() {
+		return 0, fmt.Errorf("unknown address: %s", addr)
+	}
+
+	return i, nil
+}
+
+func (b *scratchBuf) hasAddress(idx int) bool {
+	if idx < 0 || idx > b.getLastline() {
+		return false
+	}
+	return true
+}

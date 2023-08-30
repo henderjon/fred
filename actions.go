@@ -21,6 +21,7 @@ const (
 
 func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) error {
 	var err error
+	// NOTE: this check is potentially unnecessary
 	if l1 <= 0 || l1 > b.getLastline() { // NOTE: l2 is not bound by last line; may be a problem
 		return fmt.Errorf("unable to print; invalid address; %d; %d", l1, l2)
 	}
@@ -140,14 +141,19 @@ func doChange(inout termio, b buffer, l1, l2 int) error {
 }
 
 func doMove(b buffer, l1, l2 int, dest string) error {
-	l3, err := guardAddress(b, dest)
+	l3, err := b.makeAddress(dest, b.nextLine(b.getCurline()))
 	if err != nil {
 		return err
 	}
 
 	// guard against bad addressing
+	if l3 < 0 || l3 > b.getLastline() {
+		return fmt.Errorf("unable to move; destination our of range: %d", l3)
+	}
+
+	// guard against bad addressing
 	if (l1 <= 0 || l3 >= l1) && (l3 <= l2) {
-		return fmt.Errorf("invalid ranges; unable to move '%d' through '%d' to '%d'?", l1, l2, l3)
+		return fmt.Errorf("invalid ranges; unable to move '%d' through '%d' to '%d'", l1, l2, l3)
 	}
 
 	b.bulkMove(l1, l2, l3)
@@ -165,9 +171,14 @@ func doMove(b buffer, l1, l2 int, dest string) error {
 func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	var err error
 
-	l3, err := guardAddress(b, dest)
+	l3, err := b.makeAddress(dest, b.nextLine(b.getCurline()))
 	if err != nil {
 		return err
+	}
+
+	// guard against bad addressing
+	if l3 < 0 || l3 > b.getLastline() {
+		return fmt.Errorf("unable to paste; destination our of range: %d", l3)
 	}
 
 	// flag where we're going to be adding lines

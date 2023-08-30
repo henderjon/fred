@@ -17,6 +17,8 @@ type buffer interface {
 
 	defaultLines(start, end, incr string, l1, l2 int) (int, int, error)
 	applyIncrement(incr string, start, rel int) (int, int)
+	makeAddress(addr string, def int) (int, error)
+	hasAddress(int) bool
 
 	setCurline(int)
 	getCurline() int
