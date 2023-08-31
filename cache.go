@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -76,7 +75,7 @@ func (c *cache) unstageUndo() (buffer, error) {
 	case c.undo2 != nil:
 		return c.undo2, nil
 	default:
-		return *(new(buffer)), errors.New("nothing to undo") // dereference the pointer before returning it
+		return *(new(buffer)), fmt.Errorf("nothing to undo") // dereference the pointer before returning it
 	}
 }
 

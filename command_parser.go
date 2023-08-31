@@ -1,6 +1,8 @@
 package main
 
-import "errors"
+import (
+	"fmt"
+)
 
 const (
 	zero = "1"
@@ -47,7 +49,7 @@ func (p *parser) run(input string) (*command, error) {
 		case itemArg:
 			c.setArgument(i.val)
 		case itemError:
-			return nil, errors.New(i.val)
+			return nil, fmt.Errorf(i.val)
 		case itemEOF: // no more items
 			return c, nil
 		default:
