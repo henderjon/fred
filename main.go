@@ -164,7 +164,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	case putMarkAction:
 		return "", doSetMarkLine(b, line1, line2, cmd.argument)
 	case getMarkAction:
-		return "", doGetMarkedLine(inout, b, cmd.argument)
+		return "", doGetMarkedLines(inout, b, cmd.argument)
 	case searchAction:
 		return "", doGetNextMatchedLine(inout, b, cache.search(cmd.addrPattern, false))
 	case searchRevAction:

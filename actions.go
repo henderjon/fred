@@ -347,7 +347,7 @@ func doBreakLines(b buffer, l1, l2 int, rep replace) error {
 	// our scan takes an upper bound number of iterations
 	numLines := l2 - l1 // scan will handle <0
 
-	// err = doMarkLines(b, l1, numLines, rep.pattern, false)
+	// err = doMarkLinesRegex(b, l1, numLines, rep.pattern, false)
 	// if err != nil {
 	// 	return err
 	// }
@@ -577,26 +577,17 @@ func doSetMarkLine(b buffer, l1, l2 int, mark string) error {
 	return nil
 }
 
-func doGetMarkedLine(out io.Writer, b buffer, mark string) error {
+func doGetMarkedLines(out io.Writer, b buffer, m string) error {
 	mk := null
-	if len(mark) > 0 {
-		mk = rune(mark[0])
+	if len(m) > 0 {
+		mk = rune(m[0])
 	}
 
-	scan := b.scanForward(b.nextLine(b.getCurline()), b.getLastline())
-	for {
-		i, ok := scan()
-		if !ok {
-			break
-		}
+	return doMapMarkedLines(b, mk, func(b buffer, idx int) error {
+		_, err := fmt.Fprintf(out, "%2d) %s", idx, b.getLine(idx))
+		return err
+	})
 
-		if b.getMark(i) == mk {
-			fmt.Fprintf(out, "%2d) %s", i, b.getLine(i))
-			b.setCurline(i)
-		}
-	}
-
-	return nil
 }
 
 func doGetNextMatchedLine(out io.Writer, b buffer, ser search) error {

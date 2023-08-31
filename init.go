@@ -62,9 +62,9 @@ func bootstrap(b buffer, opts allParams) (*shutdown.Shutdown, termio) {
 	if len(opts.general.filename) > 0 {
 		numbts, err := doReadFile(b, b.getCurline(), opts.general.filename)
 		if err != nil {
-			fmt.Println(inout, err.Error())
+			fmt.Fprintln(inout, err.Error())
 		} else {
-			fmt.Println(inout, numbts)
+			fmt.Fprintln(inout, numbts)
 			b.setDirty(false) // loading the file on init isn't *actually* dirty
 		}
 	}
