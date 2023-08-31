@@ -117,12 +117,12 @@ func (b *scratchBuf) Read(p []byte) (int, error) {
 		byCount int
 	)
 
-	for i := 1; i < b.getLastline(); i++ {
+	for idx := 1; idx < b.getLastline(); idx++ {
 		if byCount >= len(p) {
 			return byCount, err
 		}
 
-		line := b.getLine(i)
+		line := b.getLine(idx)
 		for _, b := range []byte(line) {
 			if byCount >= len(p) {
 				return byCount, err
@@ -143,16 +143,16 @@ func (b *scratchBuf) Read(p []byte) (int, error) {
 // 	b.lines = make([]bufferLine, 1)
 // }
 
-func (b *scratchBuf) setCurline(i int) {
-	b.curline = i
+func (b *scratchBuf) setCurline(idx int) {
+	b.curline = idx
 }
 
 func (b *scratchBuf) getCurline() int {
 	return b.curline
 }
 
-func (b *scratchBuf) setLastline(i int) {
-	b.lastline = i
+func (b *scratchBuf) setLastline(idx int) {
+	b.lastline = idx
 }
 
 // getLastline reports how many lines are in the *active* buffer which is what got when we called getNumLines()
@@ -261,19 +261,19 @@ func (b *scratchBuf) reverse(from, to int) {
 }
 
 // nextLine returns the next index in the buffer, looping to 0 after lastline
-func (b *scratchBuf) nextLine(n int) int {
-	if n >= b.lastline {
+func (b *scratchBuf) nextLine(idx int) int {
+	if idx >= b.lastline {
 		return 0
 	}
-	return n + 1
+	return idx + 1
 }
 
 // prevLine returns the previous index in the buffer, looping to lastline after 0
-func (b *scratchBuf) prevLine(n int) int {
-	if n <= 0 {
+func (b *scratchBuf) prevLine(idx int) int {
+	if idx <= 0 {
 		return b.lastline
 	}
-	return n - 1
+	return idx - 1
 }
 
 // returns the text of the line at the given index
@@ -290,7 +290,7 @@ func (b *scratchBuf) getLine(idx int) string {
 // scanForward returns a func that walks the buffer's indices in a forward loop. As an implementation detail, the number of lines is the number of non-zero lines. Often getLastLine() will be used as the number of lines. It's easy to think that the second param is when to stop when it is actually the number of lines to scan.
 func (b *scratchBuf) scanForward(start, num int) func() (int, bool) {
 	stop := false
-	i := b.prevLine(start) // remove 1 because nextLine advances one
+	idx := b.prevLine(start) // remove 1 because nextLine advances one
 
 	if num < 0 {
 		num = b.getLastline()
@@ -300,18 +300,18 @@ func (b *scratchBuf) scanForward(start, num int) func() (int, bool) {
 	return func() (int, bool) {
 		if n <= num { // if we loop back, we'll return '0' so have to stop a '>' and not '>="
 			n++
-			i = b.nextLine(i)
-			return i, !stop
+			idx = b.nextLine(idx)
+			return idx, !stop
 		}
 
-		return i, stop
+		return idx, stop
 	}
 }
 
 // scanReverse returns a func that walks the buffer's indices in a reverse loop
 func (b *scratchBuf) scanReverse(start, num int) func() (int, bool) {
 	stop := false
-	i := b.nextLine(start) // remove 1 because nextLine advances one
+	idx := b.nextLine(start) // remove 1 because nextLine advances one
 
 	if num < 0 {
 		num = b.getLastline()
@@ -321,11 +321,11 @@ func (b *scratchBuf) scanReverse(start, num int) func() (int, bool) {
 	return func() (int, bool) {
 		if n <= num { // if we loop back, we'll return '0' so have to stop a '>' and not '>="
 			n++
-			i = b.prevLine(i)
-			return i, !stop
+			idx = b.prevLine(idx)
+			return idx, !stop
 		}
 
-		return i, stop
+		return idx, stop
 	}
 }
 
@@ -449,29 +449,29 @@ func (b *scratchBuf) applyIncrement(incr string, num1, relative int) (int, int) 
 // converts a string address into a number with special cases for '.', '$', and ”. Start/end addresses are guarded against '0' elsewhere (in defaultLines) but allowed in destinations
 func (b *scratchBuf) makeAddress(addr string, def int) (int, error) {
 	var (
-		i   int
+		idx int
 		err error
 	)
 
 	switch true {
 	case addr == "$":
-		i = b.getLastline()
+		idx = b.getLastline()
 	case addr == ".":
-		i = b.getCurline()
+		idx = b.getCurline()
 	case addr == "":
-		i = def
+		idx = def
 	default:
-		i, err = intval(addr)
+		idx, err = intval(addr)
 		if err != nil {
 			return 0, fmt.Errorf("invalid address; %s", err.Error())
 		}
 	}
 
-	// if i < 0 || i > b.getLastline() {
+	// if idx < 0 || idx > b.getLastline() {
 	// 	return 0, fmt.Errorf("unknown address: %s", addr)
 	// }
 
-	return i, nil
+	return idx, nil
 }
 
 func (b *scratchBuf) hasAddress(idx int) bool {

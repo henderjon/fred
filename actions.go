@@ -183,8 +183,8 @@ func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	// add old lines to the end of the buffer; we'll move them later
 	b.setCurline(mark)
 
-	for i := l1; i <= l2; i++ { // do this in reverse because we're putting them in order behind l3
-		err = b.duplicateLine(i)
+	for idx := l1; idx <= l2; idx++ { // do this in reverse because we're putting them in order behind l3
+		err = b.duplicateLine(idx)
 		if err != nil {
 			return err
 		}
@@ -504,8 +504,8 @@ func doWriteFile(inout termio, b buffer, l1, l2 int, filename string) (string, e
 	// }
 
 	numbyt := 0
-	for i := 1; i <= b.getLastline(); i++ {
-		n, _ := f.Write([]byte(b.getLine(i)))
+	for idx := 1; idx <= b.getLastline(); idx++ {
+		n, _ := f.Write([]byte(b.getLine(idx)))
 		f.Write([]byte{'\n'})
 		numbyt += n + 1 // \n is always 1
 	}
@@ -524,8 +524,8 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer b
 		// fill a temp buffer to act as stdin
 		if readFromBuffer {
 			stdin = &bytes.Buffer{}
-			for i := l1; i <= l2; i++ {
-				stdin.Write([]byte(b.getLine(i)))
+			for idx := l1; idx <= l2; idx++ {
+				stdin.Write([]byte(b.getLine(idx)))
 				stdin.Write([]byte("\n"))
 			}
 		}
@@ -571,8 +571,8 @@ func doSetMarkLine(b buffer, l1, l2 int, mark string) error {
 		mk = rune(mark[0])
 	}
 
-	for i := l1; i <= l2; i++ {
-		b.putMark(i, mk)
+	for idx := l1; idx <= l2; idx++ {
+		b.putMark(idx, mk)
 	}
 	return nil
 }
