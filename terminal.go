@@ -1,8 +1,10 @@
 package main
 
+import "io"
+
 type termio interface {
-	printf(format string, args ...any) (int, error)
-	println(args ...any) (int, error)
+	io.Writer
+	getPrompt() string
 	input(prompt string) (string, error)
 	prtHistory(string) error
 }

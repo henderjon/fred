@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -76,34 +75,6 @@ func clearBuffer(b buffer) error {
 	}
 
 	return doDelete(b, line1, line2)
-}
-
-func doMarkLines(b buffer, line1, numLines int, pattern string, invert bool) error {
-	if len(pattern) == 0 {
-		return fmt.Errorf("missing search pattern")
-	}
-
-	re, err := regexp.Compile(pattern)
-	if err != nil {
-		return err
-	}
-
-	scan := b.scanForward(line1, numLines)
-	for {
-		i, ok := scan()
-		if !ok {
-			break
-		}
-
-		if re.MatchString(b.getLine(i)) != invert {
-			b.putMark(i, mark)
-		} else if b.getMark(i) == mark {
-			// previously marked lines that match should be ignored
-			b.putMark(i, null)
-		}
-
-	}
-	return nil
 }
 
 func handleTabs(s string) string {

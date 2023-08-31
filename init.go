@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"github.com/henderjon/shutdown"
@@ -56,14 +57,14 @@ func bootstrap(b buffer, opts allParams) (*shutdown.Shutdown, termio) {
 	// signal.Notify(sysSigChan, syscall.SIGTERM)
 	// signal.Notify(sysSigChan, syscall.SIGHUP)
 
-	inout, _ := newTerm(os.Stdin, os.Stdout)
+	inout, _ := newTerm(os.Stdin, os.Stdout, opts.general.prompt)
 
 	if len(opts.general.filename) > 0 {
 		numbts, err := doReadFile(b, b.getCurline(), opts.general.filename)
 		if err != nil {
-			inout.println(err.Error())
+			fmt.Fprintln(inout, err.Error())
 		} else {
-			inout.println(numbts)
+			fmt.Fprintln(inout, numbts)
 			b.setDirty(false) // loading the file on init isn't *actually* dirty
 		}
 	}

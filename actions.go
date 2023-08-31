@@ -20,7 +20,7 @@ const (
 	printTypeCol
 )
 
-func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) error {
+func doPrint(out io.Writer, b buffer, l1, l2 int, cache *cache, printType int) error {
 	var err error
 
 	// b.setCurline(l1)
@@ -46,13 +46,13 @@ func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) er
 		line := b.getLine(i)
 		switch printType {
 		default:
-			inout.printf("%s", line)
+			fmt.Fprintf(out, "%s", line)
 		case printTypeNum:
-			inout.printf("%-2s%d\t%s", mk, i, line)
+			fmt.Fprintf(out, "%-2s%d\t%s", mk, i, line)
 		case printTypeLit:
-			inout.printf("%-2s%d\t%+q", mk, i, line)
+			fmt.Fprintf(out, "%-2s%d\t%+q", mk, i, line)
 		case printTypeCol:
-			inout.printf("%-2s%d\t%s", mk, i, revealColumn(cache.getColumn(), line))
+			fmt.Fprintf(out, "%-2s%d\t%s", mk, i, revealColumn(cache.getColumn(), line))
 		}
 	}
 
@@ -183,8 +183,8 @@ func doCopyNPaste(b buffer, l1, l2 int, dest string) error {
 	// add old lines to the end of the buffer; we'll move them later
 	b.setCurline(mark)
 
-	for i := l1; i <= l2; i++ { // do this in reverse because we're putting them in order behind l3
-		err = b.duplicateLine(i)
+	for idx := l1; idx <= l2; idx++ { // do this in reverse because we're putting them in order behind l3
+		err = b.duplicateLine(idx)
 		if err != nil {
 			return err
 		}
@@ -347,10 +347,10 @@ func doBreakLines(b buffer, l1, l2 int, rep replace) error {
 	// our scan takes an upper bound number of iterations
 	numLines := l2 - l1 // scan will handle <0
 
-	err = doMarkLines(b, l1, numLines, rep.pattern, false)
-	if err != nil {
-		return err
-	}
+	// err = doMarkLinesRegex(b, l1, numLines, rep.pattern, false)
+	// if err != nil {
+	// 	return err
+	// }
 
 	re, err = regexp.Compile(rep.pattern)
 	if err != nil {
@@ -504,8 +504,8 @@ func doWriteFile(inout termio, b buffer, l1, l2 int, filename string) (string, e
 	// }
 
 	numbyt := 0
-	for i := 1; i <= b.getLastline(); i++ {
-		n, _ := f.Write([]byte(b.getLine(i)))
+	for idx := 1; idx <= b.getLastline(); idx++ {
+		n, _ := f.Write([]byte(b.getLine(idx)))
 		f.Write([]byte{'\n'})
 		numbyt += n + 1 // \n is always 1
 	}
@@ -524,8 +524,8 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer b
 		// fill a temp buffer to act as stdin
 		if readFromBuffer {
 			stdin = &bytes.Buffer{}
-			for i := l1; i <= l2; i++ {
-				stdin.Write([]byte(b.getLine(i)))
+			for idx := l1; idx <= l2; idx++ {
+				stdin.Write([]byte(b.getLine(idx)))
 				stdin.Write([]byte("\n"))
 			}
 		}
@@ -571,35 +571,26 @@ func doSetMarkLine(b buffer, l1, l2 int, mark string) error {
 		mk = rune(mark[0])
 	}
 
-	for i := l1; i <= l2; i++ {
-		b.putMark(i, mk)
+	for idx := l1; idx <= l2; idx++ {
+		b.putMark(idx, mk)
 	}
 	return nil
 }
 
-func doGetMarkedLine(inout termio, b buffer, mark string) error {
+func doGetMarkedLines(out io.Writer, b buffer, m string) error {
 	mk := null
-	if len(mark) > 0 {
-		mk = rune(mark[0])
+	if len(m) > 0 {
+		mk = rune(m[0])
 	}
 
-	scan := b.scanForward(b.nextLine(b.getCurline()), b.getLastline())
-	for {
-		i, ok := scan()
-		if !ok {
-			break
-		}
+	return doMapMarkedLines(b, mk, func(b buffer, idx int) error {
+		_, err := fmt.Fprintf(out, "%2d) %s", idx, b.getLine(idx))
+		return err
+	})
 
-		if b.getMark(i) == mk {
-			inout.printf("%2d) %s", i, b.getLine(i))
-			b.setCurline(i)
-		}
-	}
-
-	return nil
 }
 
-func doGetNextMatchedLine(inout termio, b buffer, ser search) error {
+func doGetNextMatchedLine(out io.Writer, b buffer, ser search) error {
 	if len(ser.pattern) == 0 { // no pattern means to repeat the last search
 		return errors.New("empty pattern")
 	}
@@ -621,7 +612,7 @@ func doGetNextMatchedLine(inout termio, b buffer, ser search) error {
 		}
 
 		if re.MatchString(b.getLine(i)) {
-			inout.printf("%2d) %s", i, b.getLine(i))
+			fmt.Fprintf(out, "%2d) %s", i, b.getLine(i))
 			b.setCurline(i)
 			return nil
 		}

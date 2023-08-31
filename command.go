@@ -17,7 +17,7 @@ type command struct {
 	destination  string
 	subCommand   rune
 	argument     string
-	globalPrefix string
+	globalPrefix rune
 }
 
 func (c *command) String() string {
@@ -38,7 +38,7 @@ func (c *command) String() string {
 	fmt.Fprintf(&cmd, " destination(%s)", c.destination)
 	fmt.Fprintf(&cmd, " subCommand(%s)", string(c.subCommand))
 	fmt.Fprintf(&cmd, " argument(%s)", c.argument)
-	fmt.Fprintf(&cmd, " globalPrefix(%s)", c.globalPrefix) // g/ prefix; find more than one line
+	fmt.Fprintf(&cmd, " globalPrefix(%c)", c.globalPrefix) // g/ prefix; find more than one line
 
 	return cmd.String()
 }
@@ -73,8 +73,8 @@ func (c *command) setSubstitution(s string) {
 	c.substitution = s
 }
 
-func (c *command) setGlobalPrefix(s string) {
-	c.globalPrefix = s
+func (c *command) setGlobalPrefix(r rune) {
+	c.globalPrefix = r
 }
 
 func (c *command) setReplaceNum(s string) {

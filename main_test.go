@@ -27,7 +27,7 @@ func Test_print_command(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString(``)
-		term, _ := newTerm(in, out) // _ is an unused destructor
+		term, _ := newTerm(in, out, "") // _ is an unused destructor
 
 		doCmd(*test.cmd, controlBuffer, term, cache)
 
@@ -55,7 +55,7 @@ func Test_quit_command(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString(``)
-		term, _ := newTerm(in, out) // _ is an unused destructor
+		term, _ := newTerm(in, out, "") // _ is an unused destructor
 
 		_, err := doCmd(*test.cmd, controlBuffer, term, cache)
 
