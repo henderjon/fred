@@ -228,7 +228,7 @@ VERSION
 {{end}}
 `
 
-// Info represents the infomation used in the default Tmpl string
+// Info represents the information used in the default Tmpl string
 type Info struct {
 	Tmpl           string
 	Bin            string

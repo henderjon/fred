@@ -31,7 +31,7 @@ func (l *lexer) next() rune {
 	return r
 }
 
-// current shows the value to be emited
+// current shows the value to be emitted
 func (l *lexer) current() string {
 	return l.input[l.start:l.pos]
 }
