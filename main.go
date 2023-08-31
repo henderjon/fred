@@ -11,6 +11,7 @@ import (
 
 var (
 	stderr           = logger.NewDropLogger(os.Stderr)
+	errStop          = errors.New("stop")
 	errQuit          = errors.New("goodbye")
 	errDirtyBuffer   = errors.New("you have unsaved changes; use Q to quit without saving")
 	errEmptyFilename = errors.New("empty filename")
@@ -42,24 +43,6 @@ func main() {
 		if cmd == nil || err != nil {
 			fmt.Fprintf(inout, "invalid command; %s", err.Error())
 			b.setCurline(cursave)
-			continue
-		}
-
-		// regular 'g' or 'v'
-		if contains(string(globsPre), cmd.globalPrefix) {
-			err = doGlob(*cmd, b, inout, cache)
-			if err != nil {
-				inout.println(err.Error())
-			}
-			continue
-		}
-
-		// interactive 'G' or 'V'
-		if contains(string(intrGlobsPre), cmd.globalPrefix) {
-			err = doInteractiveGlob(*cmd, b, inout, cache, opts.general.prompt)
-			if err != nil {
-				inout.println(err.Error())
-			}
 			continue
 		}
 
@@ -115,6 +98,17 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
 	if err != nil {
 		return "", err
+	}
+
+	switch cmd.globalPrefix {
+	case globalSearchAction:
+		return "", doGlob(b, line1, line2, cmd, inout, cache)
+	case globalNegSearchAction:
+		return "", doGlob(b, line1, line2, cmd, inout, cache)
+	case globalIntSearchAction:
+		return "", doInteractiveGlob(b, line1, line2, cmd, inout, cache)
+	case globalNegIntSearchAction:
+		return "", doInteractiveGlob(b, line1, line2, cmd, inout, cache)
 	}
 
 	switch cmd.action {
@@ -209,143 +203,4 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	stderr.Log(cmd)
 
 	return "", err
-}
-
-// doGlob is *big* because we're not using globals and it's called from a scope where it doesn't share information like the original implementation
-func doGlob(cmd command, b buffer, inout termio, cache *cache) error {
-	var err error
-
-	// some commands require addresses
-	line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
-	if err != nil {
-		return err
-	}
-
-	// 'v' & 'V' do inverted search but are "global prefixes"
-	invertSearch := contains(string([]rune{globalNegSearchAction, globalNegIntSearchAction}), cmd.globalPrefix)
-	numLines := line2 - line1
-	if numLines <= 0 { // I like big loops
-		numLines = b.getLastline()
-	}
-
-	err = doMarkLines(b, line1, numLines, cmd.addrPattern, invertSearch)
-	if err != nil {
-		return err
-	}
-
-	// needed later to restore cursor after glob
-	cursave := b.getCurline()
-
-	// scan will loop once for every line even if the action is destructive so it can lap itself
-	// this shouldn't be an issue if we're handling getMark()s well and restoring curline when we're done
-	scan := b.scanForward(line1, numLines)
-	for {
-		i, ok := scan()
-		if !ok {
-			break
-		}
-
-		if b.getMark(i) != mark ||
-			contains(string(globsPre), cmd.action) ||
-			contains(string(intrGlobsPre), cmd.action) {
-			continue
-		}
-
-		cmd.addrStart = ""
-		cmd.addrEnd = ""
-		b.putMark(i, null)
-		b.setCurline(i)
-		doCmd(cmd, b, inout, cache)
-		b.setCurline(i)
-	}
-
-	b.setCurline(b.nextLine(cursave))
-	return nil
-}
-
-func doInteractiveGlob(cmd command, b buffer, inout termio, cache *cache, prompt string) error {
-	var err error
-
-	// some commands require addresses
-	line1, line2, err := b.defaultLines(cmd.addrStart, cmd.addrEnd, cmd.addrIncr, b.getCurline(), b.getCurline())
-	if err != nil {
-		return err
-	}
-
-	// 'v' & 'V' do inverted search but are "global prefixes"
-	invertSearch := contains(string([]rune{globalNegSearchAction, globalNegIntSearchAction}), cmd.globalPrefix)
-	numLines := line2 - line1
-	if numLines <= 0 { // I like big loops
-		numLines = b.getLastline()
-	}
-
-	err = doMarkLines(b, line1, numLines, cmd.addrPattern, invertSearch)
-	if err != nil {
-		return err
-	}
-
-	// needed later to restore cursor after glob
-	cursave := b.getCurline()
-
-	// scan will loop once for every line even if the action is destructive so it can lap itself
-	// this shouldn't be an issue if we're handling getMark()s well and restoring curline when we're done
-	scan := b.scanForward(line1, numLines)
-	for {
-		i, ok := scan()
-		if !ok {
-			break
-		}
-
-		if b.getMark(i) != mark ||
-			contains(string(globsPre), cmd.action) ||
-			contains(string(intrGlobsPre), cmd.action) {
-			continue
-		}
-
-		cmd.addrStart = ""
-		cmd.addrEnd = ""
-		b.putMark(i, null)
-		b.setCurline(i)
-
-		inout.println(".. " + b.getLine(i))
-
-		stop := false
-		for !stop {
-			line, err := inout.input(fmt.Sprintf(".. %s", prompt))
-			if err != nil {
-				return err
-			}
-
-			cmd, err := (&parser{}).run(line)
-			if err != nil {
-				return err
-			}
-
-			switch true {
-			case cmd.action == null: // the normal doCmd prints a line with no action; skip that behavior here
-				continue
-			case cmd.action == quitAction:
-				stop = true
-				continue
-			case cmd.action == reallyQuitAction:
-				return nil
-			}
-
-			_, err = doCmd(*cmd, b, inout, cache)
-			switch true {
-			case err != nil:
-				stop = true
-			case err == errQuit:
-				fmt.Println(err)
-			}
-			b.setCurline(i)
-		}
-		b.setCurline(i)
-	}
-
-	b.setCurline(b.nextLine(cursave))
-	return nil
-
-	// loop over buffer, mark lines the match in order to keep track of what's been done because doCmd/do* can alter the buffer
-	// loop over buffer, execute command on each marked line
 }

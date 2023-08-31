@@ -92,12 +92,20 @@ var cmds = []rune{
 	debugAction,
 }
 
-var globsPre = []rune{
-	globalSearchAction,
-	globalNegSearchAction,
+func excludeFromGlob(r rune) bool {
+	return contains(string([]rune{
+		setPagerAction,
+		setColumnAction,
+		globalSearchAction,
+		globalNegSearchAction,
+		globalIntSearchAction,
+		globalNegIntSearchAction,
+	}), r)
 }
 
-var intrGlobsPre = []rune{
-	globalIntSearchAction,
-	globalNegIntSearchAction,
+func invertDirection(r rune) bool {
+	return contains(string([]rune{
+		globalNegSearchAction,
+		globalNegIntSearchAction,
+	}), r)
 }

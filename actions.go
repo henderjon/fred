@@ -347,10 +347,10 @@ func doBreakLines(b buffer, l1, l2 int, rep replace) error {
 	// our scan takes an upper bound number of iterations
 	numLines := l2 - l1 // scan will handle <0
 
-	err = doMarkLines(b, l1, numLines, rep.pattern, false)
-	if err != nil {
-		return err
-	}
+	// err = doMarkLines(b, l1, numLines, rep.pattern, false)
+	// if err != nil {
+	// 	return err
+	// }
 
 	re, err = regexp.Compile(rep.pattern)
 	if err != nil {

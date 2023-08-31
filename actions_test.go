@@ -331,10 +331,11 @@ func Test_doRegexReplace(t *testing.T) {
 }
 func Test_doGlob(t *testing.T) {
 	tests := []struct {
-		cmd      command
-		expected buffer
+		line1, line2 int
+		cmd          command
+		expected     buffer
 	}{
-		{command{
+		{1, 5, command{
 			// addrStart:    "",
 			// addrEnd:      "",
 			addrPattern:  "[1-5]",
@@ -361,7 +362,7 @@ func Test_doGlob(t *testing.T) {
 			dirty:    true,
 			rev:      5,
 		}},
-		{command{
+		{1, 2, command{
 			addrStart:    "1",
 			addrEnd:      "2",
 			addrPattern:  "[1-5]",
@@ -386,14 +387,14 @@ func Test_doGlob(t *testing.T) {
 			},
 			filename: "filename",
 			dirty:    true,
-			rev:      2,
+			rev:      4,
 		}},
 	}
 
 	for i, test := range tests {
 		input, _ := newTerm(os.Stdin, os.Stdout, "")
 		controlBuffer := getTestActionBuffer()
-		doGlob(test.cmd, controlBuffer, input, &cache{})
+		doGlob(controlBuffer, test.line1, test.line2, test.cmd, input, &cache{})
 
 		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
@@ -518,7 +519,7 @@ func Test_doBreakLines_n1(t *testing.T) {
 				{txt: `4 Nullam lacus magna,`},
 				{txt: ` congue aliquam luctus ac, faucibus vel purus. Integer ...`},
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
-				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: mark}, // this is flotsam
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`}, // this is flotsam
 			},
 			filename: "filename",
 			dirty:    true,
@@ -568,7 +569,7 @@ func Test_doBreakLines_g(t *testing.T) {
 				{txt: `.`},
 				{txt: ``},
 				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
-				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`, mark: mark}, // this is flotsam
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`}, // this is flotsam
 			},
 			filename: "filename",
 			dirty:    true,
