@@ -172,9 +172,9 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	case getMarkAction:
 		return "", doGetMarkedLine(inout, b, cmd.argument)
 	case searchAction:
-		return "", doGetNextMatchedLine(inout, b, cache.search(cmd.addrPattern, true))
-	case searchRevAction:
 		return "", doGetNextMatchedLine(inout, b, cache.search(cmd.addrPattern, false))
+	case searchRevAction:
+		return "", doGetNextMatchedLine(inout, b, cache.search(cmd.addrPattern, true))
 	case reallyEditAction:
 		b.setDirty(false)
 		fallthrough // 'E' is exactly like edit but ignore the unsaved changes warning.

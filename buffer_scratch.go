@@ -287,7 +287,7 @@ func (b *scratchBuf) getLine(idx int) string {
 	return string(bts)
 }
 
-// scanForward returns a func that walks the buffer's indices in a forward loop. As an implementation detail, the number of lines is the number of non-zero lines.
+// scanForward returns a func that walks the buffer's indices in a forward loop. As an implementation detail, the number of lines is the number of non-zero lines. Often getLastLine() will be used as the number of lines. It's easy to think that the second param is when to stop when it is actually the number of lines to scan.
 func (b *scratchBuf) scanForward(start, num int) func() (int, bool) {
 	stop := false
 	i := b.prevLine(start) // remove 1 because nextLine advances one

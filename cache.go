@@ -32,6 +32,7 @@ func (c *cache) getColumn() int {
 
 func (c *cache) search(pattern string, reverse bool) search {
 	if len(pattern) == 0 { // no pattern means to repeat the last search
+		c.prevSearch.reverse = reverse // allow the user to change directions
 		return c.prevSearch
 	}
 

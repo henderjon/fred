@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -600,7 +601,7 @@ func doGetMarkedLine(inout termio, b buffer, mark string) error {
 
 func doGetNextMatchedLine(inout termio, b buffer, ser search) error {
 	if len(ser.pattern) == 0 { // no pattern means to repeat the last search
-		return fmt.Errorf("")
+		return errors.New("empty pattern")
 	}
 
 	re, err := regexp.Compile(ser.pattern)

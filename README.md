@@ -18,6 +18,17 @@ By default `fred` uses a tmp file as scratch space. This reduces the memory foot
 
 `$ FREDMODE=memory make install`
 
+## Future Ideas
+
+- [ ] Allow toggling default print mode between 'n' and 'p'.
+- [ ] A raw terminal that isn't a giant second library. Does one exist?
+- [ ] Remove `henderjon/logger` as a dep? eh, maybe not.
+- [ ] Finish writing tests.
+- [ ] allow /re/ to take an action
+- [ ] allow look ahead/behind after /re/
+- [ ] act on manually marked lines
+- [ ] HUP/restore
+
 [^1]: [Software Tools](https://a.co/d/57j2eG0)
 [^2]: [Software Tools for Pascal](https://a.co/d/jllgMxg)
 [^3]: [Lexical Scanning in Go - Rob Pike](https://www.youtube.com/watch?v=HxaD_trXwRE)
