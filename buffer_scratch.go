@@ -393,34 +393,36 @@ func (b *scratchBuf) String() string {
 }
 
 // defaultLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
-func (b *scratchBuf) defaultLines(num1, num2, incr string, l1, l2 int) (int, int, error) {
+func (b *scratchBuf) defaultLines(num1, num2, incr string, line1, line2 int) (int, int, error) {
 	var (
-		err    error
-		i1, i2 int
+		err        error
+		idx1, idx2 int
 	)
 
 	if len(num1) == 0 && len(num2) == 0 {
-		return l1, l2, nil
+		return line1, line2, nil
 	}
 
-	i1, err = b.makeAddress(num1, b.getCurline())
+	idx1, err = b.makeAddress(num1, b.getCurline())
 	if err != nil {
 		return 0, 0, fmt.Errorf("invalid buffer start address: %s", err.Error())
 	}
 
-	i2, err = b.makeAddress(num2, l1)
+	idx2, err = b.makeAddress(num2, idx1)
 	if err != nil {
 		return 0, 0, fmt.Errorf("invalid buffer end address: %s", err.Error())
 	}
 
-	// this will coerce values that are out of range into range
-	i1, i2 = b.applyIncrement(incr, i1, i2)
-
-	if i1 > i2 || i1 <= 0 || l1 > b.getLastline() {
-		return 0, 0, fmt.Errorf("invalid buffer range; %d, %d", i1, i2)
+	if incr != "" {
+		// this will coerce values that are out of range into range
+		idx1, idx2 = b.applyIncrement(incr, idx1, idx2)
 	}
 
-	return i1, i2, nil
+	if idx1 > idx2 || idx1 <= 0 || idx1 > b.getLastline() || idx2 > b.getLastline() {
+		return 0, 0, fmt.Errorf("invalid buffer range; %d, %d", idx1, idx2)
+	}
+
+	return idx1, idx2, nil
 }
 
 func (b *scratchBuf) applyIncrement(incr string, num1, relative int) (int, int) {
