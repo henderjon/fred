@@ -66,8 +66,7 @@ DIFFERENCES WITH THE ORIGINAL ED
     n line(s) before and after the current line. This has the added effect of
     moving the current line forward n lines. This is applied to all un-bound
     print commands.
-  - In {{.Bin}}, 'H' isn't necessary as all errors are displayed as hiding them
-    doesn't seem all the necessary.
+  - In {{.Bin}}, 'H' is used to show command history not verbose errors.
   - Some of the default line/ranges have been tweaked to reflect how the author
     uses ed.
   - Showing line numbers is default.
