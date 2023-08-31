@@ -77,8 +77,8 @@ func Test_parser(t *testing.T) {
 		// mirrorAction
 		// moveAction
 		{"10,25m35", &command{addrStart: "10", addrEnd: "25", action: moveAction, destination: "35"}, false},
-		{"10,25g/mm/m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", action: moveAction, destination: "35"}, false},
-		{"10,25g|mm|m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", action: moveAction, destination: "35"}, false},
+		{"10,25g/mm/m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: 'g', action: moveAction, destination: "35"}, false},
+		{"10,25g|mm|m35", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: 'g', action: moveAction, destination: "35"}, false},
 		// printNumsAction
 		{",n", &command{addrStart: "1", addrEnd: "$", action: printNumsAction}, false},
 		{",$n", &command{addrStart: "1", addrEnd: "$", action: printNumsAction}, false},
@@ -90,7 +90,7 @@ func Test_parser(t *testing.T) {
 		{"10,25n", &command{addrStart: "10", addrEnd: "25", action: printNumsAction}, false},
 		// printAction
 		{"10,25p", &command{addrStart: "10", addrEnd: "25", action: printAction}, false},
-		{"5,8g/^f[ob]ar/p", &command{addrStart: "5", addrEnd: "8", action: printAction, globalPrefix: "g", addrPattern: `^f[ob]ar`}, false},
+		{"5,8g/^f[ob]ar/p", &command{addrStart: "5", addrEnd: "8", action: printAction, globalPrefix: 'g', addrPattern: `^f[ob]ar`}, false},
 		// quitAction
 		{"q", &command{action: quitAction}, false},
 		// reallyQuitAction
@@ -99,12 +99,12 @@ func Test_parser(t *testing.T) {
 		{"5r path/file.ext", &command{addrStart: "5", action: readAction, argument: "path/file.ext"}, false},
 		{"r !grep -riF \"fatty fatpants\" .", &command{action: readAction, subCommand: '!', argument: "grep -riF \"fatty fatpants\" ."}, false},
 		// simpleReplaceAction
-		{"10,25g/mm/s/and/for/p", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", action: simpleReplaceAction, pattern: "and", substitution: "for", subCommand: 'p'}, false},
-		{"10,25g|mm|s!and!for!p", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", action: simpleReplaceAction, pattern: "and", substitution: "for", subCommand: 'p'}, false},
-		{"10,25g/mm/s/and/for/g", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", replaceNum: "-1", action: simpleReplaceAction, pattern: "and", substitution: "for"}, false},
-		{"10,25g/mm/s/and/for/3", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", replaceNum: "3", action: simpleReplaceAction, pattern: "and", substitution: "for"}, false},
-		{"10,25g/mm/s/and/for/", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", action: simpleReplaceAction, pattern: "and", substitution: "for"}, false},
-		{"10,25g/mm/s/and//", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: "g", action: simpleReplaceAction, pattern: "and"}, false},
+		{"10,25g/mm/s/and/for/p", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: 'g', action: simpleReplaceAction, pattern: "and", substitution: "for", subCommand: 'p'}, false},
+		{"10,25g|mm|s!and!for!p", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: 'g', action: simpleReplaceAction, pattern: "and", substitution: "for", subCommand: 'p'}, false},
+		{"10,25g/mm/s/and/for/g", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: 'g', replaceNum: "-1", action: simpleReplaceAction, pattern: "and", substitution: "for"}, false},
+		{"10,25g/mm/s/and/for/3", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: 'g', replaceNum: "3", action: simpleReplaceAction, pattern: "and", substitution: "for"}, false},
+		{"10,25g/mm/s/and/for/", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: 'g', action: simpleReplaceAction, pattern: "and", substitution: "for"}, false},
+		{"10,25g/mm/s/and//", &command{addrStart: "10", addrEnd: "25", addrPattern: "mm", globalPrefix: 'g', action: simpleReplaceAction, pattern: "and"}, false},
 		// regexReplaceAction
 		{"2,$S/^.$//", &command{addrStart: "2", addrEnd: "$", action: regexReplaceAction, pattern: "^.$", substitution: ""}, false},
 		// transliterateAction
@@ -121,12 +121,12 @@ func Test_parser(t *testing.T) {
 		{"w !grep -riF \"fatty fatpants\" .", &command{action: writeAction, subCommand: '!', argument: "grep -riF \"fatty fatpants\" ."}, false},
 		// setPagerAction
 		// globalPrefix
-		{",g/^f[ob]ar/", &command{addrStart: "1", addrEnd: "$", globalPrefix: "g", addrPattern: `^f[ob]ar`}, false},
-		{"5,g/^f[ob]ar/", &command{addrStart: "5", addrEnd: "$", globalPrefix: "g", addrPattern: `^f[ob]ar`}, false},
-		{"5,8g/^f[ob]ar/", &command{addrStart: "5", addrEnd: "8", globalPrefix: "g", addrPattern: `^f[ob]ar`}, false},
-		{"g/^f[ob]ar/", &command{globalPrefix: "g", addrPattern: `^f[ob]ar`}, false},
-		{"g/b.g/", &command{globalPrefix: "g", addrPattern: `b.g`}, false},
-		{"g//", &command{globalPrefix: "g", addrPattern: ""}, false}, //itemEmptyPattern
+		{",g/^f[ob]ar/", &command{addrStart: "1", addrEnd: "$", globalPrefix: 'g', addrPattern: `^f[ob]ar`}, false},
+		{"5,g/^f[ob]ar/", &command{addrStart: "5", addrEnd: "$", globalPrefix: 'g', addrPattern: `^f[ob]ar`}, false},
+		{"5,8g/^f[ob]ar/", &command{addrStart: "5", addrEnd: "8", globalPrefix: 'g', addrPattern: `^f[ob]ar`}, false},
+		{"g/^f[ob]ar/", &command{globalPrefix: 'g', addrPattern: `^f[ob]ar`}, false},
+		{"g/b.g/", &command{globalPrefix: 'g', addrPattern: `b.g`}, false},
+		{"g//", &command{globalPrefix: 'g', addrPattern: ""}, false}, //itemEmptyPattern
 		// testing edge cases //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		{"12", &command{addrStart: "12"}, false},
 		{"-12", &command{addrStart: "-12"}, false},
@@ -138,7 +138,7 @@ func Test_parser(t *testing.T) {
 		{"   12,13,14,11  ", &command{addrStart: "12", addrEnd: "11"}, false}, // parsing the command does not validate the command
 		{"  ,12  ", &command{addrStart: "1", addrEnd: "12"}, false},
 		{"   12 o  ", nil, true},                                                     // unknown command
-		{"g/^f[ob]ar/", &command{globalPrefix: "g", addrPattern: `^f[ob]ar`}, false}, // missing address
+		{"g/^f[ob]ar/", &command{globalPrefix: 'g', addrPattern: `^f[ob]ar`}, false}, // missing address
 		{"g/b.z", nil, true}, //itemMissingDelim
 
 	} //itemEmpty

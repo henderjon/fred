@@ -345,7 +345,7 @@ func Test_doGlob(t *testing.T) {
 			// destination:  "",
 			// subCommand:   "",
 			// argument:     "",
-			globalPrefix: "g",
+			globalPrefix: 'g',
 		}, &memoryBuf{
 			curline:  2,
 			lastline: 5,
@@ -372,7 +372,7 @@ func Test_doGlob(t *testing.T) {
 			// destination:  "",
 			// subCommand:   "",
 			// argument:     "",
-			globalPrefix: "g",
+			globalPrefix: 'g',
 		}, &memoryBuf{
 			curline:  2,
 			lastline: 5,
