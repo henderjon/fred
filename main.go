@@ -10,7 +10,6 @@ import (
 )
 
 var (
-	// debug            = false
 	stderr           = logger.NewDropLogger(os.Stderr)
 	errQuit          = errors.New("goodbye")
 	errDirtyBuffer   = errors.New("you have unsaved changes; use Q to quit without saving")
@@ -20,7 +19,6 @@ var (
 
 func main() {
 	opts := getParams()
-	// debug = opts.general.debug // this global is kinda lame
 	cache := &cache{}
 	cache.setPager(opts.general.pager)
 	b := newBuffer()
@@ -34,7 +32,7 @@ func main() {
 		var msg string
 		line, err := inout.input(opts.general.prompt)
 		if err != nil {
-			inout.printf("tilt; %s", err.Error())
+			fmt.Fprintf(inout, "TILT; %s", err.Error())
 			return
 		}
 
@@ -42,7 +40,7 @@ func main() {
 
 		cmd, err := cmdParser.run(line)
 		if cmd == nil || err != nil {
-			inout.printf("invalid command; %s", err.Error())
+			fmt.Fprintf(inout, "invalid command; %s", err.Error())
 			b.setCurline(cursave)
 			continue
 		}
@@ -67,7 +65,7 @@ func main() {
 
 		if cmd.action == undoAction {
 			if t, err := cache.unstageUndo(); err != nil {
-				inout.println(err.Error())
+				fmt.Fprint(inout, err.Error())
 			} else {
 				b = t.clone()
 			}
@@ -80,18 +78,20 @@ func main() {
 		switch true {
 		case cmd.subCommand == quitAction:
 			if b.isDirty() {
-				inout.println(errDirtyBuffer)
+				fmt.Fprint(inout, errDirtyBuffer)
 				continue
 			}
-			inout.println(errQuit)
+			fmt.Fprint(inout, errQuit)
 			return
+		case err == errStop: // used by the interactive commands
+			continue
 		case err == errQuit:
-			inout.println(err.Error())
+			fmt.Fprint(inout, err.Error())
 			return
 		case err != nil:
-			inout.println(err.Error())
+			fmt.Fprint(inout, err.Error())
 		case msg != "":
-			inout.println(msg)
+			fmt.Fprint(inout, msg)
 		}
 	}
 }

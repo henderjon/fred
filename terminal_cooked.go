@@ -2,32 +2,36 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
+	"unicode"
 )
 
 type classicTerm struct {
 	in      *bufio.Scanner
 	out     io.Writer
 	history []string
+	prompt  string
 }
 
 // func newLocalTerm(raw bool, in io.ReadWriter, out io.Writer) *localTerm {
-func newTerm(in io.Reader, out io.Writer) (termio, func()) {
+func newTerm(in io.Reader, out io.Writer, prompt string) (termio, func()) {
 	stdin := bufio.NewScanner(in)
 	return &classicTerm{
-		in:  stdin,
-		out: out,
+		in:     stdin,
+		out:    out,
+		prompt: prompt,
 	}, func() {}
 }
 
-func (t *classicTerm) printf(format string, a ...any) (n int, err error) {
-	s := fmt.Sprintf(format, a...)
-	return t.println(s)
+func (t *classicTerm) getPrompt() string {
+	return t.prompt
 }
 
-func (t *classicTerm) println(a ...any) (n int, err error) {
-	return fmt.Fprintln(t.out, a...)
+func (t *classicTerm) Write(b []byte) (int, error) {
+	b = bytes.TrimRightFunc(b, unicode.IsSpace)
+	return fmt.Fprintln(t.out, string(b))
 }
 
 func (t *classicTerm) input(prompt string) (string, error) {
@@ -57,7 +61,7 @@ func (t *classicTerm) prtHistory(s string) error {
 
 	for idx, ln := range t.history {
 		if idx >= x {
-			t.printf("%2d: %s", idx, ln)
+			fmt.Fprintf(t, "%2d: %s", idx, ln)
 		}
 	}
 

@@ -20,7 +20,7 @@ const (
 	printTypeCol
 )
 
-func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) error {
+func doPrint(out io.Writer, b buffer, l1, l2 int, cache *cache, printType int) error {
 	var err error
 
 	// b.setCurline(l1)
@@ -46,13 +46,13 @@ func doPrint(inout termio, b buffer, l1, l2 int, cache *cache, printType int) er
 		line := b.getLine(i)
 		switch printType {
 		default:
-			inout.printf("%s", line)
+			fmt.Fprintf(out, "%s", line)
 		case printTypeNum:
-			inout.printf("%-2s%d\t%s", mk, i, line)
+			fmt.Fprintf(out, "%-2s%d\t%s", mk, i, line)
 		case printTypeLit:
-			inout.printf("%-2s%d\t%+q", mk, i, line)
+			fmt.Fprintf(out, "%-2s%d\t%+q", mk, i, line)
 		case printTypeCol:
-			inout.printf("%-2s%d\t%s", mk, i, revealColumn(cache.getColumn(), line))
+			fmt.Fprintf(out, "%-2s%d\t%s", mk, i, revealColumn(cache.getColumn(), line))
 		}
 	}
 
@@ -577,7 +577,7 @@ func doSetMarkLine(b buffer, l1, l2 int, mark string) error {
 	return nil
 }
 
-func doGetMarkedLine(inout termio, b buffer, mark string) error {
+func doGetMarkedLine(out io.Writer, b buffer, mark string) error {
 	mk := null
 	if len(mark) > 0 {
 		mk = rune(mark[0])
@@ -591,7 +591,7 @@ func doGetMarkedLine(inout termio, b buffer, mark string) error {
 		}
 
 		if b.getMark(i) == mk {
-			inout.printf("%2d) %s", i, b.getLine(i))
+			fmt.Fprintf(out, "%2d) %s", i, b.getLine(i))
 			b.setCurline(i)
 		}
 	}
@@ -599,7 +599,7 @@ func doGetMarkedLine(inout termio, b buffer, mark string) error {
 	return nil
 }
 
-func doGetNextMatchedLine(inout termio, b buffer, ser search) error {
+func doGetNextMatchedLine(out io.Writer, b buffer, ser search) error {
 	if len(ser.pattern) == 0 { // no pattern means to repeat the last search
 		return errors.New("empty pattern")
 	}
@@ -621,7 +621,7 @@ func doGetNextMatchedLine(inout termio, b buffer, ser search) error {
 		}
 
 		if re.MatchString(b.getLine(i)) {
-			inout.printf("%2d) %s", i, b.getLine(i))
+			fmt.Fprintf(out, "%2d) %s", i, b.getLine(i))
 			b.setCurline(i)
 			return nil
 		}
