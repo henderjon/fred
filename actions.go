@@ -46,9 +46,11 @@ func doPrint(out io.Writer, b buffer, l1, l2 int, cache *cache, printType int) e
 		line := b.getLine(i)
 		switch printType {
 		default:
-			fmt.Fprintf(out, "%s", line)
+			fallthrough
 		case printTypeNum:
 			fmt.Fprintf(out, "%-2s%d\t%s", mk, i, line)
+		case printTypeReg:
+			fmt.Fprintf(out, "%s", line)
 		case printTypeLit:
 			fmt.Fprintf(out, "%-2s%d\t%+q", mk, i, line)
 		case printTypeCol:
@@ -56,6 +58,7 @@ func doPrint(out io.Writer, b buffer, l1, l2 int, cache *cache, printType int) e
 		}
 	}
 
+	cache.setPrintType(printType)
 	b.setCurline(l2)
 
 	return nil

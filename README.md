@@ -20,7 +20,6 @@ By default `fred` uses a tmp file as scratch space. This reduces the memory foot
 
 ## Future Ideas
 
-- [ ] Allow toggling default print mode between 'n' and 'p'.
 - [ ] A raw terminal that isn't a giant second library. Does one exist?
 - [ ] Remove `henderjon/logger` as a dep? eh, maybe not.
 - [ ] Finish writing tests.

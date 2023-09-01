@@ -12,6 +12,7 @@ type cache struct {
 	prevReplace replace
 	undo1       buffer
 	undo2       buffer
+	printType   int
 }
 
 func (c *cache) setPager(n int) {
@@ -28,6 +29,14 @@ func (c *cache) setColumn(n int) {
 
 func (c *cache) getColumn() int {
 	return c.column
+}
+
+func (c *cache) setPrintType(printType int) {
+	c.printType = printType
+}
+
+func (c *cache) getPrintType() int {
+	return c.printType
 }
 
 func (c *cache) search(pattern string, reverse bool) search {

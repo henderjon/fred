@@ -100,7 +100,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 		return "", err
 	}
 
-	switch cmd.globalPrefix {
+	switch cmd.globalPrefix { // do bulk line actions
 	case globalSearchAction:
 		return "", doGlob(b, line1, line2, cmd, inout, cache)
 	case globalNegSearchAction:
@@ -116,7 +116,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 		flag.Usage()
 		return "", nil
 	case 0: // rune default (empty action)
-		return "", doPrint(inout, b, line1, line2, cache, printTypeNum)
+		return "", doPrint(inout, b, line1, line2, cache, cache.getPrintType())
 	case eqAction:
 		return doPrintAddress(b, line2)
 	case printAction:
