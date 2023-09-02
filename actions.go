@@ -442,58 +442,55 @@ func doMirrorLines(b buffer, l1, l2 int) error {
 }
 
 // doReadFile adds the contents of filename and adds them to the buffer after l1
-func doReadFile(b buffer, l1 int, filename string) (string, error) {
+func doReadFile(b buffer, l1 int, fs fileSystem, filename string) (string, error) {
 	var err error
 	b.setCurline(l1)
 
-	_, err = normalizeFilePath(b, filename)
+	if len(filename) == 0 {
+		filename = b.getFilename()
+	}
+
+	f, err := fs.Open(filename) // checks for empty filename
 	if err != nil {
 		return "", err
 	}
 
-	f, err := os.Open(b.getFilename())
-	if err != nil {
-		return "", err
-	}
+	defer f.Close()
+	b.setFilename(filename)
 
 	numbyt := 0
-	fs := bufio.NewScanner(f)
-	fs.Split(bufio.ScanLines)
-	for fs.Scan() {
-		err = fs.Err()
+	fscan := bufio.NewScanner(f)
+	fscan.Split(bufio.ScanLines)
+	for fscan.Scan() {
+		err = fscan.Err()
 		if err != nil {
 			break
 		}
 
-		numbyt += len(fs.Text()) + 1 // \n is always 1
-		b.putLine(fs.Text(), b.getCurline())
+		numbyt += len(fscan.Text()) + 1 // \n is always 1
+		b.putLine(fscan.Text(), b.getCurline())
 	}
 
 	return fmt.Sprint(numbyt), err
 }
 
 // doReadFile adds the contents of filename and adds them to the buffer after l1
-func doWriteFile(inout termio, b buffer, l1, l2 int, filename string) (string, error) {
+func doWriteFile(inout termio, b buffer, l1, l2 int, fs fileSystem, filename string) (string, error) {
 	var err error
 	b.setCurline(l1)
 
-	if len(b.getFilename()) <= 0 && len(filename) <= 0 {
+	if len(filename) == 0 {
+		filename = b.getFilename()
+	}
+
+	if len(filename) <= 0 {
 		filename, err = inout.input("filename? ")
 		if err != nil {
 			return "", err
 		}
-		if len(filename) <= 0 {
-			return "", fmt.Errorf("cannot write empty file name")
-		}
 	}
 
-	_, err = normalizeFilePath(b, filename)
-	if err != nil {
-		return "", err
-	}
-
-	// f, err := os.Create(filename)
-	f, err := os.OpenFile(b.getFilename(), os.O_RDWR|os.O_CREATE, 0755)
+	f, err := fs.Open(filename) // checks for empty filename
 	if err != nil {
 		return "", err
 	}

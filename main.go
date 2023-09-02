@@ -55,8 +55,8 @@ func main() {
 			continue
 		}
 
-		msg, err = doCmd(*cmd, b, inout, cache) // NOTE: should doCmd return (string, error) or only (error)
-		cache.stageUndo(b.clone())              // cache confirms the incoming is different
+		msg, err = doCmd(*cmd, b, inout, osFS{}, cache) // NOTE: should doCmd return (string, error) or only (error)
+		cache.stageUndo(b.clone())                      // cache confirms the incoming is different
 
 		switch true {
 		case cmd.subCommand == quitAction:
@@ -79,7 +79,7 @@ func main() {
 	}
 }
 
-func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
+func doCmd(cmd command, b buffer, inout termio, fsys fileSystem, cache *cache) (string, error) {
 	var err error
 
 	// some commands do not require addresses
@@ -102,13 +102,13 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 
 	switch cmd.globalPrefix { // do bulk line actions
 	case globalSearchAction:
-		return "", doGlob(b, line1, line2, cmd, inout, cache)
+		return "", doGlob(b, line1, line2, cmd, inout, fsys, cache)
 	case globalNegSearchAction:
-		return "", doGlob(b, line1, line2, cmd, inout, cache)
+		return "", doGlob(b, line1, line2, cmd, inout, fsys, cache)
 	case globalIntSearchAction:
-		return "", doInteractiveGlob(b, line1, line2, cmd, inout, cache)
+		return "", doInteractiveGlob(b, line1, line2, cmd, inout, fsys, cache)
 	case globalNegIntSearchAction:
-		return "", doInteractiveGlob(b, line1, line2, cmd, inout, cache)
+		return "", doInteractiveGlob(b, line1, line2, cmd, inout, fsys, cache)
 	}
 
 	switch cmd.action {
@@ -158,7 +158,7 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 	case setColumnAction:
 		return doSetColumn(cmd.destination, cache)
 	case shellAction:
-		return doExternalShell(b, line1, line2, cmd.argument)(false, os.Stdout)
+		return doExternalShell(b, line1, line2, cmd.argument)(false, inout)
 	case filenameAction:
 		return doSetFilename(b, cmd.argument)
 	case putMarkAction:
@@ -182,19 +182,19 @@ func doCmd(cmd command, b buffer, inout termio, cache *cache) (string, error) {
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line1, cmd.argument)(false, b)
 		}
-		return doReadFile(b, 1, cmd.argument)
+		return doReadFile(b, 1, fsys, cmd.argument)
 	case readAction: // read into the current buffer either shell output or a file
 		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line2, cmd.argument)(false, b)
 		}
-		return doReadFile(b, line1, cmd.argument)
+		return doReadFile(b, line1, fsys, cmd.argument)
 	case writeAction: // write the current buffer to either shell (stdin) or a file
 		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line2, cmd.argument)(true, os.Stdout)
 		}
-		return doWriteFile(inout, b, line1, line2, cmd.argument)
+		return doWriteFile(inout, b, line1, line2, fsys, cmd.argument)
 	case debugAction:
 		return doDebug(b, cache)
 	}

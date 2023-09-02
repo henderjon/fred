@@ -60,7 +60,7 @@ func bootstrap(b buffer, opts allParams) (*shutdown.Shutdown, termio) {
 	inout, _ := newTerm(os.Stdin, os.Stdout, opts.general.prompt)
 
 	if len(opts.general.filename) > 0 {
-		numbts, err := doReadFile(b, b.getCurline(), opts.general.filename)
+		numbts, err := doReadFile(b, b.getCurline(), osFS{}, opts.general.filename)
 		if err != nil {
 			fmt.Fprintln(inout, err.Error())
 		} else {

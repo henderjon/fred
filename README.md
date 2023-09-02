@@ -8,6 +8,8 @@ In other words, the hope is that the effort's source code is readable. To that e
 
 The end result is not pretty, certainly not optimized or cleverly crafted, but it is testable and after letting it sit, still comprehendible to the author.
 
+Admittedly, the glob actions ('g', 'G', 'v', and 'V') and the implementation of a fileSystem interface for 'r' and 'w' are a step beyond elementary Go but not so far as to violate the goals of clarity and comprehensibility.
+
 The differences between `fred` and `ed` reflect the authors usage patterns when working with `ed`.
 
 ## Installation

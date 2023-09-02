@@ -11,6 +11,24 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+// localFS implements fileSystem using the embedded files
+type localFS struct {
+	seed *bytes.Buffer
+}
+
+func (m *localFS) Open(name string) (file, error) {
+	return &localFile{m.seed}, nil
+}
+
+// localFile fulfills the file interface for embedded files
+type localFile struct {
+	*bytes.Buffer
+}
+
+func (b *localFile) Close() error {
+	return nil // fulfills io.ReadWriteCloser
+}
+
 func getTestActionBuffer() buffer {
 	return &memoryBuf{
 		curline:  1,
@@ -394,7 +412,7 @@ func Test_doGlob(t *testing.T) {
 	for i, test := range tests {
 		input, _ := newTerm(os.Stdin, os.Stdout, "")
 		controlBuffer := getTestActionBuffer()
-		doGlob(controlBuffer, test.line1, test.line2, test.cmd, input, &cache{})
+		doGlob(controlBuffer, test.line1, test.line2, test.cmd, input, &localFS{}, &cache{})
 
 		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
@@ -810,6 +828,85 @@ func Test_doInsert(t *testing.T) {
 		doInsert(term, controlBuffer, test.l1)
 
 		// t.Error(controlBuffer.String(), test.expected.String())
+
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
+
+func Test_doReadFile(t *testing.T) {
+	tests := []struct {
+		l1       int
+		expected buffer
+	}{
+		{1, &memoryBuf{
+			curline:  1,
+			lastline: 6,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `This is the contents of the memory file.`},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+			},
+			filename: "example/short",
+			dirty:    true,
+			rev:      4,
+		}},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+
+		doReadFile(controlBuffer, 0, &localFS{
+			seed: bytes.NewBufferString(`This is the contents of the memory file.`),
+		}, "example/short")
+
+		// t.Error(controlBuffer.String(), test.expected.String())
+
+		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
+			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
+		}
+	}
+}
+
+func Test_doWriteFile(t *testing.T) {
+	tests := []struct {
+		l1       int
+		expected buffer
+	}{
+		{1, &memoryBuf{
+			curline:  1,
+			lastline: 5,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+			},
+			filename: "filename",
+			dirty:    false,
+			rev:      0,
+		}},
+	}
+
+	for i, test := range tests {
+		controlBuffer := getTestActionBuffer()
+		out := bytes.NewBufferString(``)
+		in := bytes.NewBufferString("")
+		term, _ := newTerm(in, out, "") // _ is an unused destructor
+		buf := bytes.NewBufferString(``)
+
+		doWriteFile(term, controlBuffer, 1, 1, &localFS{buf}, "filename")
+
+		if buf.Len() != 379 {
+			t.Errorf("write buffer failed: %d", buf.Len())
+		}
 
 		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
 			t.Errorf("idx: %d; -got/+want\n%s", i, diff)

@@ -9,3 +9,5 @@ TODO
 
 example/*
 !example/short
+
+*coverage.out

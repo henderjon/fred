@@ -70,7 +70,7 @@ func doMarkLinesRegex(b buffer, line1, line2 int, pattern string, invert bool) e
 }
 
 // doGlob marks eash line according to `pattern` and executes `cmd` on that line
-func doGlob(b buffer, line1, line2 int, cmd command, inout termio, cache *cache) error {
+func doGlob(b buffer, line1, line2 int, cmd command, inout termio, fsys fileSystem, cache *cache) error {
 	var err error
 
 	// 'v' & 'V' do inverted search but are "global prefixes"
@@ -83,27 +83,27 @@ func doGlob(b buffer, line1, line2 int, cmd command, inout termio, cache *cache)
 	cursave := b.getCurline()
 
 	cmd.globalPrefix = null // blank the prefix so we're not recursing infinitely
-	err = doMapMarkedLines(b, mark, globMapper(cmd, inout, cache))
+	err = doMapMarkedLines(b, mark, globMapper(cmd, inout, fsys, cache))
 
 	b.setCurline(b.nextLine(cursave))
 	return err
 }
 
 // globMapper returns mapLine func that executes `cmd` on a line
-func globMapper(cmd command, inout termio, cache *cache) mapLine {
+func globMapper(cmd command, inout termio, fsys fileSystem, cache *cache) mapLine {
 	return func(b buffer, idx int) error {
 		if excludeFromGlob(cmd.action) {
 			return nil
 		}
 
 		b.setCurline(idx)
-		_, err := doCmd(cmd, b, inout, cache)
+		_, err := doCmd(cmd, b, inout, fsys, cache)
 		return err
 	}
 }
 
 // doGlob marks eash line according to `pattern` and prompts the user for commands
-func doInteractiveGlob(b buffer, line1, line2 int, cmd command, inout termio, cache *cache) error {
+func doInteractiveGlob(b buffer, line1, line2 int, cmd command, inout termio, fsys fileSystem, cache *cache) error {
 	var err error
 
 	// 'v' & 'V' do inverted search but are "global prefixes"
@@ -115,15 +115,15 @@ func doInteractiveGlob(b buffer, line1, line2 int, cmd command, inout termio, ca
 	// needed later to restore cursor after glob
 	cursave := b.getCurline()
 
-	cmd.globalPrefix = null                                                                                            // blank the prefix so we're not recursing infinitely
-	err = doMapMarkedLines(b, mark, interactiveGlobMapper(cmd, inout, cache, fmt.Sprintf(".. %s", inout.getPrompt()))) // global
+	cmd.globalPrefix = null                                                                                                  // blank the prefix so we're not recursing infinitely
+	err = doMapMarkedLines(b, mark, interactiveGlobMapper(cmd, inout, fsys, cache, fmt.Sprintf(".. %s", inout.getPrompt()))) // global
 
 	b.setCurline(b.nextLine(cursave))
 	return err
 }
 
 // interactiveGlobMapper returns mapLine func that a user provided command on a line
-func interactiveGlobMapper(cmd command, inout termio, cache *cache, prompt string) mapLine {
+func interactiveGlobMapper(cmd command, inout termio, fsys fileSystem, cache *cache, prompt string) mapLine {
 
 	return func(b buffer, idx int) error {
 		var err error
@@ -157,7 +157,7 @@ func interactiveGlobMapper(cmd command, inout termio, cache *cache, prompt strin
 				return errStop
 			}
 
-			_, err = doCmd(*cmd, b, inout, cache)
+			_, err = doCmd(*cmd, b, inout, fsys, cache)
 			switch true {
 			case err != nil:
 				stop = true
