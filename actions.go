@@ -450,15 +450,16 @@ func doReadFile(b buffer, l1 int, fs fileSystem, filename string) (string, error
 		filename = b.getFilename()
 	}
 
-	bts, err := fs.ReadFile(filename) // checks for empty filename
+	frdr, err := fs.FileReader(filename)
 	if err != nil {
 		return "", err
 	}
 
+	defer frdr.Close()
 	b.setFilename(filename)
 
 	numbyt := 0
-	fscan := bufio.NewScanner(bytes.NewReader(bts))
+	fscan := bufio.NewScanner(frdr)
 	fscan.Split(bufio.ScanLines)
 	for fscan.Scan() {
 		err = fscan.Err()
@@ -495,7 +496,14 @@ func doWriteFile(inout termio, b buffer, l1, l2 int, fs fileSystem, filename str
 	// 	f.Write([]byte{'\n'})
 	// }
 
-	var bbuf bytes.Buffer
+	fwrt, err := fs.FileWriter(filename)
+	if err != nil {
+		return "", err
+	}
+
+	defer fwrt.Close()
+
+	var numbts int
 	scan := b.scanForward(1, b.getLastline()-1) // don't loop all the way
 	for {
 		idx, ok := scan()
@@ -503,27 +511,13 @@ func doWriteFile(inout termio, b buffer, l1, l2 int, fs fileSystem, filename str
 			break
 		}
 
-		// buffer the content
-		_, err = bbuf.WriteString(b.getLine(idx))
-		if err != nil {
-			return "", fmt.Errorf("error writing bufffer: %s", err.Error())
-		}
-		bbuf.WriteByte('\n')
-	}
-
-	lenBuf := bbuf.Len()
-
-	lenWrt, err := fs.WriteFile(bbuf.Bytes(), filename) // checks for empty filename
-	if err != nil {
-		return "", fmt.Errorf("error writing file: %s", err.Error())
-	}
-
-	if lenBuf != lenWrt {
-		return "", fmt.Errorf("incomplete buffer write: %d <> %d", lenBuf, lenWrt)
+		n, _ := fwrt.Write([]byte(b.getLine(idx)))
+		fwrt.Write([]byte("\n"))
+		numbts += n + 1
 	}
 
 	b.setDirty(false)
-	return fmt.Sprint(lenWrt), err
+	return fmt.Sprint(numbts), err
 }
 
 func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer bool, stdout io.Writer) (string, error) {

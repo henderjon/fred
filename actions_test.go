@@ -4,6 +4,7 @@ package main
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -13,7 +14,7 @@ import (
 
 // localFS implements fileSystem using the embedded files
 type localFS struct {
-	seed *bytes.Buffer
+	seed *localFile
 }
 
 func (m *localFS) ReadFile(fname string) ([]byte, error) {
@@ -22,6 +23,22 @@ func (m *localFS) ReadFile(fname string) ([]byte, error) {
 
 func (m *localFS) WriteFile(data []byte, fname string) (int, error) {
 	return m.seed.Write(data)
+}
+
+func (m *localFS) FileReader(fname string) (io.ReadCloser, error) {
+	return m.seed, nil
+}
+
+func (m *localFS) FileWriter(fname string) (io.WriteCloser, error) {
+	return m.seed, nil
+}
+
+type localFile struct {
+	bytes.Buffer
+}
+
+func (localFile) Close() error {
+	return nil
 }
 
 func getTestActionBuffer() buffer {
@@ -855,9 +872,10 @@ func Test_doReadFile(t *testing.T) {
 
 	for i, test := range tests {
 		controlBuffer := getTestActionBuffer()
+		seed := bytes.NewBufferString(`This is the contents of the memory file.`)
 
 		doReadFile(controlBuffer, 0, &localFS{
-			seed: bytes.NewBufferString(`This is the contents of the memory file.`),
+			seed: &localFile{*seed},
 		}, "example/short")
 
 		// t.Error(controlBuffer.String(), test.expected.String())
@@ -895,9 +913,9 @@ func Test_doWriteFile(t *testing.T) {
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString("")
 		term, _ := newTerm(in, out, "") // _ is an unused destructor
-		var buf bytes.Buffer
+		buf := new(localFile)
 
-		doWriteFile(term, controlBuffer, 1, 1, &localFS{&buf}, "filename")
+		doWriteFile(term, controlBuffer, 1, 1, &localFS{buf}, "filename")
 
 		if buf.Len() != 379 {
 			t.Errorf("write buffer failed: %d", buf.Len())
