@@ -17,14 +17,6 @@ type localFS struct {
 	seed *localFile
 }
 
-func (m *localFS) ReadFile(fname string) ([]byte, error) {
-	return m.seed.Bytes(), nil
-}
-
-func (m *localFS) WriteFile(data []byte, fname string) (int, error) {
-	return m.seed.Write(data)
-}
-
 func (m *localFS) FileReader(fname string) (io.ReadCloser, error) {
 	return m.seed, nil
 }
