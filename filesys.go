@@ -39,13 +39,5 @@ func (o osFS) FileWriter(fname string) (io.WriteCloser, error) {
 		return nil, err
 	}
 
-	f, err := os.OpenFile(absPath, os.O_RDWR|os.O_CREATE, 0644)
-	if err != nil {
-		return nil, err
-	}
-
-	f.Truncate(0)
-	f.Seek(0, 0)
-
-	return f, err
+	return os.Create(absPath)
 }
