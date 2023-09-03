@@ -1,32 +1,34 @@
 package main
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 )
 
 type fileSystem interface {
-	Open(name string) (file, error)
+	ReadFile(fname string) ([]byte, error)
+	WriteFile(data []byte, fname string) (int, error)
 }
-
-// defines the file operations used within
-type file io.ReadWriteCloser
 
 // osFS implements fileSystem using the local disk.
 type osFS struct{}
 
-func (osFS) Open(name string) (file, error) {
+func (osFS) ReadFile(fname string) ([]byte, error) {
 	var err error
 
-	if len(name) == 0 {
+	if len(fname) == 0 {
 		return nil, errEmptyFilename
 	}
 
-	absPath, err := filepath.Abs(name)
+	absPath, err := filepath.Abs(fname)
 	if err != nil {
 		return nil, err
 	}
 
-	return os.OpenFile(absPath, os.O_RDWR|os.O_CREATE, 0644)
+	return os.ReadFile(absPath)
+}
+
+func (osFS) WriteFile(data []byte, fname string) (int, error) {
+	bts := len(data)
+	return bts, os.WriteFile(fname, data, 0644)
 }

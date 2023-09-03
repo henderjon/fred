@@ -16,17 +16,12 @@ type localFS struct {
 	seed *bytes.Buffer
 }
 
-func (m *localFS) Open(name string) (file, error) {
-	return &localFile{m.seed}, nil
+func (m *localFS) ReadFile(fname string) ([]byte, error) {
+	return m.seed.Bytes(), nil
 }
 
-// localFile fulfills the file interface for embedded files
-type localFile struct {
-	*bytes.Buffer
-}
-
-func (b *localFile) Close() error {
-	return nil // fulfills io.ReadWriteCloser
+func (m *localFS) WriteFile(data []byte, fname string) (int, error) {
+	return m.seed.Write(data)
 }
 
 func getTestActionBuffer() buffer {
@@ -900,9 +895,9 @@ func Test_doWriteFile(t *testing.T) {
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString("")
 		term, _ := newTerm(in, out, "") // _ is an unused destructor
-		buf := bytes.NewBufferString(``)
+		var buf bytes.Buffer
 
-		doWriteFile(term, controlBuffer, 1, 1, &localFS{buf}, "filename")
+		doWriteFile(term, controlBuffer, 1, 1, &localFS{&buf}, "filename")
 
 		if buf.Len() != 379 {
 			t.Errorf("write buffer failed: %d", buf.Len())
