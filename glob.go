@@ -115,8 +115,8 @@ func doInteractiveGlob(b buffer, line1, line2 int, cmd command, inout termio, fs
 	// needed later to restore cursor after glob
 	cursave := b.getCurline()
 
-	cmd.globalPrefix = null                                                                                                  // blank the prefix so we're not recursing infinitely
-	err = doMapMarkedLines(b, mark, interactiveGlobMapper(cmd, inout, fsys, cache, fmt.Sprintf(".. %s", inout.getPrompt()))) // global
+	cmd.globalPrefix = null // blank the prefix so we're not recursing infinitely
+	err = doMapMarkedLines(b, mark, interactiveGlobMapper(cmd, inout, fsys, cache, fmt.Sprintf(".. %s", inout.getPrompt())))
 
 	b.setCurline(b.nextLine(cursave))
 	return err

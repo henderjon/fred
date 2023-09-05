@@ -30,6 +30,8 @@ By default `fred` uses a tmp file as scratch space. This reduces the memory foot
 - [ ] act on manually marked lines
 - [ ] HUP/restore
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/henderjon/fred)](https://goreportcard.com/report/github.com/henderjon/fred)
+
 [^1]: [Software Tools](https://a.co/d/57j2eG0)
 [^2]: [Software Tools for Pascal](https://a.co/d/jllgMxg)
 [^3]: [Lexical Scanning in Go - Rob Pike](https://www.youtube.com/watch?v=HxaD_trXwRE)
