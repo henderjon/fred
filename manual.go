@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"os"
+	"runtime/debug"
 	"text/template"
 )
 
@@ -223,6 +224,8 @@ VERSION
   version:  {{.Version}}
   compiled: {{.CompiledBy}}
   built:    {{.BuildTimestamp}}
+  mod:      {{.ModPath}}
+  rev:      {{.Rev}}
 
 {{end}}
 `
@@ -235,12 +238,24 @@ type Info struct {
 	CompiledBy     string
 	BuildTimestamp string
 	Options        string
+	ModPath        string
+	Rev            string
 }
 
 // Usage wraps a set of `Info` and creates a flag.Usage func
 func Usage(info Info) func() {
 	if len(info.Tmpl) == 0 {
 		info.Tmpl = Tmpl
+	}
+
+	if bld, ok := debug.ReadBuildInfo(); ok {
+		info.ModPath = bld.Path
+		for _, setting := range bld.Settings {
+			switch true {
+			case setting.Key == "vcs.revision":
+				info.Rev = setting.Value
+			}
+		}
 	}
 
 	t := template.Must(template.New("manual").Parse(info.Tmpl))
