@@ -207,9 +207,9 @@ COMMANDS
 
   - (,)|   [column] Print the given lines displaying the column
 
-  -(,)>n   [peek] Print the given lines and the next n lines
+  - (,)>n   [peek] Print the given lines and the next n lines
 
-  -(,)<n   [peek] Print the given lines and the previous n lines
+  - (,)<n   [peek] Print the given lines and the previous n lines
 
   - *      [debug] If {{.Bin}} is given -debug, print diagnostic info about the
            current buffer
