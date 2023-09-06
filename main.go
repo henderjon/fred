@@ -130,7 +130,7 @@ func doCmd(cmd command, b buffer, inout termio, fsys fileSystem, cache *cache) (
 	case appendAction:
 		return "", doAppend(inout, b, line1)
 	case insertAction:
-		return "", doInsert(inout, b, b.prevLine(line1))
+		return "", doInsert(inout, b, line1)
 	case deleteAction:
 		return "", doDelete(b, line1, line2)
 	case changeAction:
