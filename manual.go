@@ -11,7 +11,7 @@ import (
 // these vars are built at compile time, DO NOT ALTER
 var (
 	// Version adds build information
-	binName string
+	binName = `fred`
 	// Version adds build information
 	buildVersion string
 	// BuildTimestamp adds build information
@@ -226,6 +226,7 @@ VERSION
   built:    {{.BuildTimestamp}}
   mod:      {{.ModPath}}
   rev:      {{.Rev}}
+            ({{.RevTimestamp}})
 
 {{end}}
 `
@@ -240,6 +241,7 @@ type Info struct {
 	Options        string
 	ModPath        string
 	Rev            string
+	RevTimestamp   string
 }
 
 // Usage wraps a set of `Info` and creates a flag.Usage func
@@ -249,11 +251,19 @@ func Usage(info Info) func() {
 	}
 
 	if bld, ok := debug.ReadBuildInfo(); ok {
+
+		if info.CompiledBy == "" {
+			info.CompiledBy = bld.GoVersion
+		}
+
 		info.ModPath = bld.Path
+
 		for _, setting := range bld.Settings {
 			switch true {
 			case setting.Key == "vcs.revision":
 				info.Rev = setting.Value
+			case setting.Key == "vcs.time":
+				info.RevTimestamp = setting.Value
 			}
 		}
 	}

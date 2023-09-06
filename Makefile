@@ -11,11 +11,12 @@ BINDIR=bin
 RELEASEDIR=release
 HEAD=$(shell git describe --dirty --long --tags 2> /dev/null  || git rev-parse --short HEAD)
 COHASH=$(shell git rev-parse --short HEAD)
-TIMESTAMP=$(shell TZ=UTC date '+%FT%T %Z')
+TIMESTAMP=$(shell TZ=UTC date '+%FT%TZ')
 TEST_COVER_FILE=$(BIN)-test-coverage.out
 # TIMESTAMP=$(shell date '+%Y-%m-%dT%H:%M:%S %z %Z')
 
-LDFLAGS="-X 'main.binName=$(BIN)' -X 'main.buildVersion=$(HEAD)' -X 'main.buildTimestamp=$(TIMESTAMP)' -X 'main.compiledBy=$(shell go version)'"
+# LDFLAGS="-X 'main.binName=$(BIN)' -X 'main.buildVersion=$(HEAD)' -X 'main.buildTimestamp=$(TIMESTAMP)' -X 'main.compiledBy=$(shell go version)'"
+LDFLAGS="-X 'main.buildVersion=$(HEAD)' -X 'main.buildTimestamp=$(TIMESTAMP)'"
 
 all: local
 
