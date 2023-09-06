@@ -36,37 +36,37 @@ func Test_sameBuffer(t *testing.T) {
 
 func Test_defaultLines(t *testing.T) {
 	tests := []struct {
-		start, end string
-		l1, l2     int
-		i1, i2     int
-		e          bool
+		start, end   string
+		line1, line2 int
+		idx1, idx2   int
+		err          bool
 	}{
 		{"2", "4", 5, 5, 2, 4, false},
 		{".", "$", 5, 5, 5, 5, false},
 		{"1", "$", 5, 5, 1, 5, false}, // ',' injects these values
-		{"1", "7", 5, 5, 1, 5, false},
-		{"0", "7", 5, 5, 1, 5, false}, // we coerce out of bounds addresses, now
+		{"1", "7", 5, 5, 0, 0, true},
+		{"0", "7", 5, 5, 0, 0, true}, // we coerce out of bounds addresses, now
 	}
 
 	for _, test := range tests {
 		controlBuffer := getTestBuffer()
-		l1, l2, err := controlBuffer.defaultLines(test.start, test.end, "", test.l1, test.l2)
-		if err != nil && test.e == false {
+		line1, line2, err := controlBuffer.defaultLines(test.start, test.end, "", test.line1, test.line2)
+		if err != nil && test.err == false {
 			t.Errorf("unexpected error: %s", err.Error())
 			continue
 		}
 
-		if err == nil && test.e == true {
+		if err == nil && test.err == true {
 			t.Errorf("expected error; given (%s,%s)", test.start, test.end)
 			continue
 		}
 
-		if l1 != test.i1 {
-			t.Errorf("error converting first address; given (%s,%s); got %d; want %d", test.start, test.end, l1, test.i1)
+		if line1 != test.idx1 {
+			t.Errorf("error converting first address; given (%s,%s); got %d; want %d", test.start, test.end, line1, test.idx1)
 		}
 
-		if l2 != test.i2 {
-			t.Errorf("error converting second address; given (%s,%s); got %d; want %d", test.start, test.end, l2, test.i2)
+		if line2 != test.idx2 {
+			t.Errorf("error converting second address; given (%s,%s); got %d; want %d", test.start, test.end, line2, test.idx2)
 		}
 	}
 }
