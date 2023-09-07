@@ -36,11 +36,13 @@ func (t *classicTerm) Write(b []byte) (int, error) {
 
 func (t *classicTerm) input(prompt string) (string, error) {
 	fmt.Fprint(t.out, prompt)
-	t.in.Scan()
-	if t.in.Err() == nil && prompt != "" { // skip saving entered text
-		t.history = append(t.history, t.in.Text())
+	if t.in.Scan() {
+		if t.in.Err() == nil && prompt != "" { // skip saving entered text
+			t.history = append(t.history, t.in.Text())
+		}
+		return t.in.Text(), t.in.Err()
 	}
-	return t.in.Text(), t.in.Err()
+	return "", io.EOF
 }
 
 func (t *classicTerm) prtHistory(s string) error {

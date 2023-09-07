@@ -33,7 +33,7 @@ func main() {
 		var msg string
 		line, err := inout.input(opts.general.prompt)
 		if err != nil {
-			fmt.Fprintf(inout, "TILT; %s", err.Error())
+			fmt.Fprint(inout, err.Error())
 			return
 		}
 
