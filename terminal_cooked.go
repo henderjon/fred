@@ -13,15 +13,17 @@ type classicTerm struct {
 	out     io.Writer
 	history []string
 	prompt  string
+	isPipe  bool
 }
 
 // func newLocalTerm(raw bool, in io.ReadWriter, out io.Writer) *localTerm {
-func newTerm(in io.Reader, out io.Writer, prompt string) (termio, func()) {
+func newTerm(in io.Reader, out io.Writer, prompt string, isPipe bool) (termio, func()) {
 	stdin := bufio.NewScanner(in)
 	return &classicTerm{
 		in:     stdin,
 		out:    out,
 		prompt: prompt,
+		isPipe: isPipe,
 	}, func() {}
 }
 
@@ -35,7 +37,10 @@ func (t *classicTerm) Write(b []byte) (int, error) {
 }
 
 func (t *classicTerm) input(prompt string) (string, error) {
-	fmt.Fprint(t.out, prompt)
+	if !t.isPipe {
+		fmt.Fprint(t.out, prompt)
+	}
+
 	if t.in.Scan() {
 		if t.in.Err() == nil && prompt != "" { // skip saving entered text
 			t.history = append(t.history, t.in.Text())

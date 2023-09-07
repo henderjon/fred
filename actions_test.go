@@ -414,7 +414,7 @@ func Test_doGlob(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		input, _ := newTerm(os.Stdin, os.Stdout, "")
+		input, _ := newTerm(os.Stdin, os.Stdout, "", false)
 		controlBuffer := getTestActionBuffer()
 		doGlob(controlBuffer, test.line1, test.line2, test.cmd, input, &localFS{}, &cache{})
 
@@ -749,7 +749,7 @@ func Test_doPrint(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString(``)
-		term, _ := newTerm(in, out, "") // _ is an unused destructor
+		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
 		doPrint(term, controlBuffer, test.l1, test.l2, cache, test.tp)
 
@@ -788,7 +788,7 @@ func Test_doAppend(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString("foobar snafu\n.\n")
-		term, _ := newTerm(in, out, "") // _ is an unused destructor
+		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
 		doAppend(term, controlBuffer, test.l1)
 
@@ -827,7 +827,7 @@ func Test_doInsert(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString("foobar snafu\n.\n")
-		term, _ := newTerm(in, out, "") // _ is an unused destructor
+		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
 		doInsert(term, controlBuffer, test.l1)
 
@@ -904,7 +904,7 @@ func Test_doWriteFile(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString("")
-		term, _ := newTerm(in, out, "") // _ is an unused destructor
+		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 		buf := new(localFile)
 
 		doWriteFile(term, controlBuffer, 1, 1, &localFS{buf}, "filename")

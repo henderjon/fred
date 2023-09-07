@@ -57,7 +57,7 @@ func bootstrap(b buffer, opts allParams) (*shutdown.Shutdown, termio) {
 	// signal.Notify(sysSigChan, syscall.SIGTERM)
 	// signal.Notify(sysSigChan, syscall.SIGHUP)
 
-	inout, _ := newTerm(os.Stdin, os.Stdout, opts.general.prompt)
+	inout, _ := newTerm(os.Stdin, os.Stdout, opts.general.prompt, isPipe(os.Stdin))
 
 	if len(opts.general.filename) > 0 {
 		numbts, err := doReadFile(b, b.getCurline(), osFS{}, opts.general.filename)

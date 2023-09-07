@@ -27,7 +27,7 @@ func Test_print_command(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString(``)
-		term, _ := newTerm(in, out, "") // _ is an unused destructor
+		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
 		doCmd(*test.cmd, controlBuffer, term, &localFS{}, cache)
 
@@ -55,7 +55,7 @@ func Test_quit_command(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString(``)
-		term, _ := newTerm(in, out, "") // _ is an unused destructor
+		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
 		_, err := doCmd(*test.cmd, controlBuffer, term, &localFS{}, cache)
 
@@ -97,7 +97,7 @@ func Test_interactive_glob(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString("s/ui/++/g\nQ\n")
-		term, _ := newTerm(in, out, "") // _ is an unused destructor
+		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
 		_, err := doCmd(*test.cmd, controlBuffer, term, &localFS{}, cache)
 		if err != nil && err != errStop {
@@ -141,7 +141,7 @@ func Test_interactive_v_glob(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString("s/e/!/g\nq\ns/e/!/g\nq\ns/e/!/g\nq\ns/e/!/g\nq\nQ\n")
-		term, _ := newTerm(in, out, "") // _ is an unused destructor
+		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
 		_, err := doCmd(*test.cmd, controlBuffer, term, &localFS{}, cache)
 		if err != nil && err != errStop {
@@ -172,7 +172,7 @@ func Test_doExternalShell(t *testing.T) {
 		controlBuffer := getTestActionBuffer()
 		out := bytes.NewBufferString(``)
 		in := bytes.NewBufferString("s/e/!/g\nq\ns/e/!/g\nq\ns/e/!/g\nq\ns/e/!/g\nq\nQ\n")
-		term, _ := newTerm(in, out, "") // _ is an unused destructor
+		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
 		str, err := doCmd(*test.cmd, controlBuffer, term, &localFS{}, cache)
 		if err != nil {
