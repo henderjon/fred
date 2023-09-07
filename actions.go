@@ -106,7 +106,7 @@ func doAppend(inout termio, b buffer, l1 int) error {
 		if err != nil {
 			return err
 		}
-		l1++ // append to the next line; don't lock append to always adding lines to the one given, move the destination with the what is entered
+		l1++ // append to the next line; don't lock append to always adding lines to the one given, move the destination with what is entered
 		b.setCurline(l1)
 	}
 }

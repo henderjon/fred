@@ -20,7 +20,9 @@ func doMapMarkedLines(b buffer, m rune, fn mapLine) error {
 		}
 
 		if b.getMark(i) == m {
-			b.putMark(i, null)
+			if m == mark { // only remove the mark if it was for glob actions
+				b.putMark(i, null)
+			}
 
 			err := fn(b, i)
 			if err != nil {
