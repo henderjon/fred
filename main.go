@@ -24,7 +24,7 @@ func main() {
 	cache.setPager(opts.general.pager)
 	b := newBuffer()
 
-	// create out shutdown listener and our terminal and load the file given via -file
+	// create our shutdown listener and our terminal and load the file given via -file
 	shd, inout := bootstrap(b, opts)
 	defer shd.Destructor()
 
