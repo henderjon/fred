@@ -2,8 +2,6 @@ package main
 
 import (
 	"testing"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 func Test_parser(t *testing.T) {
@@ -144,16 +142,18 @@ func Test_parser(t *testing.T) {
 	} //itemEmpty
 
 	for _, test := range tests {
-		c, err := (&parser{}).run(test.input)
+		t.Run(test.input, func(t *testing.T) {
+			c, err := (&parser{}).run(test.input)
 
-		if diff := cmp.Diff(c, test.expCommand, cmp.AllowUnexported(command{})); diff != "" {
-			t.Errorf("given: %s; -got/+want\n%s[%s]", test.input, diff, err)
-			// t.Errorf("given: %s; -got/+want\n%s", test.input, diff)
-		}
+			if !test.expErr {
+				if c.String() != test.expCommand.String() {
+					t.Errorf("\nerror: %s\n-got:  %s\n+want: %s", err, c, test.expCommand)
+				}
+			}
 
-		if test.expErr && (err == nil) {
-			t.Errorf("given: %s; error: %s\n", test.input, err)
-		}
-
+			if test.expErr && (err == nil) {
+				t.Errorf("error: %s\n", err.Error())
+			}
+		})
 	}
 }

@@ -4,12 +4,11 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 // localFS implements fileSystem using the embedded files
@@ -103,14 +102,16 @@ func Test_doDelete(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		doDelete(controlBuffer, test.l1, test.l2)
+	for idx, test := range tests {
+		tName := fmt.Sprint("doDelete ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			doDelete(controlBuffer, test.l1, test.l2)
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
-
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 func Test_doMove(t *testing.T) {
@@ -151,14 +152,16 @@ func Test_doMove(t *testing.T) {
 		}},
 	}
 
-	for _, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		doMove(controlBuffer, test.l1, test.l2, test.dest)
+	for idx, test := range tests {
+		tName := fmt.Sprint("doMove ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			doMove(controlBuffer, test.l1, test.l2, test.dest)
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("-got/+want\n%s", diff)
-		}
-
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -205,17 +208,19 @@ func Test_doCopyNPaste(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		err := doCopyNPaste(controlBuffer, test.l1, test.l2, test.dest)
-		if err != nil {
-			t.Error(err)
-		}
+	for idx, test := range tests {
+		tName := fmt.Sprint("doCopyNPaste ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			err := doCopyNPaste(controlBuffer, test.l1, test.l2, test.dest)
+			if err != nil {
+				t.Error(err)
+			}
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
-
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 func Test_doSimpleReplace(t *testing.T) {
@@ -273,15 +278,17 @@ func Test_doSimpleReplace(t *testing.T) {
 		}},
 	}
 
-	for _, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		c := &cache{}
-		doSimpleReplace(controlBuffer, test.l1, test.l2, c.replace(test.pattern, test.replace, test.num))
+	for idx, test := range tests {
+		tName := fmt.Sprint("doSimpleReplace ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			c := &cache{}
+			doSimpleReplace(controlBuffer, test.l1, test.l2, c.replace(test.pattern, test.replace, test.num))
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("-got/+want\n%s", diff)
-		}
-
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -340,15 +347,17 @@ func Test_doRegexReplace(t *testing.T) {
 		}},
 	}
 
-	for _, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		c := &cache{}
-		doRegexReplace(controlBuffer, test.l1, test.l2, c.replace(test.pattern, test.replace, test.num))
+	for idx, test := range tests {
+		tName := fmt.Sprint("doRegexReplace ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			c := &cache{}
+			doRegexReplace(controlBuffer, test.l1, test.l2, c.replace(test.pattern, test.replace, test.num))
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("-got/+want\n%s", diff)
-		}
-
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 func Test_doGlob(t *testing.T) {
@@ -413,15 +422,17 @@ func Test_doGlob(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		input, _ := newTerm(os.Stdin, os.Stdout, "", false)
-		controlBuffer := getTestActionBuffer()
-		doGlob(controlBuffer, test.line1, test.line2, test.cmd, input, &localFS{}, &cache{})
+	for idx, test := range tests {
+		tName := fmt.Sprint("doGlob ", idx)
+		t.Run(tName, func(t *testing.T) {
+			input, _ := newTerm(os.Stdin, os.Stdout, "", false)
+			controlBuffer := getTestActionBuffer()
+			doGlob(controlBuffer, test.line1, test.line2, test.cmd, input, &localFS{}, &cache{})
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
-
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -446,14 +457,16 @@ func Test_doSetMarkLine_1(t *testing.T) {
 		}},
 	}
 
-	for _, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		doSetMarkLine(controlBuffer, test.l1, test.l2, test.argument)
+	for idx, test := range tests {
+		tName := fmt.Sprint("doSetMarkLine ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			doSetMarkLine(controlBuffer, test.l1, test.l2, test.argument)
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("-got/+want\n%s", diff)
-		}
-
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -478,14 +491,16 @@ func Test_doSetMarkLine_2(t *testing.T) {
 		}},
 	}
 
-	for _, test := range tests {
-		controlBuffer := getTestMarkedActionBuffer()
-		doSetMarkLine(controlBuffer, test.l1, test.l2, test.argument)
+	for idx, test := range tests {
+		tName := fmt.Sprint("doSetMarkLine2 ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestMarkedActionBuffer()
+			doSetMarkLine(controlBuffer, test.l1, test.l2, test.argument)
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("-got/+want\n%s", diff)
-		}
-
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -512,14 +527,16 @@ func Test_doJoinLines(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		doJoinLines(controlBuffer, test.l1, test.l2, `++`)
+	for idx, test := range tests {
+		tName := fmt.Sprint("doJoinLines ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			doJoinLines(controlBuffer, test.l1, test.l2, `++`)
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
-
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -549,13 +566,16 @@ func Test_doBreakLines_n1(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		doBreakLines(controlBuffer, test.l1, test.l2, replace{`[,.]`, "", `1`})
+	for idx, test := range tests {
+		tName := fmt.Sprint("doBreakLines_n1 ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			doBreakLines(controlBuffer, test.l1, test.l2, replace{`[,.]`, "", `1`})
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -599,13 +619,16 @@ func Test_doBreakLines_g(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		doBreakLines(controlBuffer, test.l1, test.l2, replace{`[,.]`, "", `-1`})
+	for idx, test := range tests {
+		tName := fmt.Sprint("doBreakLines_g ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			doBreakLines(controlBuffer, test.l1, test.l2, replace{`[,.]`, "", `-1`})
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -617,16 +640,19 @@ func Test_doPrintAddress(t *testing.T) {
 		{5, "5"},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		s, err := doPrintAddress(controlBuffer, test.l2)
-		if err != nil {
-			t.Error(err)
-		}
+	for idx, test := range tests {
+		tName := fmt.Sprint("doPrintAddress ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			s, err := doPrintAddress(controlBuffer, test.l2)
+			if err != nil {
+				t.Error(err)
+			}
 
-		if diff := cmp.Diff(s, test.expected); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if s != test.expected {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -651,13 +677,16 @@ func Test_setFilename(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		doSetFilename(controlBuffer, `new file name`)
+	for idx, test := range tests {
+		tName := fmt.Sprint("doSetFilename ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			doSetFilename(controlBuffer, `new file name`)
 
-		if diff := cmp.Diff(test.given, filepath.Base(test.expected.getFilename())); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if test.given != filepath.Base(test.expected.getFilename()) {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -683,13 +712,16 @@ func Test_doMirrorLines(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		doMirrorLines(controlBuffer, test.l1, test.l2)
+	for idx, test := range tests {
+		tName := fmt.Sprint("doMirrorLines ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			doMirrorLines(controlBuffer, test.l1, test.l2)
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -715,13 +747,16 @@ func Test_doTransliterate(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		doTransliterate(controlBuffer, test.l1, test.l2, `ae`, `12`)
+	for idx, test := range tests {
+		tName := fmt.Sprint("doTransliterate ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			doTransliterate(controlBuffer, test.l1, test.l2, `ae`, `12`)
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -745,19 +780,20 @@ func Test_doPrint(t *testing.T) {
 
 	// t.Error(out.String(), line, err)
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		out := bytes.NewBufferString(``)
-		in := bytes.NewBufferString(``)
-		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
+	for idx, test := range tests {
+		tName := fmt.Sprint("doPrint ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			out := bytes.NewBufferString(``)
+			in := bytes.NewBufferString(``)
+			term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
-		doPrint(term, controlBuffer, test.l1, test.l2, cache, test.tp)
+			doPrint(term, controlBuffer, test.l1, test.l2, cache, test.tp)
 
-		// t.Error(out.String(), test.expected)
-
-		if diff := cmp.Diff(out.String(), test.expected); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if out.String() != test.expected {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -784,19 +820,20 @@ func Test_doAppend(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		out := bytes.NewBufferString(``)
-		in := bytes.NewBufferString("foobar snafu\n.\n")
-		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
+	for idx, test := range tests {
+		tName := fmt.Sprint("doAppend ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			out := bytes.NewBufferString(``)
+			in := bytes.NewBufferString("foobar snafu\n.\n")
+			term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
-		doAppend(term, controlBuffer, test.l1)
+			doAppend(term, controlBuffer, test.l1)
 
-		// t.Error(controlBuffer.String(), test.expected.String())
-
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -823,19 +860,20 @@ func Test_doInsert(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		out := bytes.NewBufferString(``)
-		in := bytes.NewBufferString("foobar snafu\n.\n")
-		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
+	for idx, test := range tests {
+		tName := fmt.Sprint("doInsert ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			out := bytes.NewBufferString(``)
+			in := bytes.NewBufferString("foobar snafu\n.\n")
+			term, _ := newTerm(in, out, "", false) // _ is an unused destructor
 
-		doInsert(term, controlBuffer, test.l1)
+			doInsert(term, controlBuffer, test.l1)
 
-		// t.Error(controlBuffer.String(), test.expected.String())
-
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -862,19 +900,20 @@ func Test_doReadFile(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		seed := bytes.NewBufferString(`This is the contents of the memory file.`)
+	for idx, test := range tests {
+		tName := fmt.Sprint("doReadFile ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			seed := bytes.NewBufferString(`This is the contents of the memory file.`)
 
-		doReadFile(controlBuffer, 0, &localFS{
-			seed: &localFile{*seed},
-		}, "example/short")
+			doReadFile(controlBuffer, 0, &localFS{
+				seed: &localFile{*seed},
+			}, "example/short")
 
-		// t.Error(controlBuffer.String(), test.expected.String())
-
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
 
@@ -900,21 +939,24 @@ func Test_doWriteFile(t *testing.T) {
 		}},
 	}
 
-	for i, test := range tests {
-		controlBuffer := getTestActionBuffer()
-		out := bytes.NewBufferString(``)
-		in := bytes.NewBufferString("")
-		term, _ := newTerm(in, out, "", false) // _ is an unused destructor
-		buf := new(localFile)
+	for idx, test := range tests {
+		tName := fmt.Sprint("doWriteFile ", idx)
+		t.Run(tName, func(t *testing.T) {
+			controlBuffer := getTestActionBuffer()
+			out := bytes.NewBufferString(``)
+			in := bytes.NewBufferString("")
+			term, _ := newTerm(in, out, "", false) // _ is an unused destructor
+			buf := new(localFile)
 
-		doWriteFile(term, controlBuffer, 1, 1, &localFS{buf}, "filename")
+			doWriteFile(term, controlBuffer, 1, 1, &localFS{buf}, "filename")
 
-		if buf.Len() != 379 {
-			t.Errorf("write buffer failed: %d", buf.Len())
-		}
+			if buf.Len() != 379 {
+				t.Errorf("write buffer failed: %d", buf.Len())
+			}
 
-		if diff := cmp.Diff(controlBuffer.String(), test.expected.String()); diff != "" {
-			t.Errorf("idx: %d; -got/+want\n%s", i, diff)
-		}
+			if controlBuffer.String() != test.expected.String() {
+				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+			}
+		})
 	}
 }
