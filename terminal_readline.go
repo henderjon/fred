@@ -5,6 +5,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"unicode"
@@ -72,26 +73,5 @@ func (t *readlineTerm) input(prompt string) (string, error) {
 }
 
 func (t *readlineTerm) prtHistory(s string) error {
-	var err error
-
-	num := 5
-	if len(s) > 0 {
-		num, err = intval(s)
-		if err != nil {
-			return err
-		}
-	}
-
-	x := (len(t.history) - 1) - (num - 1) // get starting index -n from the end
-	if x <= 0 {
-		x = 0
-	}
-
-	for idx, ln := range t.history {
-		if idx >= x {
-			fmt.Fprintf(t, "%2d: %s", idx, ln)
-		}
-	}
-
-	return nil
+	return errors.New("command not implemented for this terminal")
 }

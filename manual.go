@@ -4,20 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"os"
-	"runtime/debug"
 	"text/template"
-)
-
-// these vars are built at compile time, DO NOT ALTER
-var (
-	// Version adds build information
-	binName = `fred`
-	// Version adds build information
-	buildVersion string
-	// BuildTimestamp adds build information
-	buildTimestamp string
-	// CompiledBy adds the make/model that was used to compile
-	compiledBy string
 )
 
 // Tmpl is a basic man page[-ish] looking template
@@ -224,9 +211,6 @@ VERSION
   version:  {{.Version}}
   compiled: {{.CompiledBy}}
   built:    {{.BuildTimestamp}}
-  mod:      {{.ModPath}}
-  rev:      {{.Rev}}
-            ({{.RevTimestamp}})
 
 {{end}}
 `
@@ -239,33 +223,12 @@ type Info struct {
 	CompiledBy     string
 	BuildTimestamp string
 	Options        string
-	ModPath        string
-	Rev            string
-	RevTimestamp   string
 }
 
 // Usage wraps a set of `Info` and creates a flag.Usage func
 func Usage(info Info) func() {
 	if len(info.Tmpl) == 0 {
 		info.Tmpl = Tmpl
-	}
-
-	if bld, ok := debug.ReadBuildInfo(); ok {
-
-		if info.CompiledBy == "" {
-			info.CompiledBy = bld.GoVersion
-		}
-
-		info.ModPath = bld.Path
-
-		for _, setting := range bld.Settings {
-			switch true {
-			case setting.Key == "vcs.revision":
-				info.Rev = setting.Value
-			case setting.Key == "vcs.time":
-				info.RevTimestamp = setting.Value
-			}
-		}
 	}
 
 	t := template.Must(template.New("manual").Parse(info.Tmpl))

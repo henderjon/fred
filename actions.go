@@ -653,7 +653,10 @@ func doDebug(b buffer, cache *cache) (string, error) {
 	// }
 
 	var rtn strings.Builder
-	rtn.WriteString(b.String())
+
+	bi := getBuildInfo()
+	rtn.WriteString(bi.String())
 	rtn.WriteString(cache.String())
+	rtn.WriteString(b.String())
 	return rtn.String(), nil
 }

@@ -20,11 +20,12 @@ type allParams struct {
 }
 
 func getParams() allParams {
+	bi := getBuildInfo()
 	flag.Usage = Usage(Info{
-		Bin:            binName,
-		Version:        buildVersion,
-		CompiledBy:     compiledBy,
-		BuildTimestamp: buildTimestamp,
+		Bin:            bi.getBinName(),
+		Version:        bi.getBuildVersion(),
+		CompiledBy:     bi.getCompiledBy(),
+		BuildTimestamp: bi.getBuildTimestamp(),
 	})
 
 	params := allParams{}
