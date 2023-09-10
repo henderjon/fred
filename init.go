@@ -47,8 +47,11 @@ func getParams() allParams {
 }
 
 func bootstrap(b buffer, opts allParams) (*shutdown.Shutdown, termio) {
+	inout, destructor := newTerm(os.Stdin, os.Stdout, opts.general.prompt, isPipe(os.Stdin))
+
 	shd := shutdown.New(func() {
 		b.destructor() // clean up our tmp file
+		destructor()   // close readline
 	})
 	// defer shd.Destructor()
 
@@ -56,8 +59,6 @@ func bootstrap(b buffer, opts allParams) (*shutdown.Shutdown, termio) {
 	// signal.Notify(sysSigChan, syscall.SIGINT)
 	// signal.Notify(sysSigChan, syscall.SIGTERM)
 	// signal.Notify(sysSigChan, syscall.SIGHUP)
-
-	inout, _ := newTerm(os.Stdin, os.Stdout, opts.general.prompt, isPipe(os.Stdin))
 
 	if len(opts.general.filename) > 0 {
 		numbts, err := doReadFile(b, b.getCurline(), osFS{}, opts.general.filename)

@@ -7,4 +7,9 @@ require (
 	github.com/henderjon/logger v0.5.2
 )
 
-require github.com/henderjon/shutdown v0.7.0
+require (
+	github.com/chzyer/readline v1.5.1
+	github.com/henderjon/shutdown v0.7.0
+)
+
+require golang.org/x/sys v0.12.0 // indirect

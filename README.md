@@ -20,9 +20,13 @@ By default `fred` uses a tmp file as scratch space. This reduces the memory foot
 
 `$ FREDMODE=memory make install`
 
+To enable simple readline support:
+
+`$ FREDMODE=readline make install`
+
 ## Future Ideas
 
-- [ ] A raw terminal that isn't a giant second library. Does one exist?
+- [√] A raw terminal that isn't a giant second library. Does one exist?
 - [ ] Remove `henderjon/logger` as a dep? eh, maybe not.
 - [ ] Finish writing tests.
 - [ ] allow /re/ to take an action
