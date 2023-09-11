@@ -28,7 +28,7 @@ type memoryBuf struct {
 	rev      int // revision, each time we alter a buffer we incr
 }
 
-func newBuffer() buffer {
+func newBuffer(_ FileSystem) buffer {
 	return &memoryBuf{
 		curline:  0,
 		lastline: 0,

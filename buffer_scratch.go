@@ -11,22 +11,6 @@ import (
 	"unicode"
 )
 
-func tmp() *os.File {
-	f, err := os.CreateTemp("", `fred_tmp_*`)
-	if err != nil {
-		stderr.Fatal(err)
-	}
-
-	return f
-}
-
-// NamedReaderWriteAt wraps ReaderAt and WriterAt interfaces as well as the Name() method
-type NamedReaderWriteAt interface {
-	io.ReaderAt
-	io.WriterAt
-	Name() string
-}
-
 type bufferLine struct {
 	pos  int
 	len  int
@@ -42,14 +26,17 @@ type scratchBuf struct {
 	lastline int
 	lines    []bufferLine
 	filename string
-	ext      NamedReaderWriteAt
+	ext      NamedScratchFile
 	pos      int
 	dirty    bool
 	rev      int // revision, each time we alter a buffer we incr
 }
 
-func newBuffer() buffer {
-	f := tmp()
+func newBuffer(fs FileSystem) buffer {
+	f, e := fs.ScratchFile()
+	if e != nil {
+		stderr.Fatal(e)
+	}
 	return &scratchBuf{
 		curline:  0,
 		lastline: 0,

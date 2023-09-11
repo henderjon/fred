@@ -445,7 +445,7 @@ func doMirrorLines(b buffer, l1, l2 int) error {
 }
 
 // doReadFile adds the contents of filename and adds them to the buffer after l1
-func doReadFile(b buffer, l1 int, fs fileSystem, filename string) (string, error) {
+func doReadFile(b buffer, l1 int, fs FileSystem, filename string) (string, error) {
 	var err error
 	b.setCurline(l1)
 
@@ -478,7 +478,7 @@ func doReadFile(b buffer, l1 int, fs fileSystem, filename string) (string, error
 }
 
 // doReadFile adds the contents of filename and adds them to the buffer after l1
-func doWriteFile(inout termio, b buffer, l1, l2 int, fs fileSystem, filename string) (string, error) {
+func doWriteFile(inout termio, b buffer, l1, l2 int, fs FileSystem, filename string) (string, error) {
 	var err error
 	b.setCurline(l1)
 

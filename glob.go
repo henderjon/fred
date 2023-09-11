@@ -72,7 +72,7 @@ func doMarkLinesRegex(b buffer, line1, line2 int, pattern string, invert bool) e
 }
 
 // doGlob marks eash line according to `pattern` and executes `cmd` on that line
-func doGlob(b buffer, line1, line2 int, cmd command, inout termio, fsys fileSystem, cache *cache) error {
+func doGlob(b buffer, line1, line2 int, cmd command, inout termio, fsys FileSystem, cache *cache) error {
 	var err error
 
 	// 'v' & 'V' do inverted search but are "global prefixes"
@@ -92,7 +92,7 @@ func doGlob(b buffer, line1, line2 int, cmd command, inout termio, fsys fileSyst
 }
 
 // globMapper returns mapLine func that executes `cmd` on a line
-func globMapper(cmd command, inout termio, fsys fileSystem, cache *cache) mapLine {
+func globMapper(cmd command, inout termio, fsys FileSystem, cache *cache) mapLine {
 	return func(b buffer, idx int) error {
 		if excludeFromGlob(cmd.action) {
 			return nil
@@ -105,7 +105,7 @@ func globMapper(cmd command, inout termio, fsys fileSystem, cache *cache) mapLin
 }
 
 // doGlob marks eash line according to `pattern` and prompts the user for commands
-func doInteractiveGlob(b buffer, line1, line2 int, cmd command, inout termio, fsys fileSystem, cache *cache) error {
+func doInteractiveGlob(b buffer, line1, line2 int, cmd command, inout termio, fsys FileSystem, cache *cache) error {
 	var err error
 
 	// 'v' & 'V' do inverted search but are "global prefixes"
@@ -125,7 +125,7 @@ func doInteractiveGlob(b buffer, line1, line2 int, cmd command, inout termio, fs
 }
 
 // interactiveGlobMapper returns mapLine func that a user provided command on a line
-func interactiveGlobMapper(cmd command, inout termio, fsys fileSystem, cache *cache, prompt string) mapLine {
+func interactiveGlobMapper(cmd command, inout termio, fsys FileSystem, cache *cache, prompt string) mapLine {
 
 	return func(b buffer, idx int) error {
 		var err error

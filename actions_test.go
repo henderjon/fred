@@ -5,32 +5,10 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"testing"
 )
-
-// localFS implements fileSystem using the embedded files
-type localFS struct {
-	seed *localFile
-}
-
-func (m *localFS) FileReader(fname string) (io.ReadCloser, error) {
-	return m.seed, nil
-}
-
-func (m *localFS) FileWriter(fname string) (io.WriteCloser, error) {
-	return m.seed, nil
-}
-
-type localFile struct {
-	bytes.Buffer
-}
-
-func (localFile) Close() error {
-	return nil
-}
 
 func getTestActionBuffer() buffer {
 	return &memoryBuf{

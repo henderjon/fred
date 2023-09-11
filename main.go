@@ -22,7 +22,7 @@ func main() {
 	opts := getParams()
 	cache := &cache{}
 	cache.setPager(opts.general.pager)
-	b := newBuffer()
+	b := newBuffer(osFS{})
 
 	// create our shutdown listener and our terminal and load the file given via -file
 	shd, inout := bootstrap(b, opts)
@@ -79,7 +79,7 @@ func main() {
 	}
 }
 
-func doCmd(cmd command, b buffer, inout termio, fsys fileSystem, cache *cache) (string, error) {
+func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (string, error) {
 	var err error
 
 	// some commands do not require addresses
