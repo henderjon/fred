@@ -26,7 +26,8 @@ type stringable interface {
 	string | rune | []byte
 }
 
-// contains checks haystack for needle, given that needle can be cast to a string; guards against empty string false positives
+// contains checks haystack for needle, given that needle can be cast to a string;
+// guards against empty string false positives
 func contains[T stringable](haystack string, needle T) bool {
 	find := string(needle)
 	if len(find) == 0 {
@@ -62,7 +63,9 @@ func simpleNReplace(subject, pattern, replace string, n int) string {
 	return rtn.String()
 }
 
-// clearBuffer blanks the current buffer. Long term this should probably be added to the buffer interface and handle checking for a dirty buffer ...
+// clearBuffer blanks the current buffer.
+// Long term this should probably be added to the buffer interface and
+// handle checking for a dirty buffer ...
 func clearBuffer(b buffer) error {
 	if b.isDirty() {
 		return errDirtyBuffer
@@ -91,7 +94,8 @@ func handleTabs(s string) string {
 
 func normalizeFilePath(b buffer, filename string) (string, error) {
 	if len(filename) == 0 {
-		if len(b.getFilename()) == 0 { // NOTE: there a far bit of paranoia here, this is very unlikely to happen IRL
+		// NOTE: there a far bit of paranoia here, this is very unlikely to happen IRL
+		if len(b.getFilename()) == 0 {
 			return "", errEmptyFilename
 		}
 		filename = b.getFilename()

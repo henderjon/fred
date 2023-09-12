@@ -159,7 +159,10 @@ func (b *scratchBuf) putLine(line string, idx int) error {
 		return err
 	}
 
-	// when the current active buffer has fewer lines that the total buffer (ie we've deleted/forgotten lines at the end of the buffer) we can reuse those lines in stead of always appending. This reduces memory usage but the scratch file will continue to grow.
+	// when the current active buffer has fewer lines that the total buffer
+	// (ie we've deleted/forgotten lines at the end of the buffer)
+	// we can reuse those lines in stead of always appending.
+	// This reduces memory usage but the scratch file will continue to grow.
 	if b.lastline <= len(b.lines)-1 {
 		b.lines[b.lastline] = newLine
 	} else {
@@ -274,7 +277,8 @@ func (b *scratchBuf) getLine(idx int) string {
 	return string(bts)
 }
 
-// scanForward returns a func that walks the buffer's indices in a forward loop. As an implementation detail, the number of lines is the number of non-zero lines. Often getLastLine() will be used as the number of lines. It's easy to think that the second param is when to stop when it is actually the number of lines to scan.
+// scanForward returns a func that walks the buffer's indices in a forward loop.
+// As an implementation detail, the number of lines is the number of non-zero lines.
 func (b *scratchBuf) scanForward(start, num int) func() (int, bool) {
 	stop := false
 	idx := b.prevLine(start) // remove 1 because nextLine advances one
@@ -379,7 +383,10 @@ func (b *scratchBuf) String() string {
 	return rtn.String()
 }
 
-// defaultLines normalizes two addresses, both optional. It takes what is provided and returns sensible defaults with an eye to how the relate to each other. It also changes '.' and '$' to current and end addresses respectively
+// defaultLines normalizes two addresses, both optional.
+// It takes what is provided and returns sensible defaults with an eye to
+// how the relate to each other.
+// It also changes '.' and '$' to current and end addresses respectively
 func (b *scratchBuf) defaultLines(num1, num2, incr string, line1, line2 int) (int, int, error) {
 	var (
 		err        error
@@ -435,7 +442,9 @@ func (b *scratchBuf) applyIncrement(incr string, num1, relative int) (int, int) 
 
 }
 
-// converts a string address into a number with special cases for '.', '$', and ”. Start/end addresses are guarded against '0' elsewhere (in defaultLines) but allowed in destinations
+// converts a string address into a number with special cases for '.', '$', and ”.
+// Start/end addresses are guarded against '0' elsewhere (in defaultLines) but
+// are allowed in destinations
 func (b *scratchBuf) makeAddress(addr string, def int) (int, error) {
 	var (
 		idx int

@@ -7,10 +7,14 @@ import (
 
 const (
 	null = '\x00'
-	mark = '\x01' // we allow single chars to mark lines, this value is used internally when we go global actions (g,G,v,V) so we don't get confused
+	// we allow single chars to mark lines, this value is used internally when
+	// we do global actions (g,G,v,V) so we don't get confused
+	mark = '\x01'
 )
 
-// buffer is the interface for our content. It is large because of the accessor methods (and the fact that it provides the interface for bufferLines as well) which are not idiomatic, but good practice.
+// buffer is the interface for our content. It is large because of the accessor
+// methods (and the fact that it provides the interface for bufferLines as well)
+// which are not idiomatic, but good practice.
 type buffer interface {
 	io.ReadWriter
 	fmt.Stringer
@@ -20,7 +24,9 @@ type buffer interface {
 	// makeAddress does no validation
 	makeAddress(addr string, def int) (int, error)
 
-	//hasAddress check for a valid address inclusively between 0 and lastLine, care should be used to check addresses if that is not the correct range. Specifically, there are times when 0 should not be included in the check.
+	//hasAddress check for a valid address inclusively between 0 and lastLine,
+	// care should be used to check addresses if that is not the correct range.
+	// Specifically, there are times when 0 should not be included in the check.
 	hasAddress(int) bool
 
 	setCurline(int)

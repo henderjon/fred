@@ -30,7 +30,8 @@ func doPrint(out io.Writer, b buffer, l1, l2 int, cache *cache, printType int) e
 		return err
 	}
 
-	// because these values were vetted by defaultLines there is no danger in skipping validation within the scan
+	// because these values were vetted by defaultLines there is no danger in
+	// skipping validation within the scan
 	scan := b.scanForward(l1, l2-l1)
 	for {
 		i, ok := scan() // scan hides the '0' line
@@ -82,7 +83,8 @@ func doSetPager(num string, cache *cache) (string, error) {
 	return fmt.Sprintf("pager set to %d", cache.getPager()), nil
 }
 
-// doPrintAddress asks for 'l2' because it should print the end of the requested range knowing that if only one address is given, it is a range of a single number
+// doPrintAddress asks for 'l2' because it should print the end of the requested range
+// knowing that if only one address is given, it is a range of a single number
 func doPrintAddress(b buffer, l2 int) (string, error) {
 	b.setCurline(l2)
 	return fmt.Sprintf("%d", b.getCurline()), nil
@@ -106,7 +108,10 @@ func doAppend(inout termio, b buffer, l1 int) error {
 		if err != nil {
 			return err
 		}
-		l1++ // append to the next line; don't lock append to always adding lines to the one given, move the destination with what is entered
+		// append to the next line;
+		// don't lock append to always adding lines to the one given,
+		// move the destination with what is entered
+		l1++
 		b.setCurline(l1)
 	}
 }
@@ -120,7 +125,8 @@ func doInsert(inout termio, b buffer, l1 int) error {
 	return doAppend(inout, b, l1)
 }
 
-// doDelete moves a range of lines to the end of the buffer then decreases the last line to "forget" about the lines at the end
+// doDelete moves a range of lines to the end of the buffer
+// then decreases the last line to "forget" about the lines at the end
 func doDelete(b buffer, l1, l2 int) error {
 	if l1 <= 0 {
 		l1 = 1
@@ -163,7 +169,9 @@ func doMove(b buffer, l1, l2 int, dest string) error {
 	if l3 > l1 {
 		cl = l3
 	} else {
-		cl = l3 + (l2 - l1 + 1) // the last line + the number of lines we moved (the difference of the origin range)
+		// the last line + the number of lines we moved
+		// ... the difference of the origin range
+		cl = l3 + (l2 - l1 + 1)
 	}
 
 	b.setCurline(cl)

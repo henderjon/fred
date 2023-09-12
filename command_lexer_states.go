@@ -130,7 +130,8 @@ func lexAction(l *lexer) stateFn {
 		return lexReplaceNum(l)
 	case l.acceptOne(string(cmds)):
 		l.emit(itemAction)
-		// some commands take a space and more info; later when I deviate from traditional ed, maybe take spaces all over
+		// some commands take a space and more info; later when I deviate from
+		// traditional ed, maybe take spaces all over
 		if space := l.peek(); isSpace(space) || space == shellAction {
 			return lexArg(l)
 		}
