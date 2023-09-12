@@ -158,7 +158,7 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 	case setColumnAction:
 		return doSetColumn(cmd.destination, cache)
 	case shellAction:
-		return doExternalShell(b, line1, line2, cmd.argument)(false, inout)
+		return doExternalShell(b, line1, line2, cmd.argument)(nil, inout)
 	case filenameAction:
 		return doSetFilename(b, cmd.argument)
 	case putMarkAction:
@@ -180,19 +180,19 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 
 		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
-			return doExternalShell(b, line1, line1, cmd.argument)(false, b)
+			return doExternalShell(b, line1, line1, cmd.argument)(nil, b)
 		}
 		return doReadFile(b, 1, fsys, cmd.argument)
 	case readAction: // read into the current buffer either shell output or a file
 		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
-			return doExternalShell(b, line1, line2, cmd.argument)(false, b)
+			return doExternalShell(b, line1, line2, cmd.argument)(nil, b)
 		}
 		return doReadFile(b, line1, fsys, cmd.argument)
 	case writeAction: // write the current buffer to either shell (stdin) or a file
 		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
-			return doExternalShell(b, line1, line2, cmd.argument)(true, os.Stdout)
+			return doExternalShell(b, line1, line2, cmd.argument)(b, os.Stdout)
 		}
 		return doWriteFile(inout, b, line1, line2, fsys, cmd.argument)
 	case debugAction:

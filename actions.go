@@ -531,20 +531,21 @@ func doWriteFile(inout termio, b buffer, l1, l2 int, fs FileSystem, filename str
 	return fmt.Sprint(numbts), err
 }
 
-func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer bool, stdout io.Writer) (string, error) {
-	return func(readFromBuffer bool, stdout io.Writer) (string, error) {
+func doExternalShell(b buffer, l1, l2 int, command string) func(stdin io.Reader, stdout io.Writer) (string, error) {
+	return func(stdin io.Reader, stdout io.Writer) (string, error) {
 		var (
-			err   error
-			stdin io.ReadWriter = nil
+			err error
+			// stdin io.ReadWriter = nil
 		)
 
 		// fill a temp buffer to act as stdin
-		if readFromBuffer {
-			stdin = &bytes.Buffer{}
+		if stdin == b {
+			inBy := &bytes.Buffer{}
 			for idx := l1; idx <= l2; idx++ {
-				stdin.Write([]byte(b.getLine(idx)))
-				stdin.Write([]byte("\n"))
+				inBy.Write([]byte(b.getLine(idx)))
+				inBy.Write([]byte("\n"))
 			}
+			stdin = inBy
 		}
 
 		cmds := strings.TrimSpace(command)
@@ -566,10 +567,15 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(readFromBuffer b
 
 		cmd := exec.Command(args[0], args[1:]...)
 
+		var outBy bytes.Buffer
+
 		cmd.Stdin = stdin
-		cmd.Stdout = stdout
+		cmd.Stdout = &outBy
 		cmd.Stderr = os.Stderr
+
 		err = cmd.Run()
+		io.Copy(stdout, &outBy)
+
 		return "!", err
 	}
 }
