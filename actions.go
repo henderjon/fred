@@ -569,11 +569,20 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(stdin io.Reader,
 
 		var outBy bytes.Buffer
 
+		// troubleshoot panics
+		// var errBy bytes.Buffer
+		// defer func() {
+		// 	if err := recover(); err != nil {
+		// 		stderr.Log(err, outBy.Len(), errBy.Len())
+		// 	}
+		// }()
+
 		cmd.Stdin = stdin
 		cmd.Stdout = &outBy
 		cmd.Stderr = os.Stderr
 
 		err = cmd.Run()
+		outBy.WriteByte('\n') // shim a newline because scripts that do not end with a newline cause a panic
 		io.Copy(stdout, &outBy)
 
 		return "!", err
