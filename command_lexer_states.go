@@ -27,10 +27,10 @@ func lexDef(l *lexer) stateFn {
 			return lexAddress(itemAddress)(l)
 		case r == shellAction:
 			l.emit(itemAction)
-			return lexArg
+			return lexArgs
 		case r == historyAction:
 			l.emit(itemAction)
-			return lexArg
+			return lexArgs
 		case r == eqAction:
 			l.emit(itemAction)
 		case isGlobalPrefix(r):
@@ -119,7 +119,7 @@ func lexAction(l *lexer) stateFn {
 		return lexReplaceNum(l)
 	case l.acceptOne(string([]rune{putMarkAction, getMarkAction})):
 		l.emit(itemAction)
-		return lexArg(l)
+		return lexArgs(l)
 	case l.acceptOne(string([]rune{simpleReplaceAction, regexReplaceAction, transliterateAction})):
 		l.emit(itemAction)
 		delim := l.next()
@@ -133,7 +133,7 @@ func lexAction(l *lexer) stateFn {
 		// some commands take a space and more info; later when I deviate from
 		// traditional ed, maybe take spaces all over
 		if space := l.peek(); isSpace(space) || space == shellAction {
-			return lexArg(l)
+			return lexArgs(l)
 		}
 		return lexDef
 	}
@@ -174,7 +174,7 @@ func lexReplaceNum(l *lexer) stateFn {
 	return lexDef
 }
 
-func lexArg(l *lexer) stateFn {
+func lexArgs(l *lexer) stateFn {
 	if l.acceptRun(" ") {
 		l.ignore()
 	}
@@ -184,6 +184,16 @@ func lexArg(l *lexer) stateFn {
 	}
 
 	l.bleed()
+	l.emit(itemArg)
+	return lexDef
+}
+
+func lexArg(l *lexer) stateFn {
+	if l.acceptRun(" ") {
+		l.ignore()
+	}
+
+	l.next() //  only take the next rune for an arg
 	l.emit(itemArg)
 	return lexDef
 }
