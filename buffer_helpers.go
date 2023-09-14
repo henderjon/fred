@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 func makeContext(b buffer, l1, l2, pager int) (int, int, error) {
@@ -139,4 +140,16 @@ func intval(num string) (int, error) {
 		return 0, fmt.Errorf("unable to parse number: %s; %s", num, err.Error())
 	}
 	return i, nil
+}
+
+func firstRune(s string) (rune, error) {
+	if s == "" {
+		return -1, fmt.Errorf("cannot parse rune: %s", s)
+	}
+
+	rn, wid := utf8.DecodeRuneInString(s)
+	if wid == 0 {
+		return -1, fmt.Errorf("cannot parse rune: %s", s)
+	}
+	return rn, nil
 }
