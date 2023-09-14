@@ -117,7 +117,12 @@ func lexAction(l *lexer) stateFn {
 		lexPattern(delim, itemPattern)(l)
 		// lexPattern(delim, itemSubstitution)(l)
 		return lexReplaceNum(l)
-	case l.acceptOne(string([]rune{putMarkAction, getMarkAction})):
+	case l.acceptOne(string([]rune{bulkMarkAction})):
+		l.emit(itemGlobalPrefix)
+		l.next() //  only take the next rune for an address pattern
+		l.emit(itemAddressPattern)
+		return lexDef
+	case l.acceptOne(string([]rune{putMarkAction})):
 		l.emit(itemAction)
 		return lexArgs(l)
 	case l.acceptOne(string([]rune{simpleReplaceAction, regexReplaceAction, transliterateAction})):

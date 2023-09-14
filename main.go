@@ -109,6 +109,8 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 		return "", doInteractiveGlob(b, line1, line2, cmd, inout, fsys, cache)
 	case globalNegIntSearchAction:
 		return "", doInteractiveGlob(b, line1, line2, cmd, inout, fsys, cache)
+	case bulkMarkAction:
+		return "", doManualBulk(b, cmd.addrPattern, cmd, inout, fsys, cache)
 	}
 
 	switch cmd.action {
@@ -163,8 +165,6 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 		return doSetFilename(b, cmd.argument)
 	case putMarkAction:
 		return "", doSetMarkLine(b, line1, line2, cmd.argument)
-	case getMarkAction:
-		return "", doGetMarkedLines(inout, b, cmd.argument)
 	case searchAction:
 		return "", doGetNextMatchedLine(inout, b, cache.search(cmd.addrPattern, false))
 	case searchRevAction:

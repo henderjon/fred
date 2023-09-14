@@ -6,7 +6,7 @@ const (
 
 var (
 	shellAction              = rune('!')
-	getMarkAction            = rune('"')
+	bulkMarkAction           = rune('"')
 	searchAction             = rune('/') // /re/... establishes the ADDRESSES for the lines against which to execute cmd moving forward
 	putMarkAction            = rune('\'')
 	searchRevAction          = rune('\\') // \re\... establishes the ADDRESSES for the lines against which to execute cmd moving backward
@@ -50,7 +50,7 @@ var (
 
 var cmds = []rune{
 	shellAction,
-	getMarkAction,
+	bulkMarkAction,
 	searchAction,
 	putMarkAction,
 	searchRevAction,

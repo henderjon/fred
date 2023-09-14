@@ -12,10 +12,10 @@ func Test_parser(t *testing.T) {
 	}{
 		// shellAction
 		{"!grep -riF \"fatty fatpants\" .", &command{action: shellAction, argument: "grep -riF \"fatty fatpants\" ."}, false},
-		// getMarkAction
-		{"\"b", &command{action: getMarkAction, argument: "b"}, false},
-		{"\"bar", &command{action: getMarkAction, argument: "bar"}, false},
-		{"\"b", &command{action: getMarkAction, argument: "b"}, false},
+		// bulkMarkAction
+		{"\"b", &command{globalPrefix: bulkMarkAction, addrPattern: "b"}, false},
+		{"\"bar", &command{globalPrefix: bulkMarkAction, addrPattern: "b", action: 'a', subCommand: 'r'}, false},
+		{"\"b", &command{globalPrefix: bulkMarkAction, addrPattern: "b"}, false},
 		// searchAction
 		{"/re/p", &command{action: searchAction, subCommand: 'p', addrPattern: `re`}, false},
 		{"/re/>5p", &command{action: searchAction, subCommand: 'p', addrIncr: ">", addrEnd: "5", addrPattern: `re`}, false},

@@ -597,10 +597,19 @@ func doSetFilename(b buffer, filename string) (string, error) {
 	return b.getFilename(), nil
 }
 
-func doSetMarkLine(b buffer, l1, l2 int, mark string) error {
-	mk := null
-	if len(mark) > 0 {
-		mk = rune(mark[0])
+func doSetMarkLine(b buffer, l1, l2 int, arg string) error {
+	var (
+		mk  rune
+		err error
+	)
+
+	if arg == "" {
+		mk = null
+	} else {
+		mk, err = firstRune(arg)
+		if err != nil {
+			return err
+		}
 	}
 
 	for idx := l1; idx <= l2; idx++ {

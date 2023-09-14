@@ -14,22 +14,20 @@ type mapLine func(b buffer, idx int) error
 func doMapMarkedLines(b buffer, m rune, fn mapLine) error {
 	scan := b.scanForward(b.nextLine(b.getCurline()), b.getLastline())
 	for {
-		i, ok := scan()
+		idx, ok := scan()
 		if !ok {
 			break
 		}
-
-		if b.getMark(i) == m {
+		if b.getMark(idx) == m {
 			if m == mark { // only remove the mark if it was for glob actions
-				b.putMark(i, null)
+				b.putMark(idx, null)
 			}
-
-			err := fn(b, i)
+			err := fn(b, idx)
 			if err != nil {
 				return err // short circuit the loop
 			}
 
-			b.setCurline(i)
+			b.setCurline(idx)
 		}
 	}
 
@@ -174,3 +172,23 @@ func interactiveGlobMapper(cmd command, inout termio, fsys FileSystem, cache *ca
 
 // loop over buffer, mark lines the match in order to keep track of what's been done because doCmd/do* can alter the buffer
 // loop over buffer, execute command on each marked line
+
+// doGlob marks eash line according to `pattern` and executes `cmd` on that line
+func doManualBulk(b buffer, arg string, cmd command, inout termio, fsys FileSystem, cache *cache) error {
+	var err error
+
+	// needed later to restore cursor after glob
+	cursave := b.getCurline()
+
+	mk, err := firstRune(arg)
+	if err != nil {
+		return err
+	}
+
+	cmd.globalPrefix = null        // blank the prefix so we're not recursing infinitely
+	cmd.addrPattern = string(null) // blank the addrPattern as we've overloaded it here
+	err = doMapMarkedLines(b, mk, globMapper(cmd, inout, fsys, cache))
+
+	b.setCurline(b.nextLine(cursave))
+	return err
+}
