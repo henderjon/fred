@@ -15,7 +15,7 @@ type FileSystem interface {
 	ScratchFile() (NamedScratchFile, error)
 }
 
-// NamedReaderWriteAt wraps ReaderAt and WriterAt interfaces as well as the Name() method
+// NamedScratchFile wraps ReaderAt and WriterAt interfaces as well as the Name() and Close() methods
 type NamedScratchFile interface {
 	io.ReaderAt
 	io.WriterAt
