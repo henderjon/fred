@@ -618,18 +618,18 @@ func doSetMarkLine(b buffer, l1, l2 int, arg string) error {
 	return nil
 }
 
-func doGetMarkedLines(out io.Writer, b buffer, m string) error {
-	mk := null
-	if len(m) > 0 {
-		mk = rune(m[0])
-	}
+// func doGetMarkedLines(out io.Writer, b buffer, m string) error {
+// 	mk := null
+// 	if len(m) > 0 {
+// 		mk = rune(m[0])
+// 	}
 
-	return doMapMarkedLines(b, mk, func(b buffer, idx int) error {
-		_, err := fmt.Fprintf(out, "%2d) %s", idx, b.getLine(idx))
-		return err
-	})
+// 	return doMapMarkedLines(b, mk, func(b buffer, idx int) error {
+// 		_, err := fmt.Fprintf(out, "%2d) %s", idx, b.getLine(idx))
+// 		return err
+// 	})
 
-}
+// }
 
 func doGetNextMatchedLine(out io.Writer, b buffer, ser search) error {
 	if len(ser.pattern) == 0 { // no pattern means to repeat the last search

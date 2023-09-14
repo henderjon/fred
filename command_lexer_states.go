@@ -193,12 +193,12 @@ func lexArgs(l *lexer) stateFn {
 	return lexDef
 }
 
-func lexArg(l *lexer) stateFn {
-	if l.acceptRun(" ") {
-		l.ignore()
-	}
+// func lexArg(l *lexer) stateFn {
+// 	if l.acceptRun(" ") {
+// 		l.ignore()
+// 	}
 
-	l.next() //  only take the next rune for an arg
-	l.emit(itemArg)
-	return lexDef
-}
+// 	l.next() //  only take the next rune for an arg
+// 	l.emit(itemArg)
+// 	return lexDef
+// }
