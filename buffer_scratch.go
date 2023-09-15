@@ -442,6 +442,20 @@ func (b *scratchBuf) applyIncrement(incr string, num1, relative int) (int, int) 
 
 }
 
+func (b *scratchBuf) makeContext(line1, line2, pager int) (int, int, error) {
+	line1 = line1 - pager
+	if line1 < 0 {
+		line1 = 1
+	}
+
+	line2 = line2 + pager
+	if !b.hasAddress(line2) {
+		line2 = b.getLastline()
+	}
+
+	return line1, line2, nil
+}
+
 // converts a string address into a number with special cases for '.', '$', and ”.
 // Start/end addresses are guarded against '0' elsewhere (in defaultLines) but
 // are allowed in destinations
@@ -477,4 +491,23 @@ func (b *scratchBuf) hasAddress(idx int) bool {
 		return false
 	}
 	return true
+}
+
+// delLines moves a range of lines to the end of the buffer
+// then decreases the last line to "forget" about the lines at the end
+func (b *scratchBuf) delLines(line1, line2 int) error {
+	// NOTE: there is no validation here for accidentaly deleting all the lines; validation should be up a level
+	if line1 <= 0 {
+		line1 = 1
+	}
+
+	if line2 < line1 {
+		return fmt.Errorf("unable to delete invalid range: %d,%d", line1, line2)
+	}
+
+	lastLine := b.getLastline()
+	b.bulkMove(line1, line2, lastLine)
+	b.setLastline(lastLine - (line2 - line1 + 1))
+	b.setCurline(b.prevLine(line1))
+	return nil
 }

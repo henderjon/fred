@@ -8,20 +8,6 @@ import (
 	"unicode/utf8"
 )
 
-func makeContext(b buffer, l1, l2, pager int) (int, int, error) {
-	l1 = l1 - pager
-	if l1 < 0 {
-		l1 = 1
-	}
-
-	l2 = l2 + pager
-	if !b.hasAddress(l2) {
-		l2 = b.getLastline()
-	}
-
-	return l1, l2, nil
-}
-
 type stringable interface {
 	string | rune | []byte
 }
@@ -61,23 +47,6 @@ func simpleNReplace(subject, pattern, replace string, n int) string {
 	rtn.WriteString(replace)
 	rtn.WriteString(subject[idx+len(pattern):])
 	return rtn.String()
-}
-
-// clearBuffer blanks the current buffer.
-// Long term this should probably be added to the buffer interface and
-// handle checking for a dirty buffer ...
-func clearBuffer(b buffer) error {
-	if b.isDirty() {
-		return errDirtyBuffer
-	}
-
-	// some commands require addresses
-	line1, line2, err := b.defaultLines("", "", "", 1, b.getLastline())
-	if err != nil {
-		return err
-	}
-
-	return doDelete(b, line1, line2)
 }
 
 func handleTabs(s string) string {

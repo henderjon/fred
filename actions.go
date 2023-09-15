@@ -25,7 +25,7 @@ func doPrint(out io.Writer, b buffer, l1, l2 int, cache *cache, printType int) e
 
 	// b.setCurline(l1)
 
-	l1, l2, err = makeContext(b, l1, l2, cache.getPager())
+	l1, l2, err = b.makeContext(l1, l2, cache.getPager())
 	if err != nil {
 		return err
 	}
@@ -128,16 +128,7 @@ func doInsert(inout termio, b buffer, l1 int) error {
 // doDelete moves a range of lines to the end of the buffer
 // then decreases the last line to "forget" about the lines at the end
 func doDelete(b buffer, l1, l2 int) error {
-	if l1 <= 0 {
-		l1 = 1
-		// return fmt.Errorf("unable to delete; invalid addresses; %d, %d", l1, l2)
-	}
-
-	ll := b.getLastline()
-	b.bulkMove(l1, l2, ll)
-	b.setLastline(ll - (l2 - l1 + 1))
-	b.setCurline(b.prevLine(l1))
-	return nil
+	return b.delLines(l1, l2)
 }
 
 func doChange(inout termio, b buffer, l1, l2 int) error {

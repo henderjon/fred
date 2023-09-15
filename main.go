@@ -174,7 +174,11 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 		fallthrough // 'E' is exactly like edit but ignore the unsaved changes warning.
 		// generally speaking "fallthrough" should be avoided, but these two commands are almost identical
 	case editAction: // read into the current buffer either shell output or a file
-		if err = clearBuffer(b); err != nil {
+		if b.isDirty() {
+			return "", errDirtyBuffer
+		}
+
+		if err = doDelete(b, 1, b.getLastline()); err != nil {
 			return "", err
 		}
 

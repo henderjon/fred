@@ -20,6 +20,7 @@ type buffer interface {
 	fmt.Stringer
 
 	defaultLines(start, end, incr string, l1, l2 int) (int, int, error)
+	makeContext(line1, line2, pager int) (int, int, error)
 
 	// makeAddress does no validation
 	makeAddress(addr string, def int) (int, error)
@@ -44,6 +45,7 @@ type buffer interface {
 
 	putLine(line string, idx int) error
 	getLine(int) string
+	delLines(line1, line2 int) error
 
 	replaceLine(string, int) error
 	duplicateLine(int) error
