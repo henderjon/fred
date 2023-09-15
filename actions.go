@@ -589,12 +589,19 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(stdin io.Reader,
 	}
 }
 
-func doSetFilename(b buffer, filename string) (string, error) {
-	_, err := normalizeFilePath(b, filename)
+func doSetFilename(b buffer, fs FileSystem, filename string) (string, error) {
+	if filename == "" {
+		b.setFilename("")
+		return "", fmt.Errorf("filename set to \"\"")
+	}
+
+	path, err := fs.Abs(filename)
 	if err != nil {
 		return "", err
 	}
-	return b.getFilename(), nil
+
+	b.setFilename(path)
+	return path, nil
 }
 
 func doSetMarkLine(b buffer, l1, l2 int, arg string) error {

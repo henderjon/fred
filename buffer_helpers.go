@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -92,24 +91,6 @@ func handleTabs(s string) string {
 // 	s = strings.ReplaceAll(s, `\n`, "\n")
 // 	return strings.ReplaceAll(s, "\x1A", `\n`)
 // }
-
-func normalizeFilePath(b buffer, filename string) (string, error) {
-	if len(filename) == 0 {
-		// NOTE: there a far bit of paranoia here, this is very unlikely to happen IRL
-		if len(b.getFilename()) == 0 {
-			return "", errEmptyFilename
-		}
-		filename = b.getFilename()
-	}
-
-	absPath, err := filepath.Abs(filename)
-	if err != nil {
-		return "", err
-	}
-
-	b.setFilename(absPath)
-	return absPath, nil
-}
 
 func revealColumn(col int, s string) string {
 	if col <= 0 {

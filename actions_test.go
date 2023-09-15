@@ -659,7 +659,9 @@ func Test_setFilename(t *testing.T) {
 		tName := fmt.Sprint("doSetFilename ", idx)
 		t.Run(tName, func(t *testing.T) {
 			controlBuffer := getTestActionBuffer()
-			doSetFilename(controlBuffer, `new file name`)
+			buf := new(localFile)
+
+			doSetFilename(controlBuffer, &localFS{buf}, `new file name`)
 
 			if test.given != filepath.Base(test.expected.getFilename()) {
 				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)

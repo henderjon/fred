@@ -162,7 +162,7 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 	case shellAction:
 		return doExternalShell(b, line1, line2, cmd.argument)(nil, inout)
 	case filenameAction:
-		return doSetFilename(b, cmd.argument)
+		return doSetFilename(b, fsys, cmd.argument)
 	case putMarkAction:
 		return "", doSetMarkLine(b, line1, line2, cmd.argument)
 	case searchAction:
