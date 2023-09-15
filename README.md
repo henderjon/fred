@@ -26,13 +26,13 @@ To enable simple readline support:
 
 ## Future Ideas
 
-- [√] A raw terminal that isn't a giant second library. Does one exist?
-- [ ] Remove `henderjon/logger` as a dep? eh, maybe not.
-- [ ] Finish writing tests.
-- [ ] allow /re/ to take an action
-- [ ] allow look ahead/behind after /re/
-- [ ] act on manually marked lines
-- [ ] HUP/restore
+- √ a raw terminal that isn't a giant second library. Does one exist?
+- √ act on manually marked lines
+- ~remove `henderjon/logger` as a dep? eh, maybe not.~
+- finish writing tests.
+- ~allow /re/ to take an action~
+- ~allow look ahead/behind after /re/~
+- HUP/restore
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/henderjon/fred)](https://goreportcard.com/report/github.com/henderjon/fred)
 
