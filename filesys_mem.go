@@ -10,6 +10,10 @@ type localFS struct {
 	seed *localFile
 }
 
+func (m *localFS) Abs(fname string) (string, error) {
+	return fname, nil
+}
+
 func (m *localFS) FileReader(fname string) (io.ReadCloser, error) {
 	return m.seed, nil
 }

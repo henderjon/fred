@@ -7,6 +7,8 @@ import (
 // FileSystem wraps thred simple methods for interacting with an underlying filesystem.
 // It serves as an abstraction of either os or in memory actions
 type FileSystem interface {
+	// Abs check creates an Abs path
+	Abs(fname string) (string, error)
 	// FileReader wraps the Read and Close methods
 	FileReader(fname string) (io.ReadCloser, error)
 	// FileWriter wraps the Write and Close methods

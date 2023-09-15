@@ -9,7 +9,7 @@ import (
 // osFS implements fileSystem using the local disk.
 type osFS struct{}
 
-func (osFS) absPath(fname string) (string, error) {
+func (osFS) Abs(fname string) (string, error) {
 	if len(fname) == 0 {
 		return "", errEmptyFilename
 	}
@@ -18,7 +18,7 @@ func (osFS) absPath(fname string) (string, error) {
 }
 
 func (o osFS) FileReader(fname string) (io.ReadCloser, error) {
-	absPath, err := o.absPath(fname)
+	absPath, err := o.Abs(fname)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (o osFS) FileReader(fname string) (io.ReadCloser, error) {
 func (o osFS) FileWriter(fname string) (io.WriteCloser, error) {
 	var err error
 
-	absPath, err := o.absPath(fname)
+	absPath, err := o.Abs(fname)
 	if err != nil {
 		return nil, err
 	}
