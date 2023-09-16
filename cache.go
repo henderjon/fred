@@ -10,8 +10,8 @@ type cache struct {
 	column      int
 	prevSearch  search
 	prevReplace replace
-	undo1       buffer
-	undo2       buffer
+	prevBuffer  buffer
+	currBuffer  buffer
 	printType   int
 }
 
@@ -66,23 +66,27 @@ func (c *cache) replace(pattern, sub, num string) replace {
 	return c.prevReplace
 }
 
+func (c *cache) getCurrBuffer() buffer {
+	return c.currBuffer
+}
+
 func (c *cache) stageUndo(b buffer) {
-	if c.undo2 != nil && c.undo2.getRev() == b.getRev() {
+	if c.currBuffer != nil && c.currBuffer.getRev() == b.getRev() {
 		return
 	}
 
-	c.undo1 = c.undo2
-	c.undo2 = b
+	c.prevBuffer = c.currBuffer
+	c.currBuffer = b
 }
 
 func (c *cache) unstageUndo() (buffer, error) {
 	switch true {
-	case c.undo1 != nil:
-		tmp := c.undo1
-		c.stageUndo(c.undo1)
+	case c.prevBuffer != nil:
+		tmp := c.prevBuffer
+		c.stageUndo(c.prevBuffer)
 		return tmp, nil
-	case c.undo2 != nil:
-		return c.undo2, nil
+	case c.currBuffer != nil:
+		return c.currBuffer, nil
 	default:
 		return *(new(buffer)), fmt.Errorf("nothing to undo") // dereference the pointer before returning it
 	}
@@ -109,16 +113,16 @@ func (c *cache) String() string {
 	fmt.Fprintf(&rtn, "  pager: %d\r\n", c.pager)
 	fmt.Fprintf(&rtn, "  column: %d\r\n", c.column)
 
-	if c.undo1 != nil {
-		fmt.Fprintf(&rtn, "  undo1: %d\r\n", c.undo1.getRev())
+	if c.prevBuffer != nil {
+		fmt.Fprintf(&rtn, "  prevBuffer: %d\r\n", c.prevBuffer.getRev())
 	} else {
-		fmt.Fprint(&rtn, "  undo1: nil\r\n")
+		fmt.Fprint(&rtn, "  prevBuffer: nil\r\n")
 	}
 
-	if c.undo2 != nil {
-		fmt.Fprintf(&rtn, "  undo2: %d\r\n", c.undo2.getRev())
+	if c.currBuffer != nil {
+		fmt.Fprintf(&rtn, "  currBuffer: %d\r\n", c.currBuffer.getRev())
 	} else {
-		fmt.Fprint(&rtn, "  undo2: nil\r\n")
+		fmt.Fprint(&rtn, "  currBuffer: nil\r\n")
 	}
 
 	return rtn.String()

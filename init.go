@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
+	"syscall"
 
 	"github.com/henderjon/shutdown"
 )
@@ -50,12 +52,15 @@ func getParams() allParams {
 	return params
 }
 
-func bootstrap(b buffer, opts allParams) (*shutdown.Shutdown, termio) {
+func bootstrap(b buffer, c *cache, opts allParams) (*shutdown.Shutdown, termio) {
 	inout, destructor := newTerm(os.Stdin, os.Stdout, opts.general.prompt, isPipe(os.Stdin))
 
 	shd := shutdown.New(func() {
-		b.destructor() // clean up our tmp file
-		destructor()   // close readline
+		c.getCurrBuffer().destructor() // clean up our tmp file
+		destructor()                   // close readline
+	}, []syscall.Signal{
+		syscall.SIGHUP,
+		syscall.SIGTERM,
 	})
 	// defer shd.Destructor()
 

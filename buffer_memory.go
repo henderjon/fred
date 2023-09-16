@@ -6,7 +6,9 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -103,6 +105,13 @@ func (b *memoryBuf) Read(p []byte) (int, error) {
 	return byCount, io.EOF
 }
 
+func (b *memoryBuf) hup() {
+	if b.isDirty() {
+		f, _ := os.Create(fmt.Sprintf("fred-%s.hup", time.Now().UTC().Format(time.RFC3339)))
+		defer f.Close()
+		io.Copy(f, b)
+	}
+}
 func (b *memoryBuf) setCurline(idx int) {
 	b.curline = idx
 }

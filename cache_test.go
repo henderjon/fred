@@ -51,29 +51,29 @@ func Test_undo(t *testing.T) {
 
 	result.stageUndo(one.clone())
 
-	if result.undo1 != nil || result.undo2.getRev() != 1 {
-		t.Errorf("stage: %d / %d", result.undo1.getRev(), result.undo2.getRev())
+	if result.prevBuffer != nil || result.currBuffer.getRev() != 1 {
+		t.Errorf("stage: %d / %d", result.prevBuffer.getRev(), result.currBuffer.getRev())
 		// t.Error("stage: nil / one")
 	}
 
 	result.stageUndo(two.clone())
 
-	if result.undo1.getRev() != 1 || result.undo2.getRev() != 2 {
-		t.Errorf("stage: %d / %d", result.undo1.getRev(), result.undo2.getRev())
+	if result.prevBuffer.getRev() != 1 || result.currBuffer.getRev() != 2 {
+		t.Errorf("stage: %d / %d", result.prevBuffer.getRev(), result.currBuffer.getRev())
 		// t.Error("stage: one / two")
 	}
 
 	result.stageUndo(three.clone())
 
-	if result.undo1.getRev() != 2 || result.undo2.getRev() != 3 {
-		t.Errorf("stage: %d / %d", result.undo1.getRev(), result.undo2.getRev())
+	if result.prevBuffer.getRev() != 2 || result.currBuffer.getRev() != 3 {
+		t.Errorf("stage: %d / %d", result.prevBuffer.getRev(), result.currBuffer.getRev())
 		// t.Error("stage: two / three")
 	}
 
 	result.unstageUndo()
 
-	if result.undo1.getRev() != 3 || result.undo2.getRev() != 2 {
-		t.Errorf("unstage: %d / %d", result.undo1.getRev(), result.undo2.getRev())
+	if result.prevBuffer.getRev() != 3 || result.currBuffer.getRev() != 2 {
+		t.Errorf("unstage: %d / %d", result.prevBuffer.getRev(), result.currBuffer.getRev())
 		// t.Error("unstage three / two")
 	}
 

@@ -25,7 +25,7 @@ func main() {
 	b := newBuffer(osFS{})
 
 	// create our shutdown listener and our terminal and load the file given via -file
-	shd, inout := bootstrap(b, opts)
+	shd, inout := bootstrap(b, cache, opts)
 	defer shd.Destructor()
 
 	cmdParser := &parser{}

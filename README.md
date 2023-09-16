@@ -28,13 +28,15 @@ To enable simple readline support:
 
 - √ a raw terminal that isn't a giant second library. Does one exist?
 - √ act on manually marked lines
-- ~remove `henderjon/logger` as a dep? eh, maybe not.~
+- √ HUP
+- restore
 - finish writing tests.
+- ~remove `henderjon/logger` as a dep? eh, maybe not.~
 - ~allow /re/ to take an action~
 - ~allow look ahead/behind after /re/~
-- HUP/restore
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/henderjon/fred)](https://goreportcard.com/report/github.com/henderjon/fred)
+![License](https://img.shielded.dev/s/y6t)
 
 [^1]: [Software Tools](https://a.co/d/57j2eG0)
 [^2]: [Software Tools for Pascal](https://a.co/d/jllgMxg)
