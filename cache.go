@@ -73,7 +73,6 @@ func (c *cache) stageUndo(b buffer) {
 
 	c.undo1 = c.undo2
 	c.undo2 = b
-
 }
 
 func (c *cache) unstageUndo() (buffer, error) {

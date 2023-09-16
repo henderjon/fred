@@ -65,13 +65,18 @@ func bootstrap(b buffer, opts allParams) (*shutdown.Shutdown, termio) {
 	// signal.Notify(sysSigChan, syscall.SIGHUP)
 
 	if len(opts.general.filename) > 0 {
-		numbts, err := doReadFile(b, b.getCurline(), osFS{}, opts.general.filename)
+		rdr, err := (&osFS{}).FileReader(opts.general.filename)
 		if err != nil {
 			fmt.Fprintln(inout, err.Error())
-		} else {
-			fmt.Fprintln(inout, numbts)
-			b.setDirty(false) // loading the file on init isn't *actually* dirty
 		}
+		n, err := io.Copy(b, rdr)
+		if err != nil {
+			fmt.Fprintln(inout, err.Error())
+		}
+
+		fmt.Fprintln(inout, n)
+		b.setFilename(opts.general.filename)
+		b.setDirty(false) // loading the file on init isn't *actually* dirty
 	}
 
 	return shd, inout

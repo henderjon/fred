@@ -90,36 +90,22 @@ func (b *memoryBuf) Write(by []byte) (int, error) {
 
 // Read fulfills io.Reader
 func (b *memoryBuf) Read(p []byte) (int, error) {
-	var (
-		err     error
-		byCount int
-	)
+	var byCount int
+	var buf bytes.Buffer
 
-	for idx := 1; idx < b.getLastline(); idx++ {
+	for idx := 1; idx <= b.getLastline(); idx++ {
 		if byCount >= len(p) {
-			return byCount, err
+			return byCount, io.ErrShortBuffer
 		}
 
 		line := b.getLine(idx)
-		for _, b := range []byte(line) {
-			if byCount >= len(p) {
-				return byCount, err
-			}
-			p = append(p, b)
-			byCount++
-		}
-		// if we read out lines, should we add newlines?
-		p = append(p, '\n')
-		byCount++
+		buf.WriteString(line)
+		buf.WriteRune('\n')
 	}
-	return byCount, err
+	byCount = buf.Len()
+	buf.Read(p)
+	return byCount, io.EOF
 }
-
-// func (b *memoryBuf) clear() {
-// 	b.curline = 0
-// 	b.lastline = 0
-// 	b.lines = make([]bufferLine, 1)
-// }
 
 func (b *memoryBuf) setCurline(idx int) {
 	b.curline = idx
