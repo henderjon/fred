@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -103,10 +104,6 @@ func (b *scratchBuf) Read(p []byte) (int, error) {
 	var buf bytes.Buffer
 
 	for idx := 1; idx <= b.getLastline(); idx++ {
-		if byCount >= len(p) {
-			return byCount, io.ErrShortBuffer
-		}
-
 		line := b.getLine(idx)
 		buf.WriteString(line)
 		buf.WriteRune('\n')
@@ -116,6 +113,13 @@ func (b *scratchBuf) Read(p []byte) (int, error) {
 	return byCount, io.EOF
 }
 
+func (b *scratchBuf) hup() {
+	if b.isDirty() {
+		f, _ := os.Create(fmt.Sprintf("fred-%s.hup", time.Now().UTC().Format(time.RFC3339)))
+		defer f.Close()
+		io.Copy(f, b)
+	}
+}
 
 func (b *scratchBuf) setCurline(idx int) {
 	b.curline = idx
@@ -329,6 +333,7 @@ func (b *scratchBuf) writeLine(line string) (bufferLine, error) {
 }
 
 func (b *scratchBuf) destructor() {
+	b.hup()
 	// if f, ok := b.ext.(*os.File); ok {
 	// stderr.Println(f.Name())
 	os.Remove(b.ext.Name())

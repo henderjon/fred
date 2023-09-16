@@ -94,10 +94,6 @@ func (b *memoryBuf) Read(p []byte) (int, error) {
 	var buf bytes.Buffer
 
 	for idx := 1; idx <= b.getLastline(); idx++ {
-		if byCount >= len(p) {
-			return byCount, io.ErrShortBuffer
-		}
-
 		line := b.getLine(idx)
 		buf.WriteString(line)
 		buf.WriteRune('\n')
