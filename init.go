@@ -55,13 +55,18 @@ func getParams() allParams {
 func bootstrap(b buffer, c *cache, opts allParams) (*shutdown.Shutdown, termio) {
 	inout, destructor := newTerm(os.Stdin, os.Stdout, opts.general.prompt, isPipe(os.Stdin))
 
-	shd := shutdown.New(func() {
-		c.getCurrBuffer().destructor() // clean up our tmp file
-		destructor()                   // close readline
-	}, []syscall.Signal{
+	shd := shutdown.New(nil, []syscall.Signal{
 		syscall.SIGHUP,
 		syscall.SIGTERM,
 	})
+
+	shd.SetDestructor(func() {
+		if shd.IsDown() { // must create snd before defining this check
+			c.getCurrBuffer().destructor() // clean up our tmp file
+		}
+		destructor() // close readline
+	})
+
 	// defer shd.Destructor()
 
 	// HUP signals

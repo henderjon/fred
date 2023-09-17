@@ -178,8 +178,10 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 			return "", errDirtyBuffer
 		}
 
-		if err = doDelete(b, 1, b.getLastline()); err != nil {
-			return "", err
+		if b.getLastline() > 1 {
+			if err = doDelete(b, 1, b.getLastline()); err != nil {
+				return "", err
+			}
 		}
 
 		if cmd.subCommand == shellAction {
