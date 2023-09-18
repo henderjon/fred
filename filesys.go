@@ -4,7 +4,7 @@ import (
 	"io"
 )
 
-// FileSystem wraps thred simple methods for interacting with an underlying filesystem.
+// FileSystem wraps a few simple methods for interacting with an underlying filesystem.
 // It serves as an abstraction of either os or in memory actions
 type FileSystem interface {
 	// Abs check creates an Abs path

@@ -92,7 +92,7 @@ func (c *cache) unstageUndo() (buffer, error) {
 	}
 }
 
-// String statisfies fmt.Stringer. It is useful for debugging and testing
+// String satisfies fmt.Stringer. It is useful for debugging and testing
 // because it can expose the value of private properties and nested structs
 func (c *cache) String() string {
 	var rtn strings.Builder
