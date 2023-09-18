@@ -444,6 +444,20 @@ func doMirrorLines(b buffer, l1, l2 int) error {
 	return nil
 }
 
+func doEditFile(b buffer, fs FileSystem, filename string) (string, error) {
+	nb, err := doReadFile(b, 1, fs, filename)
+	if err != nil {
+		return nb, err
+	}
+
+	path, err := doSetFilename(b, fs, filename)
+	if err != nil {
+		return path, err
+	}
+
+	return fmt.Sprintf("%s; %s", nb, path), nil
+}
+
 // doReadFile adds the contents of filename and adds them to the buffer after l1
 func doReadFile(b buffer, l1 int, fs FileSystem, filename string) (string, error) {
 	var err error

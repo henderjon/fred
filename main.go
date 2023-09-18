@@ -188,28 +188,21 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line1, cmd.argument)(nil, b)
 		}
-		nb, err := doReadFile(b, 1, fsys, cmd.argument)
-		if err != nil {
-			return nb, err
-		}
 
-		path, err := doSetFilename(b, fsys, cmd.argument)
-		if err != nil {
-			return path, err
-		}
-
-		return fmt.Sprintf("%s; %s", nb, path), nil
+		return doEditFile(b, fsys, cmd.argument)
 	case readAction: // read into the current buffer either shell output or a file
 		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line2, cmd.argument)(nil, b)
 		}
+
 		return doReadFile(b, line1, fsys, cmd.argument)
 	case writeAction: // write the current buffer to either shell (stdin) or a file
 		if cmd.subCommand == shellAction {
 			b.setCurline(line1)
 			return doExternalShell(b, line1, line2, cmd.argument)(b, os.Stdout)
 		}
+
 		return doWriteFile(inout, b, line1, line2, fsys, cmd.argument)
 	case debugAction:
 		return doDebug(b, cache)
