@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -463,6 +464,7 @@ func doReadFile(b buffer, l1 int, fs FileSystem, filename string) (string, error
 	numbyt := 0
 	fscan := bufio.NewScanner(frdr)
 	fscan.Split(bufio.ScanLines)
+
 	for fscan.Scan() {
 		err = fscan.Err()
 		if err != nil {
@@ -582,8 +584,7 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(stdin io.Reader,
 
 func doSetFilename(b buffer, fs FileSystem, filename string) (string, error) {
 	if filename == "" {
-		b.setFilename("")
-		return "", fmt.Errorf("filename set to \"\"")
+		return b.getFilename(), nil
 	}
 
 	path, err := fs.Abs(filename)
@@ -592,7 +593,19 @@ func doSetFilename(b buffer, fs FileSystem, filename string) (string, error) {
 	}
 
 	b.setFilename(path)
-	return path, nil
+
+	wd, err := os.Getwd()
+	if err != nil {
+		return path, nil
+	}
+
+	return filepath.Rel(wd, path)
+	// dir := filepath.Dir(path)
+	// if dir == "." {
+	// 	path = filepath.Join(dir, path)
+	// }
+
+	// return path, err
 }
 
 func doSetMarkLine(b buffer, l1, l2 int, arg string) error {

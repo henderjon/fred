@@ -57,22 +57,14 @@ func bootstrap(b buffer, c *cache, opts allParams) (*shutdown.Shutdown, termio) 
 
 	shd := shutdown.New(nil, []syscall.Signal{
 		syscall.SIGHUP,
-		syscall.SIGTERM,
 	})
 
 	shd.SetDestructor(func() {
-		if shd.IsDown() { // must create snd before defining this check
+		if shd.IsDown() { // must create shd before defining this check
 			c.getCurrBuffer().destructor() // clean up our tmp file
 		}
 		destructor() // close readline
 	})
-
-	// defer shd.Destructor()
-
-	// HUP signals
-	// signal.Notify(sysSigChan, syscall.SIGINT)
-	// signal.Notify(sysSigChan, syscall.SIGTERM)
-	// signal.Notify(sysSigChan, syscall.SIGHUP)
 
 	if len(opts.general.filename) > 0 {
 		rdr, err := (&osFS{}).FileReader(opts.general.filename)
