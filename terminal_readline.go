@@ -8,6 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
+	"strings"
 	"unicode"
 
 	"github.com/chzyer/readline"
@@ -24,9 +26,9 @@ type readlineTerm struct {
 
 // func newLocalTerm(raw bool, in io.ReadWriter, out io.Writer) *localTerm {
 func newTerm(pipe io.Reader, stdout io.Writer, prompt string, isPipe bool) (termio, func()) {
-
 	rl, err := readline.NewEx(&readline.Config{
 		Prompt:                 prompt,
+		AutoComplete:           &fCompleter{},
 		InterruptPrompt:        ".",
 		EOFPrompt:              "q",
 		DisableAutoSaveHistory: true,
@@ -74,4 +76,20 @@ func (t *readlineTerm) input(prompt string) (string, error) {
 
 func (t *readlineTerm) prtHistory(s string) error {
 	return errors.New("command not implemented for this terminal")
+}
+
+type fCompleter struct{}
+
+func (a fCompleter) Do(line []rune, pos int) (newLine [][]rune, length int) {
+	_, after, _ := strings.Cut(string(line), " ")
+
+	names := make([][]rune, 0)
+	files, _ := os.ReadDir("./")
+	for _, f := range files {
+		fname := f.Name()
+		if strings.HasPrefix(fname, after) {
+			names = append(names, []rune(fname[len(after):]))
+		}
+	}
+	return names, len(after)
 }
