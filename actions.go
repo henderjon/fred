@@ -555,16 +555,16 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(stdin io.Reader,
 			stdin = inBy
 		}
 
-		cmds := strings.TrimSpace(command)
+		shellCmd := strings.TrimSpace(command)
 
 		// hide all escaped '%'
-		cmds = strings.ReplaceAll(cmds, `\%`, string(rune(26)))
+		shellCmd = strings.ReplaceAll(shellCmd, `\%`, string(rune(26)))
 		// replace '%' with filename
-		cmds = strings.ReplaceAll(cmds, `%`, b.getFilename())
+		shellCmd = strings.ReplaceAll(shellCmd, `%`, b.getFilename())
 		// put the '%' back
-		cmds = strings.ReplaceAll(cmds, string(rune(26)), `%`)
+		shellCmd = strings.ReplaceAll(shellCmd, string(rune(26)), `%`)
 
-		buf := bufio.NewScanner(strings.NewReader(cmds))
+		buf := bufio.NewScanner(strings.NewReader(shellCmd))
 		buf.Split(bufio.ScanWords)
 
 		var args []string
