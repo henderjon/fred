@@ -83,126 +83,7 @@ COMMANDS
     - (,) indicates a range of lines
 
 
-  - (.)a    [append] Adds the provided input after the current line
-
-  - (,)b/regex/
-            [break]  Breaks the given line(s) after each occurrence of regex
-
-  - (,)c    [change] Removes the given line(s) before adding the provided input
-
-  - (,)d    [delete] Removes the given line(s)
-
-  - e file  [edit] Clears the current buffer before loading the given file
-
-  - e !exe  [edit] Clears the current buffer before loading the output of exe
-
-  - E file  [edit] Acts the same as 'e' but without prompting for unsaved changes
-
-  - E !exe  [edit] Acts the same as 'e' but without prompting for unsaved changes
-
-  - f name  [file] Sets the filename of the current buffer
-
-  - G/regex/
-            [global] Search all lines that match regex prompt for commands for
-            each line
-
-  - g/regex/cmd
-            [global] Search all lines for regex and do cmd
-
-  - Hn      [history] Prints the last n commands
-
-  - h       [help] Shows this document
-
-  - (.)i    [insert] Adds the provided input before the current line.
-
-  - (,)j/sep/
-            [join] Joins the given lines using sep
-
-  - (,)k(.)
-            [copy] Duplicates the given line(s) to the given destination
-
-  - (,)l    [print] Prints the given line(s) but exposes hidden chars
-
-  - (,)M    [mirror] Reverses the order of the given line(s)
-
-  - (,)m(.)
-            [move] Moves the given line(s) to the given destination
-
-  - (,)n    [print] Prints the given line(s) but exposes line numbers
-
-  - (,)p    [print] Prints the given line(s)
-
-  - q       [quit] Prompt for unsaved changes, then Exit
-
-  - Q       [quit] Exit without prompting for unsaved changes
-
-  - (.)r file
-            [read] Loads the given file at the given address
-
-  - (.)r !exe
-            [read] Loads the output of exe at the given address
-
-  - (,)s/pat/sub/n
-            [substitute] Replaces nth occurrence of pat with sub in the given
-            line(s). If n is 'g' or '-1' replace all occurrences. If n is absent
-            only do the first occurrence
-
-  - (,)S/regex/sub/n
-            [substitute] Replaces nth regex match with sub in the given line(s).
-            If n is 'g' or '-1' replace all occurrences. If n is absent only do
-            the first occurrence
-
-  - (,)t/find/repl/
-            [transliterate] Replace each character in find with it corresponding
-            char from repl in the given line(s)
-
-  - u       [undo] Restores the previous buffer. Like ed undo is it's own
-            inverse
-
-  - V/regex/
-            [global] Search all lines that do not match regex prompt for commands
-            for each line
-
-  - v/regex/cmd
-            [global] Search all lines that do not match regex and do cmd
-
-  - w [filename]
-            [write] write the current buffer to the current filename or filename
-            if provided. If provided, sets buffer filename.
-
-  - (,)w !exe
-            [write] write the given lines to the stdin of exe
-
-  - zn      [pager] Set pager to n. Pager is the number of lines before and after
-            to show when printing lines.
-
-  - !exe    [shell] Execute exe in a shell
-
-  - (,)"a cmd
-            [mark] Get all the lines marked with 'a' [any single character] and
-            execute the optional cmd
-
-  - /regex/
-            [search] Find the next line matching regex. Use '//' to repeat
-
-  - (,)'a   [mark] Mark each of the given lines with 'a' [any single character]
-
-  - \regex\
-            [search] Find the previous line matching regex. Use '\\' to repeat
-
-  - =       [print] Show only the line number of the current line
-
-  - ^n      [column] Set the column at the nth character
-
-  - (,)|    [column] Print the given lines displaying the column
-
-  - (,)>n   [peek] Print the given lines and the next n lines
-
-  - (,)<n   [peek] Print the given lines and the previous n lines
-
-  - *       [debug] If {{.Bin}} is given -debug, print diagnostic info about the
-            current buffer
-
+{{.QuickHelp}}
 
 EXAMPLES
   $ {{.Bin}} -h
@@ -225,6 +106,7 @@ type Info struct {
 	CompiledBy     string
 	BuildTimestamp string
 	Options        string
+	QuickHelp      string
 }
 
 // Usage wraps a set of `Info` and creates a flag.Usage func

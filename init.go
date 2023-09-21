@@ -29,6 +29,7 @@ func getParams() allParams {
 		Version:        bi.getBuildVersion(),
 		CompiledBy:     bi.getCompiledBy(),
 		BuildTimestamp: bi.getBuildTimestamp(),
+		QuickHelp:      quickHelp(),
 	})
 
 	params := allParams{}

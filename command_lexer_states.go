@@ -61,7 +61,7 @@ func isSpace(r rune) bool {
 }
 
 func isAction(r rune) bool {
-	return strings.ContainsRune(string(cmds), r)
+	return strings.ContainsRune(allCmds(), r)
 }
 
 func isIncr(r rune) bool {
@@ -133,7 +133,7 @@ func lexAction(l *lexer) stateFn {
 		lexPattern(delim, itemPattern)(l)
 		lexPattern(delim, itemSubstitution)(l)
 		return lexReplaceNum(l)
-	case l.acceptOne(string(cmds)):
+	case l.acceptOne(allCmds()):
 		l.emit(itemAction)
 		// some commands take a space and more info; later when I deviate from
 		// traditional ed, maybe take spaces all over
