@@ -64,14 +64,13 @@ func (t *readlineTerm) input(prompt string) (string, error) {
 		prompt = ""
 	}
 
-	cfg := t.rl.Config.Clone()
-	cfg.AutoComplete = fCompleter{}
+	t.rl.Config.AutoComplete = fCompleter{}
 
 	if prompt == "" {
-		cfg.AutoComplete = nullCompleter{}
+		t.rl.Config.AutoComplete = nullCompleter{}
 	}
 
-	t.rl.SetConfig(cfg)
+	// t.rl.SetConfig(cfg)
 	t.rl.SetPrompt(prompt)
 	line, err := t.rl.Readline()
 
