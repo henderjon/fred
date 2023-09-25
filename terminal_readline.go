@@ -33,6 +33,7 @@ func newTerm(pipe io.Reader, stdout io.Writer, prompt string, isPipe bool) (term
 		EOFPrompt:              "q",
 		DisableAutoSaveHistory: true,
 		VimMode:                false,
+		DisableBell:            true,
 	})
 	if err != nil {
 		return nil, nil
