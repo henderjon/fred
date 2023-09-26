@@ -64,6 +64,9 @@ func main() {
 				fmt.Fprint(inout, errDirtyBuffer)
 				continue
 			}
+			if msg != "" { // if our command gave us a message, print it before quitting
+				fmt.Fprint(inout, msg)
+			}
 			fmt.Fprint(inout, errQuit)
 			return
 		case err == errStop: // used by the interactive commands

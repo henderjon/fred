@@ -56,6 +56,10 @@ func getParams() allParams {
 
 func bootstrap(b buffer, c *cache, opts allParams) (*shutdown.Shutdown, termio) {
 	inout, destructor := newTerm(os.Stdin, os.Stdout, opts.general.prompt, isPipe(os.Stdin))
+	if inout == nil {
+		fmt.Println(inout, "unable to create terminal")
+		os.Exit(1)
+	}
 
 	shd := shutdown.New(nil, []syscall.Signal{
 		syscall.SIGHUP,
@@ -65,7 +69,10 @@ func bootstrap(b buffer, c *cache, opts allParams) (*shutdown.Shutdown, termio) 
 		if shd.IsDown() { // must create shd before defining this check
 			c.getCurrBuffer().destructor() // clean up our tmp file
 		}
-		destructor() // close readline
+
+		if destructor != nil {
+			destructor() // close readline
+		}
 	})
 
 	if len(opts.general.filename) > 0 {

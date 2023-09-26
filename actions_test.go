@@ -78,6 +78,21 @@ func Test_doDelete(t *testing.T) {
 			dirty:    true,
 			rev:      1,
 		}},
+		{3, 3, &memoryBuf{
+			curline:  2,
+			lastline: 4,
+			lines: []bufferLine{
+				{txt: ``},
+				{txt: `1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...`},
+				{txt: `2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...`},
+				{txt: `4 Nullam lacus magna, congue aliquam luctus ac, faucibus vel purus. Integer ...`},
+				{txt: `5 Mauris nunc purus, congue non vehicula eu, blandit sit amet est. ...`},
+				{txt: `3 Nunc scelerisque urna a erat gravida porttitor. Donec pulvinar leo urna, id ...`},
+			},
+			filename: "filename",
+			dirty:    true,
+			rev:      4,
+		}},
 	}
 
 	for idx, test := range tests {
