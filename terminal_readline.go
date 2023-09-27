@@ -68,7 +68,7 @@ func (t *readlineTerm) input(prompt string) (string, error) {
 	t.rl.Config.AutoComplete = fCompleter{}
 
 	if prompt == "" {
-		t.rl.Config.AutoComplete = nullCompleter{}
+		t.rl.Config.AutoComplete = &readline.TabCompleter{}
 	}
 
 	// t.rl.SetConfig(cfg)
