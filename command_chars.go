@@ -103,6 +103,11 @@ var cmds = map[rune]quickdoc{
 	debugAction:              {"*", "[debug] print debugging information"},
 }
 
+var additionalDocs = map[rune]quickdoc{
+	'>': {"(,)>n", "[peek] print up to n lines after the given lines"},
+	'<': {"(,)<n", "[peek] print up to n lines before the given lines"},
+}
+
 func allCmds() string {
 	return string(cmdOrder)
 }
@@ -173,6 +178,12 @@ func quickHelp() string {
 
 	for _, r := range cmdOrder {
 		if q, ok := cmds[r]; ok && len(q.example) > 0 {
+			fmt.Fprintf(&str, "  - %-8s %s\n\n", q.example, wrap(q.explanation, len(q.example), 13))
+		}
+	}
+
+	for r := range additionalDocs {
+		if q, ok := additionalDocs[r]; ok && len(q.example) > 0 {
 			fmt.Fprintf(&str, "  - %-8s %s\n\n", q.example, wrap(q.explanation, len(q.example), 13))
 		}
 	}
