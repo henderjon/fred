@@ -34,9 +34,7 @@ dep:
 
 .PHONY: check
 check: _setup
-	golint
 	goimports -w ./
-	gofmt -w ./
 	go vet
 
 ################################################################################

@@ -107,3 +107,10 @@ type nullCompleter struct{}
 func (a nullCompleter) Do(line []rune, pos int) (newLine [][]rune, length int) {
 	return nil, 0
 }
+
+// TabCompleter allows tabs in typed input; a little copying is better than a little dependency
+type TabCompleter struct{}
+
+func (t TabCompleter) Do([]rune, int) ([][]rune, int) {
+	return [][]rune{[]rune("\t")}, 0
+}
