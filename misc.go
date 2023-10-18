@@ -68,11 +68,8 @@ func revealColumn(col int, s string) string {
 
 	var rtn strings.Builder
 	for i, r := range s {
-		if i > 0 && ((i+1)%col) == 0 {
-			rtn.WriteString("\033[7m")
-			rtn.WriteRune(r)
-			rtn.WriteString("\033[0m")
-			continue
+		if i == col {
+			rtn.WriteRune('█')
 		}
 		rtn.WriteRune(r)
 	}
