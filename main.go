@@ -4,13 +4,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
 	"os"
-
-	"github.com/henderjon/logger"
 )
 
 var (
-	stderr           = logger.NewDropLogger(os.Stderr)
+	stderr           = log.New(os.Stderr, "", 0)
 	errStop          = errors.New("stop")
 	errQuit          = errors.New("goodbye")
 	errDirtyBuffer   = errors.New("you have unsaved changes; use Q to quit without saving")
@@ -211,8 +210,8 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 		return doDebug(b, cache)
 	}
 
-	stderr.Log(line1, line2)
-	stderr.Log(cmd)
+	stderr.Println(line1, line2)
+	stderr.Println(cmd)
 
 	return "", err
 }

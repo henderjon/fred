@@ -5,7 +5,6 @@ go 1.21.0
 require (
 	github.com/chzyer/readline v1.5.1
 	github.com/google/go-cmp v0.5.9
-	github.com/henderjon/logger v0.5.2
 	github.com/henderjon/shutdown v0.7.1
 )
 

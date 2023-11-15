@@ -53,7 +53,7 @@ func (p *parser) run(input string) (*command, error) {
 		case itemEOF: // no more items
 			return c, nil
 		default:
-			stderr.Log(i.String())
+			stderr.Println(i.String())
 			return c, nil
 		}
 	}

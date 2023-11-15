@@ -5,8 +5,6 @@ github.com/chzyer/test v1.0.0/go.mod h1:2JlltgoNkt4TW/z9V/IzDdFaMTM2JPIi26O1pF38
 github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
 github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-github.com/henderjon/logger v0.5.2 h1:gWAdse2ovnWJ9WKBHnXjgA+VgNmVWmnlafKeJPW9KXs=
-github.com/henderjon/logger v0.5.2/go.mod h1:u/r3vnyrM2wa9ToZyF1dlwpNQvLVPfmVthiScPZQhMM=
 github.com/henderjon/readline v1.5.2-0.20230921195023-6b6925437244 h1:nbXlCYdTQo/TeQ5vgGh/FGYwnHKUkvB+aTgD9UhlWBU=
 github.com/henderjon/readline v1.5.2-0.20230921195023-6b6925437244/go.mod h1:Y4GZ5YAyivIr88aokkgTWYD1y+k6IQvmeVlBKhRLDPQ=
 github.com/henderjon/shutdown v0.7.1 h1:8EQ2tgiPqxONwmq8RzANQogYPSonmJbrnxHcY/2Ag44=

@@ -580,7 +580,7 @@ func doExternalShell(b buffer, l1, l2 int, command string) func(stdin io.Reader,
 		// var errBy bytes.Buffer
 		// defer func() {
 		// 	if err := recover(); err != nil {
-		// 		stderr.Log(err, outBy.Len(), errBy.Len())
+		// 		stderr.Println(err, outBy.Len(), errBy.Len())
 		// 	}
 		// }()
 

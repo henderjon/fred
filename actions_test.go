@@ -764,7 +764,7 @@ func Test_doPrint(t *testing.T) {
 		{1, 2, printTypeReg, "1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...\n2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...\n"},
 		{1, 2, printTypeNum, "  1	1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...\n  2	2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...\n"},
 		{1, 2, printTypeLit, "  1	\"1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...\"\n  2	\"2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...\"\n"},
-		{1, 2, printTypeCol, "  1	1 Lorem ipsum dolor sit amet, consectetur adipisc\x1b[7mi\x1b[0mng elit. Morbi sed ante eu ...\n  2	2 Duis ut porta mi, eu ornare orci. Etiam sed veh\x1b[7mi\x1b[0mcula orci. ...\n"},
+		{1, 2, printTypeCol, "  1	1 Lorem ipsum dolor sit amet, consectetur adipisci█ng elit. Morbi sed ante eu ...\n  2	2 Duis ut porta mi, eu ornare orci. Etiam sed vehi█cula orci. ...\n"},
 	}
 
 	// line, err := term.input(":")
@@ -786,7 +786,7 @@ func Test_doPrint(t *testing.T) {
 			doPrint(term, controlBuffer, test.l1, test.l2, cache, test.tp)
 
 			if out.String() != test.expected {
-				t.Errorf("\n-got:  %s\n+want: %s", controlBuffer, test.expected)
+				t.Errorf("\n-got:  %s\n+want: %s", out.String(), test.expected)
 			}
 		})
 	}

@@ -15,7 +15,7 @@ func lexDef(l *lexer) stateFn {
 		// 	break
 		// }
 		r := l.next()
-		// stderr.Log(string(r))
+		// stderr.Println(string(r))
 		switch true {
 		case isSpace(r):
 			l.ignore()
@@ -112,7 +112,7 @@ func lexAction(l *lexer) stateFn {
 	case l.acceptOne(string([]rune{joinAction, breakAction})): // TODO: join doesn't need a replace num... consider arg vs pattern ... ?
 		l.emit(itemAction)
 		delim := l.next()
-		// stderr.Log(string(delim))
+		// stderr.Println(string(delim))
 		l.ignore() // ignore the delim
 		lexPattern(delim, itemPattern)(l)
 		// lexPattern(delim, itemSubstitution)(l)
@@ -128,7 +128,7 @@ func lexAction(l *lexer) stateFn {
 	case l.acceptOne(string([]rune{simpleReplaceAction, regexReplaceAction, transliterateAction})):
 		l.emit(itemAction)
 		delim := l.next()
-		// stderr.Log(string(delim))
+		// stderr.Println(string(delim))
 		l.ignore() // ignore the delim
 		lexPattern(delim, itemPattern)(l)
 		lexPattern(delim, itemSubstitution)(l)
