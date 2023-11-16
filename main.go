@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	stderr           = log.New(os.Stderr, "", 0)
+	stderr           = LogWriter{log.New(os.Stderr, "", 0)}
 	errStop          = errors.New("stop")
 	errQuit          = errors.New("goodbye")
 	errDirtyBuffer   = errors.New("you have unsaved changes; use Q to quit without saving")
