@@ -129,8 +129,6 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 		return "", doPrint(inout, b, line1, line2, cache, printTypeNum)
 	case printLiteralAction:
 		return "", doPrint(inout, b, line1, line2, cache, printTypeLit)
-	case printColumnAction:
-		return "", doPrint(inout, b, line1, line2, cache, printTypeCol)
 	case appendAction:
 		return "", doAppend(inout, b, line1)
 	case insertAction:
@@ -159,8 +157,6 @@ func doCmd(cmd command, b buffer, inout termio, fsys FileSystem, cache *cache) (
 		return "", doMirrorLines(b, line1, line2)
 	case setPagerAction:
 		return doSetPager(cmd.destination, cache)
-	case setColumnAction:
-		return doSetColumn(cmd.destination, cache)
 	case shellAction:
 		return doExternalShell(b, line1, line2, cmd.argument)(nil, inout)
 	case filenameAction:

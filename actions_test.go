@@ -764,7 +764,6 @@ func Test_doPrint(t *testing.T) {
 		{1, 2, printTypeReg, "1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...\n2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...\n"},
 		{1, 2, printTypeNum, "  1	1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...\n  2	2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...\n"},
 		{1, 2, printTypeLit, "  1	\"1 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed ante eu ...\"\n  2	\"2 Duis ut porta mi, eu ornare orci. Etiam sed vehicula orci. ...\"\n"},
-		{1, 2, printTypeCol, "  1	1 Lorem ipsum dolor sit amet, consectetur adipisci█ng elit. Morbi sed ante eu ...\n  2	2 Duis ut porta mi, eu ornare orci. Etiam sed vehi█cula orci. ...\n"},
 	}
 
 	// line, err := term.input(":")

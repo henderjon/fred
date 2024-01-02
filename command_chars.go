@@ -49,9 +49,9 @@ var (
 	superWriteAction         = rune('W') // write [file] command
 	writeAction              = rune('w') // write [file] command
 	setPagerAction           = rune('z')
-	setColumnAction          = rune('^')
-	printColumnAction        = rune('|')
-	debugAction              = rune('*')
+	// setColumnAction          = rune('^')
+	// printColumnAction        = rune('|')
+	debugAction = rune('*')
 )
 
 type quickdoc struct {
@@ -98,8 +98,6 @@ var cmds = map[rune]quickdoc{
 	superWriteAction:         {"", ""},
 	writeAction:              {"w filename", "[write] write the buffer to the set filename or $filename if provided"},
 	setPagerAction:           {"z n", "[pager] set pager to $n lines"},
-	setColumnAction:          {"^ n", "[column] set the column to appear every $n columns"},
-	printColumnAction:        {"(,)|", "[print] print the given lines with columns"},
 	debugAction:              {"*", "[debug] print debugging information"},
 }
 
@@ -115,7 +113,6 @@ func allCmds() string {
 func excludeFromGlob(r rune) bool {
 	return contains(string([]rune{
 		setPagerAction,
-		setColumnAction,
 		globalSearchAction,
 		globalNegSearchAction,
 		globalIntSearchAction,
@@ -168,8 +165,6 @@ var cmdOrder = []rune{
 	putMarkAction,
 	bulkMarkAction,
 	eqAction,
-	setColumnAction,
-	printColumnAction,
 	debugAction,
 }
 

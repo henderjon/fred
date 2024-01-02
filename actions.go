@@ -18,7 +18,6 @@ const (
 	printTypeReg = iota
 	printTypeNum
 	printTypeLit
-	printTypeCol
 )
 
 func doPrint(out io.Writer, b buffer, l1, l2 int, cache *cache, printType int) error {
@@ -55,8 +54,6 @@ func doPrint(out io.Writer, b buffer, l1, l2 int, cache *cache, printType int) e
 			fmt.Fprintf(out, "%s", line)
 		case printTypeLit:
 			fmt.Fprintf(out, "%-2s%d\t%+q", mk, i, line)
-		case printTypeCol:
-			fmt.Fprintf(out, "%-2s%d\t%s", mk, i, revealColumn(cache.getColumn(), line))
 		}
 	}
 
