@@ -16,9 +16,10 @@ TEST_COVER_FILE=$(BIN)-test-coverage.out
 # TIMESTAMP=$(shell date '+%Y-%m-%dT%H:%M:%S %z %Z')
 
 LDFLAGS="-X 'main.binName=$(BIN)' -X 'main.buildVersion=$(HEAD)' -X 'main.buildTimestamp=$(TIMESTAMP)' -X 'main.compiledBy=$(shell go version)'"
+DBGLDFLAGS="-X 'main.binName=$(BIN)' -X 'main.buildVersion=$(HEAD)' -X 'main.buildTimestamp=$(TIMESTAMP)' -X 'main.compiledBy=$(shell go version)' -X 'main.allowDebug=true'"
 # LDFLAGS="-X 'main.buildVersion=$(HEAD)' -X 'main.buildTimestamp=$(TIMESTAMP)'"
 
-all: local
+all: prod
 
 .PHONY: version
 version:
@@ -50,7 +51,7 @@ clean:
 	rm -f $(BIN) $(BIN)-* $(BINDIR)/$(BIN) $(BINDIR)/$(BIN)-*
 
 .PHONY: install
-install: local
+install: prod
 	mkdir -p $(PREFIX)/$(BINDIR)
 	mv $(BINDIR)/$(BIN) $(PREFIX)/$(BINDIR)/$(BIN)
 	@echo "\ninstalled $(BIN) to $(PREFIX)/$(BINDIR)\n"
@@ -82,15 +83,15 @@ test-cover:
 #### MACOS BUILDS
 ################################################################################
 
-.PHONY: local
-local: dep check
-	GOEXPERIMENT=loopvar go build -ldflags $(LDFLAGS) -tags "$(FREDMODE)" -o $(BINDIR)/$(BIN)
+.PHONY: debug
+debug: dep check
+	GOEXPERIMENT=loopvar go build -ldflags $(DBGLDFLAGS) -tags "$(FREDMODE)" -o $(BINDIR)/$(BIN)
 
 .PHONY: release
-release: dep check
+release: prod
 	GOEXPERIMENT=loopvar go build -ldflags $(LDFLAGS) -tags "$(FREDMODE)" -o $(BINDIR)/$(BIN)
 	tar -czf $(RELEASEDIR)/$(BIN)-$(COHASH)-$(GOOS)-$(GOARCH).tgz -C $(BINDIR) $(BIN)
 
 .PHONY: prod
 prod: dep check
-	GOEXPERIMENT=loopvar GOWORK=off go build -ldflags $(LDFLAGS) -o $(BINDIR)/$(BIN)
+	GOEXPERIMENT=loopvar GOWORK=off go build -ldflags $(LDFLAGS) -tags "$(FREDMODE)" -o $(BINDIR)/$(BIN)

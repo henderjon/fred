@@ -702,9 +702,9 @@ func doSetColumn(num string, cache *cache) (string, error) {
 }
 
 func doDebug(b buffer, cache *cache) (string, error) {
-	// if !debug {
-	// return "", errors.New("debugging is not enabled; did you mean to use `-debug`?")
-	// }
+	if allowDebug != `true` {
+		return "", errors.New("debugging is not enabled; recompile to enable")
+	}
 
 	var rtn strings.Builder
 

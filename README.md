@@ -16,13 +16,11 @@ The differences between `fred` and `ed` reflect the authors usage patterns when 
 
 `$ make install`
 
-By default `fred` uses a tmp file as scratch space. This reduces the memory footprint. If it's more desireable to keep all the scratch space in memory, build `fred` in memory mode:
+By default `fred` uses a tmp file as scratch space. This reduces the memory footprint. If it's more desireable to keep all the scratch space in memory, build `fred` in memory mode: `$ FREDMODE=memory make install`
 
-`$ FREDMODE=memory make install`
+To enable simple readline support: `$ FREDMODE=readline make install`
 
-To enable simple readline support:
-
-`$ FREDMODE=readline make install`
+To use both: `$ FREDMODE="readline memory" make install`
 
 ## Future Ideas
 
@@ -31,7 +29,7 @@ To enable simple readline support:
 - √ HUP
 - restore
 - finish writing tests.
-- ~remove `henderjon/logger` as a dep? eh, maybe not.~
+- √ remove `henderjon/logger` as a dep? eh, maybe not.
 - ~allow /re/ to take an action~
 - ~allow look ahead/behind after /re/~
 
